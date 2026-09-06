@@ -1,9 +1,8 @@
-# DepaMatch – Recomendador inteligente de propiedades
+# DepaRent – Plataforma inteligente para propietarios de departamentos en alquiler.
 
-## Team Members
+## Integrantes
 
-* Adrian Urbina Mendoza — Team Leader & Data Acquisition / Preprocessing
-* Breysi Salazar Medina — Machine Learning Engineer
 * Armando Martinez Palomino — NLP & Data Engineering
+* Breysi Salazar Medina — Machine Learning Engineer
+* Adrian Urbina Mendoza — Team Leader & Data Acquisition / Preprocessing
 * Luciana Yangali Cáceres — Recommendation System & Application / Visualization
-
