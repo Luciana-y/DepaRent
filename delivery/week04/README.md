@@ -1,49 +1,48 @@
-# DepaMatch – Recomendador inteligente de propiedades
+# Week 04 – Topic, Team and Dataset Selection
 
 ## Team Members
 
-* Adrian Urbina Mendoza
-* Breysi Salazar Medina
-* Armando Martinez Palomino
-* Luciana Yangali Cáceres
+- Adrian Urbina Mendoza — Team Leader / Data Acquisition & Preprocessing
+- Armando Martinez Palomino — NLP & Data Engineering
+- Breysi Salazar Medina — Machine Learning Engineer
+- Luciana Yangali Cáceres — Application / Visualization & Recommendation System
+  
+## Working Product Name
 
-## Tentative Product Name
-
-**DepaMatch – Recomendador inteligente de propiedades**
-
-DepaMatch es una plataforma web inteligente orientada a facilitar la búsqueda de propiedades para **alquiler o compra**. El sistema permitirá que el usuario describa en lenguaje natural el tipo de vivienda que busca y, mediante técnicas de NLP y Machine Learning, transformará dicha descripción en un perfil de búsqueda para recomendar las propiedades con mayor compatibilidad.
+DepaRent – Plataforma inteligente para propietarios de departamentos en alquiler.
 
 ## Initial Problem / Opportunity
 
-La búsqueda tradicional de una propiedad requiere que el usuario establezca múltiples filtros de manera independiente, como presupuesto, ubicación, número de dormitorios, baños, área, cochera y otras características. Esto puede obligarlo a revisar una gran cantidad de anuncios para encontrar alternativas que realmente se ajusten a sus necesidades.
-
-**DepaMatch** busca solucionar este problema permitiendo que el usuario describa su vivienda ideal mediante **lenguaje natural**. El sistema identificará automáticamente los atributos relevantes de la solicitud, construirá un perfil matemático y lo comparará con las propiedades disponibles.
-
-Como resultado, se generará un **Top 5 de propiedades**, acompañado de un **Match Score** que represente el grado de compatibilidad entre cada inmueble y las preferencias del usuario.
-
-La oportunidad consiste en transformar los datos inmobiliarios disponibles en recomendaciones personalizadas, pasando de una lógica basada únicamente en filtros a una experiencia de búsqueda basada en **similitud y compatibilidad**.
+Los propietarios que desean alquilar un departamento deben determinar un precio de publicación y posicionar su inmueble frente a otras propiedades del mercado. Actualmente, esta decisión suele realizarse mediante comparación manual de anuncios similares, sin integrar de manera sistemática las características del inmueble, su ubicación y el comportamiento del mercado. El proyecto propone desarrollar un producto de datos web que utilice información inmobiliaria para caracterizar propiedades, estimar valores de alquiler y apoyar posteriormente decisiones relacionadas con la estrategia de publicación.
 
 ## Target Domain
 
-**Dominio: Sector inmobiliario / Real Estate**
+Mercado inmobiliario de alquiler de departamentos en Lima Metropolitana y Callao.
 
-El producto está dirigido principalmente a personas interesadas en **alquilar o comprar una propiedad**, especialmente usuarios que necesitan comparar múltiples alternativas y que prefieren expresar sus necesidades de manera natural en lugar de configurar numerosos filtros.
+## Target Users
 
-Entre los usuarios potenciales se encuentran jóvenes que buscan independizarse, profesionales que desean trasladarse, parejas que buscan su primera vivienda, familias y compradores que desean explorar propiedades de acuerdo con sus preferencias y presupuesto.
+El usuario principal será el propietario de uno o varios departamentos que desea publicarlos en alquiler y tomar decisiones basadas en datos sobre su posicionamiento en el mercado. Como usuario secundario, la plataforma podrá ser utilizada por personas que buscan departamentos disponibles para alquilar.
 
-El principal contexto de uso será la etapa inicial de **exploración y selección inmobiliaria**, donde existe una gran cantidad de propiedades y el usuario necesita reducirlas a un conjunto manejable de alternativas.
+## Dataset
 
-## Dataset Source
+El producto requiere un **dataset inmobiliario** donde cada registro represente una propiedad. El dataset principal contiene anuncios inmobiliarios de departamentos en Lima Metropolitana y Callao. 
 
-El producto requiere un **dataset inmobiliario** donde cada registro represente una propiedad y contenga características que permitan comparar los diferentes inmuebles.
+Incluye atributos relacionados con:
+- precio;
+- distrito;
+- superficie;
+- dormitorios;
+- baños;
+- cochera;
+- características y amenidades del inmueble;
+- descripción del anuncio;
+- otras variables inmobiliarias disponibles.
+
+El procedimiento de adquisición y las restricciones correspondientes se documentan en `acquisition.md`.
 
 El dataset principal seleccionado para el proyecto es:
 
 **Dataset:** depatamentos_lima.csv
 **Fuente:** `https://www.adondevivir.com` y `https://urbania.pe`
 **Formato:** CSV
-**Número de registros:** 1806
 **Cobertura geográfica:** Lima Metropolitana
-
-Las variables de interés incluyen, según su disponibilidad en la fuente, **precio, ubicación/distrito, tipo de propiedad, dormitorios, baños, superficie, cochera, amenidades y descripción textual del anuncio**. Estas variables permitirán construir la representación matemática de cada propiedad y posteriormente compararla con el perfil generado a partir de la solicitud del usuario.
-
