@@ -1,0 +1,48 @@
+nombre_atributo,descripcion,tipo_dato,formato_o_unidad,valores_posibles,codigo_valores_faltantes
+id_anuncio,Identificador unico de la publicacion asignado por el portal inmobiliario,Entero / Cadena,Cadena numerica de ID,Numeros enteros positivos (ej. '150779893'),NaN
+fuente,Portal inmobiliario de origen de la publicacion,Categorico / Cadena,Texto,"'adondevivir', 'urbania'",NaN
+tipo_operacion,Modalidad de la transaccion inmobiliaria ofrecida,Categorico / Cadena,Texto,'alquiler' (Renta mensual),NaN
+url,Enlace web directo a la ficha del departamento en el portal,Cadena,URL HTTPS,Enlaces web validos (ej. 'https://urbania.pe/inmueble/...'),NaN
+fecha_scraping,Marca de tiempo de extraccion de la informacion,Fecha y Hora (DateTime),YYYY-MM-DD HH:MM:SS (UTC-5),Cadenas de fecha validas,NaN
+titulo,Titulo o titular publicitario del anuncio,Cadena de texto,Texto libre (una sola linea),Texto alfanumerico descriptivo del inmueble,NaN
+precio,Precio nominal publicado por el propietario o agencia,Flotante (Numerico),Monto en moneda original,Numeros reales positivos,NaN
+moneda,Moneda en la que fue publicado el precio original,Categorico / Cadena,Codigo ISO 4217,"'PEN' (Soles peruanos), 'USD' (Dolares americanos)",NaN
+precio_soles,Precio estandarizado y convertido a Soles (PEN) con tipo de cambio de referencia,Flotante (Numerico),PEN (Soles / mes),[850.0 - 50000.0],NaN
+area_total,Superficie total ocupada del departamento,Flotante (Numerico),Metros cuadrados (m²),[20.0 - 1000.0] m²,NaN
+area_construida,Superficie techada / construida del departamento,Flotante (Numerico),Metros cuadrados (m²),[20.0 - 1000.0] m²,NaN
+precio_m2,Precio en soles por metro cuadrado de alquiler (precio_soles / area_total),Flotante (Numerico),PEN / m² / mes,[10.0 - 150.0],NaN
+distrito,Distrito normalizado de Lima Metropolitana,Categorico / Cadena,Nombre en Proper Case,"'Miraflores', 'San Isidro', 'Santiago de Surco', 'San Borja', 'Barranco', etc.",NaN
+direccion,"Calle, avenida, urbanizacion o referencia reportada",Cadena de texto,Texto libre,Direccion fisica o referencia urbana,NaN
+dormitorios,Numero de habitaciones o dormitorios del departamento,Flotante (Numerico),Conteo / Cantidad,Enteros de [1.0 - 8.0],NaN
+banos,Numero de banos completos en el departamento,Flotante (Numerico),Conteo / Cantidad,Enteros de [1.0 - 8.0],NaN
+estacionamientos,Numero de cocheras o espacios de estacionamiento privados,Flotante (Numerico),Conteo / Cantidad,Enteros de [0.0 - 8.0],NaN
+piso,Numero de piso en el que esta ubicado el departamento,Flotante (Numerico),Numero de piso,Enteros de [1.0 - 50.0],NaN
+antiguedad,Anos de antiguedad desde la construccion (0 = Estreno),Flotante (Numerico),Anos,Enteros de [0.0 - 80.0],NaN
+mantenimiento,Cuota mensual de mantenimiento del edificio en Soles,Flotante (Numerico),PEN (Soles / mes),Montos positivos [20.0 - 4000.0],NaN
+estado_inmueble,Estado de entrega o fase del proyecto inmobiliario,Categorico / Cadena,Texto,"'En planos', 'En construccion', 'Entrega inmediata', 'Segundo uso'",NaN
+caracteristicas,Lista en texto plano de etiquetas provistas por el portal,Cadena de texto,Lista separada por comas,Texto descriptivo de caracteristicas,NaN
+nombre_proyecto,Nombre comercial del edificio o desarrollo inmobiliario,Cadena de texto,Texto,Nombres comerciales de proyectos,NaN
+inmobiliaria,"Nombre de la inmobiliaria, constructora, agente o dueno",Cadena de texto,Texto,"Nombres de agencias (ej. 'RE/MAX', 'CENTURY 21', 'Büro')",NaN
+descripcion,Texto publicitario detallando acabados y distribucion,Texto largo,Cadena saneada sin saltos de linea,Texto libre explicativo,NaN
+latitud,Coordenada geografica de latitud GPS,Flotante (Numerico),Grados decimales (WGS84),[-12.50 a -11.70] para Lima,NaN
+longitud,Coordenada geografica de longitud GPS,Flotante (Numerico),Grados decimales (WGS84),[-77.20 a -76.70] para Lima,NaN
+ascensor,Variable binaria: indica si el edificio cuenta con ascensor,Entero Binario,0 o 1,"1 (Si cuenta), 0 (No mencionado / No cuenta)",Ninguno (Siempre 0 o 1)
+balcon,Variable binaria: indica si dispone de balcon,Entero Binario,0 o 1,"1 (Si cuenta), 0 (No mencionado / No cuenta)",Ninguno (Siempre 0 o 1)
+terraza,Variable binaria: indica si dispone de terraza privada o azotea,Entero Binario,0 o 1,"1 (Si cuenta), 0 (No mencionado / No cuenta)",Ninguno (Siempre 0 o 1)
+piscina,Variable binaria: indica si el edificio tiene piscina,Entero Binario,0 o 1,"1 (Si cuenta), 0 (No mencionado / No cuenta)",Ninguno (Siempre 0 o 1)
+gimnasio,Variable binaria: indica si el edificio tiene gimnasio equipado,Entero Binario,0 o 1,"1 (Si cuenta), 0 (No mencionado / No cuenta)",Ninguno (Siempre 0 o 1)
+cochera,Variable binaria: indica si incluye cochera o estacionamiento,Entero Binario,0 o 1,"1 (Si cuenta), 0 (No mencionado / No cuenta)",Ninguno (Siempre 0 o 1)
+deposito,Variable binaria: indica si incluye cuarto de deposito o almacen,Entero Binario,0 o 1,"1 (Si cuenta), 0 (No mencionado / No cuenta)",Ninguno (Siempre 0 o 1)
+vista_al_mar,Variable binaria: indica vista al mar o malecon,Entero Binario,0 o 1,"1 (Si cuenta), 0 (No mencionado / No cuenta)",Ninguno (Siempre 0 o 1)
+parrilla,Variable binaria: indica area de parrillas / zona BBQ,Entero Binario,0 o 1,"1 (Si cuenta), 0 (No mencionado / No cuenta)",Ninguno (Siempre 0 o 1)
+areas_verdes,Variable binaria: indica jardines interiores o areas verdes,Entero Binario,0 o 1,"1 (Si cuenta), 0 (No mencionado / No cuenta)",Ninguno (Siempre 0 o 1)
+seguridad_24_7,Variable binaria: indica porteria o vigilancia 24/7,Entero Binario,0 o 1,"1 (Si cuenta), 0 (No mencionado / No cuenta)",Ninguno (Siempre 0 o 1)
+coworking,Variable binaria: indica sala de coworking o SUM,Entero Binario,0 o 1,"1 (Si cuenta), 0 (No mencionado / No cuenta)",Ninguno (Siempre 0 o 1)
+juegos_infantiles,Variable binaria: indica area recreativa infantil,Entero Binario,0 o 1,"1 (Si cuenta), 0 (No mencionado / No cuenta)",Ninguno (Siempre 0 o 1)
+pet_friendly,Variable binaria: indica si admite mascotas,Entero Binario,0 o 1,"1 (Si cuenta), 0 (No mencionado / No cuenta)",Ninguno (Siempre 0 o 1)
+Trimestre,Periodo trimestral estandarizado del dataset panel BCRP,Cadena,YYYY-Tq,[2013-T3 a 2026-T1],Ninguno
+Distrito,Distrito analizado o agregado distrital en el panel BCRP,Categorico / Cadena,Texto,"'Barranco', 'Jesus Maria', 'Miraflores', ..., 'Promedio'",Ninguno
+PER,Indicador Precio de Venta / Alquiler Anual (anos para recuperar la inversion),Flotante (Numerico),Anos,[13.0 - 26.0],Ninguno
+Precio_Venta_USD,Precio promedio de venta de departamentos en dolares por metro cuadrado,Flotante (Numerico),US$ / m²,[1100.0 - 2700.0],Ninguno
+Tipo_Cambio,Tipo de cambio nominal promedio trimestral (Soles por Dolar),Flotante (Numerico),S/ por US$,[2.70 - 4.10],Ninguno
+Alquiler_Mensual_Soles,Variable objetivo: alquiler mensual estimado en soles por metro cuadrado,Flotante (Numerico),PEN / m² / mes,[17.0 - 55.0],Ninguno
