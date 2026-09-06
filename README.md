@@ -1,8 +1,8 @@
 # DepaRent – Plataforma inteligente para propietarios de departamentos en alquiler.
 
-## Integrantes
+## Team Members
 
-* Armando Martinez Palomino — NLP & Data Engineering
-* Breysi Salazar Medina — Machine Learning Engineer
-* Adrian Urbina Mendoza — Team Leader & Data Acquisition / Preprocessing
-* Luciana Yangali Cáceres — Recommendation System & Application / Visualization
+- Adrian Urbina Mendoza — Team Leader / Data Acquisition & Preprocessing
+- Armando Martinez Palomino — NLP & Data Engineering
+- Breysi Salazar Medina — Machine Learning Engineer
+- Luciana Yangali Cáceres — Application / Visualization & Recommendation System
