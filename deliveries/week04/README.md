@@ -13,7 +13,12 @@ DepaRent – Plataforma inteligente para propietarios de departamentos en alquil
 
 ## Initial Problem / Opportunity
 
-Los propietarios que desean alquilar un departamento deben determinar un precio de publicacion y posicionar su inmueble frente a otras propiedades del mercado. Actualmente, esta decision suele realizarse mediante comparacion manual de anuncios similares, sin integrar de manera sistematica las caracteristicas del inmueble, su ubicacion y el comportamiento historico y macroeconomico del mercado. El proyecto propone desarrollar un producto de datos web que utilice informacion inmobiliaria de corte transversal y series temporales para caracterizar propiedades, estimar valores de alquiler por metro cuadrado y apoyar decisiones relacionadas con la estrategia de publicacion y fijacion de precios.
+La necesidad principal puede resumirse en una pregunta: ¿Cómo puede un propietario determinar un precio de alquiler razonable y una estrategia de publicación utilizando información objetiva del mercado y de las características de su inmueble?
+
+Un propietario puede pensar, por ejemplo, en publicar un departamento de 70 m², dos dormitorios, dos baños y cochera en Lince por S/ 2 900. Sin una herramienta analítica, debe decidir manualmente si ese valor está alineado con departamentos realmente comparables, si determinadas características justifican una diferencia de precio y si el contexto del distrito favorece una estrategia más competitiva o más cercana al rango superior del mercado.
+
+DepaRent buscará reducir esta incertidumbre. El sistema no pretende realizar una tasación oficial ni garantizar que un inmueble se alquilará a determinado precio. Su propósito es estimar, comparar y recomendar sobre la base de patrones observados en los datos, mostrando al propietario el contexto y la incertidumbre de cada resultado.
+
 
 ## Target Domain
 
