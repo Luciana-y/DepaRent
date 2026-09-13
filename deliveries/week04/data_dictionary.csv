@@ -46,3 +46,13 @@ PER,Indicador Precio de Venta / Alquiler Anual (anos para recuperar la inversion
 Precio_Venta_USD,Precio promedio de venta de departamentos en dolares por metro cuadrado,Flotante (Numerico),US$ / m²,[1100.0 - 2700.0],Ninguno
 Tipo_Cambio,Tipo de cambio nominal promedio trimestral (Soles por Dolar),Flotante (Numerico),S/ por US$,[2.70 - 4.10],Ninguno
 Alquiler_Mensual_Soles,Variable objetivo: alquiler mensual estimado en soles por metro cuadrado,Flotante (Numerico),PEN / m² / mes,[17.0 - 55.0],Ninguno
+paradero_id,Identificador unico del paradero en el catalogo oficial ATU,Categorico / Cadena,Cadena de ID (formato 'ATU_PAR_xxxx'),'ATU_PAR_0001' a 'ATU_PAR_3233',Ninguno
+nombre_paradero,Nombre oficial del paradero o cruce de referencia,Cadena de texto,Texto libre,"Nombres oficiales (ej. 'Honorio Delgado', 'Javier Prado', 'Angamos')",Ninguno
+distrito,Distrito politico-administrativo de ubicacion,Categorico / Cadena,Nombre de distrito en Proper Case,"'Miraflores', 'San Isidro', 'Magdalena del Mar', 'Jesus Maria', etc.",Ninguno
+corredor_vial,Eje vial o corredor de transporte asignado por la ATU,Categorico / Cadena,Texto,"'Corredor Rojo', 'Corredor Azul', 'Corredor Morado', 'Via Expresa', 'NA'",'NA' (Vias secundarias)
+latitud,Coordenada de latitud geografica del paradero,Flotante (Numerico),Grados decimales (WGS84),[-12.3395 a -11.7590],Ninguno
+longitud,Coordenada de longitud geografica del paradero,Flotante (Numerico),Grados decimales (WGS84),[-77.1655 a -76.8175],Ninguno
+tipo_transporte,Modalidad de transporte publico autorizada,Categorico / Cadena,Texto,"'Transporte Regular', 'Alimentador', 'Corredor', 'Troncal'",Ninguno
+nivel_afluencia_cod,Codigo numerico del nivel de demanda de pasajeros,Categorico / Cadena,Codigo numerico,"'1', '2', '3', '4'",Ninguno
+nivel_afluencia_desc,Descripcion cualitativa de la afluencia de pasajeros,Categorico / Cadena,Texto,"'Moderado', 'Alto', 'Muy Alto', 'Extremo'",Ninguno
+timestamp_oficial,Marca de tiempo del registro en el sistema de la ATU,Fecha y Hora (DateTime),ISO 8601 (YYYY-MM-DDTHH:MM:SS.000Z),Marcas de tiempo validas,Ninguno

@@ -12,6 +12,9 @@ Este documento describe los procesos de adquisicion y procesamiento de datos par
 2. **Dataset Macroinmobiliario Panel BCRP (`dataset_alquileres_trimestre_bcrp.csv`)**: Series temporales macroeconomicas e inmobiliarias trimestrales (T3-2013 a T1-2026) obtenidas de la API oficial del **Banco Central de Reserva del Peru (BCRP)**.
    * Total consolidado: **663 observaciones** (51 trimestres por 13 distritos/categorias).
 
+3. **Dataset de Transporte Publico Oficial (`paraderos.csv`)**: Inventario de paraderos georreferenciados de Lima Metropolitana y Callao publicado originalmente por la **Autoridad de Transporte Urbano para Lima y Callao (ATU)** (corte temporal: mayo 2021) y preservado en un repositorio de respaldo de datos abiertos en GitHub (`jmcastagnetto/lima-atu-covid19-paraderos`) tras la desactivacion de la consulta publica directa en el portal institucional.
+   * Total consolidado: **3,233 paraderos unicos** georreferenciados en 43 distritos.
+
 ---
 
 ## 2. Adquisicion de Datos de Portales Inmobiliarios
@@ -64,3 +67,25 @@ Se consume el endpoint oficial sin requerir web scraping:
 * Conversion de identificadores temporales (`T3.13` $\rightarrow$ `2013-T3`).
 * Cruce por llaves `(Trimestre, Distrito)` para conformar una estructura panel balanceada.
 * Imputacion de valores faltantes puntuales mediante interpolacion lineal dentro de cada serie distrital.
+---
+
+## 4. Adquisicion del Dataset de Paraderos Oficiales de la ATU
+
+### 4.1. Extraccion, Origen y Trazabilidad
+Los datos corresponden al inventario georreferenciado oficial publicado por la ATU en su aplicativo institucional (`sistemas.atu.gob.pe/paraderosCOVID`) con corte temporal a mayo de 2021. Debido a que el acceso publico directo a dicho aplicativo fue restringido al concluir la emergencia sanitaria, la informacion se recupera a traves del repositorio de respaldo de datos abiertos en GitHub de Jesus M. Castagnetto (`jmcastagnetto/lima-atu-covid19-paraderos`), el cual conserva una copia integra y fidedigna del archivo oficial original.
+* **Entidad emisora original**: Autoridad de Transporte Urbano para Lima y Callao (ATU).
+* **Repositorio de respaldo / espejo**: GitHub (`lima-atu-covid19-paraderos`).
+* **Corte temporal de la data**: Mayo 2021.
+* **Sistema de Coordenadas**: WGS84 (EPSG:4326) en grados decimales.
+
+### 4.2. Procesamiento y Estandarizacion
+1. **Generacion de Identificador Unico**: Asignacion de clave primaria estructurada `paradero_id` (`ATU_PAR_0001` a `ATU_PAR_3233`).
+2. **Normalizacion Geografica**: Validacion de rangos de latitud y longitud dentro del poligono metropolitano de Lima y Callao.
+3. **Mapeo de Atributos Operativos**: Estandarizacion de campos institucionales:
+   * `parnom` -> `nombre_paradero`
+   * `disnom` -> `distrito`
+   * `cornom` -> `corredor_vial`
+   * `tipodet` -> `tipo_transporte` (*Transporte Regular*, *Alimentador*, *Corredor*, *Troncal*)
+   * `nivel` / `nivel_lbl` -> `nivel_afluencia_cod` / `nivel_afluencia_desc` (*Moderado*, *Alto*, *Muy Alto*, *Extremo*)
+   * `ts` -> `timestamp_oficial`
+4. **Exportacion**: Almacenamiento directo en `data/paraderos.csv` con codificacion UTF-8 sin perdida de precision decimal.

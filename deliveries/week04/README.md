@@ -30,7 +30,7 @@ El usuario principal sera el propietario de uno o varios departamentos que desea
 
 ## Datasets
 
-El producto integra dos fuentes de datos complementarias:
+El producto integra tres fuentes de datos complementarias:
 
 1. **Dataset Microinmobiliario (`departamentos_alquiler_lima.csv`)**:
    * **Fuente**: Adondevivir (`https://www.adondevivir.com`) y Urbania (`https://urbania.pe`).
@@ -40,6 +40,11 @@ El producto integra dos fuentes de datos complementarias:
 2. **Dataset Macroinmobiliario Panel (`dataset_alquileres_trimestre_bcrp.csv`)**:
    * **Fuente**: API oficial del Banco Central de Reserva del Peru (BCRP).
    * **Contenido**: 663 observaciones trimestrales (T3-2013 a T1-2026) con series de PER, Precio de Venta en US$/m², Tipo de Cambio nominal y Alquiler Mensual estimado en S/ por m² para 13 series distritales.
+   * **Formato**: CSV.
+
+3. **Dataset de Transporte Publico Oficial (`paraderos.csv`)**:
+   * **Fuente**: Autoridad de Transporte Urbano para Lima y Callao (ATU) / Repositorio de respaldo de datos abiertos en GitHub (`jmcastagnetto/lima-atu-covid19-paraderos`, corte mayo 2021).
+   * **Contenido**: 3,233 paraderos formales georreferenciados en 43 distritos de Lima Metropolitana y Callao con 10 atributos (identificador oficial, nombre, distrito, corredor vial, coordenadas WGS84, modalidad de transporte y nivel de afluencia).
    * **Formato**: CSV.
 
 El procedimiento de adquisicion se documenta en `acquisition.md`, la evaluacion de calidad en `data_quality.md` y la definicion de atributos en `data_dictionary.csv`.
