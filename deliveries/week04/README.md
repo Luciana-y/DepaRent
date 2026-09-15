@@ -34,7 +34,7 @@ El producto integra tres fuentes de datos complementarias:
 
 1. **Dataset Microinmobiliario (`departamentos_alquiler_lima.csv`)**:
    * **Fuente**: Adondevivir (`https://www.adondevivir.com`) y Urbania (`https://urbania.pe`).
-   * **Contenido**: 3,801 anuncios individuales de departamentos en alquiler con 41 atributos (precios, metrajes, distribucion, coordenadas GPS y 14 amenidades binarias).
+   * **Contenido**: 3,822 anuncios individuales de departamentos en alquiler con 43 atributos estructurados (precios, metrajes, distribucion, medios baños, coordenadas GPS, texto crudo para NLP y amenidades).
    * **Formato**: CSV.
 
 2. **Dataset Macroinmobiliario Panel (`dataset_alquileres_trimestre_bcrp.csv`)**:

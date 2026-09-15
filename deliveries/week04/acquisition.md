@@ -7,7 +7,7 @@ Este documento describe los procesos de adquisicion y procesamiento de datos par
 1. **Dataset Microinmobiliario de Alquileres (`departamentos_alquiler_lima.csv`)**: Recopila anuncios de departamentos en modalidad exclusiva de **Alquiler** en Lima Metropolitana.
    * **Adondevivir** (`https://www.adondevivir.com`)
    * **Urbania Peru** (`https://urbania.pe`)
-   * Total consolidado: **3,801 departamentos unicos**.
+   * Total consolidado: **3,822 departamentos unicos**.
 
 2. **Dataset Macroinmobiliario Panel BCRP (`dataset_alquileres_trimestre_bcrp.csv`)**: Series temporales macroeconomicas e inmobiliarias trimestrales (T3-2013 a T1-2026) obtenidas de la API oficial del **Banco Central de Reserva del Peru (BCRP)**.
    * Total consolidado: **663 observaciones** (51 trimestres por 13 distritos/categorias).
@@ -26,10 +26,10 @@ Ambos portales operan sobre la infraestructura de Navent, la cual incluye el est
 flowchart TD
     A["Peticion HTTP GET (Catalogo de Alquiler)"] --> B["Respuesta HTML con __PRELOADED_STATE__"]
     B --> C["Extraccion de listStore.listPostings (JSON)"]
-    C --> D["Mapeo de Campos Estructurados y Caracteristicas (CFT)"]
-    D --> E["Normalizacion de Moneda (PEN/USD a Soles) y Unidades"]
+    D["Mapeo de Campos Estructurados (CFT) y Texto Crudo"] --> E["Normalizacion de Moneda (PEN/USD a Soles) y Unidades"]
+    C --> D
     E --> F["Deduplicacion Multi-Nivel"]
-    F --> G["Exportacion a data/departamentos_alquiler_lima.csv"]
+    F --> G["Exportacion a data/departamentos_alquiler_lima.csv (43 Columnas)"]
 ```
 
 ### 2.2. Mapeo de Campos Estructurados (CFT)
@@ -38,9 +38,10 @@ La extraccion prioriza los campos nativos de la base de datos JSON del portal:
 * `CFT101`: Area construida ($m^2$) $\rightarrow$ `area_construida`
 * `CFT2`: Dormitorios $\rightarrow$ `dormitorios`
 * `CFT3`: Banos $\rightarrow$ `banos`
+* `CFT4`: Medios Banos $\rightarrow$ `medios_banos`
 * `CFT7`: Estacionamientos $\rightarrow$ `estacionamientos`
 * `CFT5`: Antiguedad en anos $\rightarrow$ `antiguedad`
-* Precios, expensas de mantenimiento, ubicacion, coordenadas geograficas y 14 amenidades binarias.
+* Precios, expensas de mantenimiento, ubicacion, coordenadas geograficas, texto crudo para NLP (`texto_amenidades_crudo`) y amenidades para imputacion en EDA.
 
 ### 2.3. Control de Tasa y Resiliencia
 * Encabezados de navegacion estandarizados (*User-Agent*).

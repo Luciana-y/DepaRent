@@ -15,6 +15,7 @@ distrito,Distrito normalizado de Lima Metropolitana,Categorico / Cadena,Nombre e
 direccion,"Calle, avenida, urbanizacion o referencia reportada",Cadena de texto,Texto libre,Direccion fisica o referencia urbana,NaN
 dormitorios,Numero de habitaciones o dormitorios del departamento,Flotante (Numerico),Conteo / Cantidad,Enteros de [1.0 - 8.0],NaN
 banos,Numero de banos completos en el departamento,Flotante (Numerico),Conteo / Cantidad,Enteros de [1.0 - 8.0],NaN
+medios_banos,Numero de medios banos (banos de visita o sin ducha) en el departamento,Flotante (Numerico),Conteo / Cantidad,Enteros de [1.0 - 6.0],NaN
 estacionamientos,Numero de cocheras o espacios de estacionamiento privados,Flotante (Numerico),Conteo / Cantidad,Enteros de [0.0 - 8.0],NaN
 piso,Numero de piso en el que esta ubicado el departamento,Flotante (Numerico),Numero de piso,Enteros de [1.0 - 50.0],NaN
 antiguedad,Anos de antiguedad desde la construccion (0 = Estreno),Flotante (Numerico),Anos,Enteros de [0.0 - 80.0],NaN
@@ -26,20 +27,21 @@ inmobiliaria,"Nombre de la inmobiliaria, constructora, agente o dueno",Cadena de
 descripcion,Texto publicitario detallando acabados y distribucion,Texto largo,Cadena saneada sin saltos de linea,Texto libre explicativo,NaN
 latitud,Coordenada geografica de latitud GPS,Flotante (Numerico),Grados decimales (WGS84),[-12.50 a -11.70] para Lima,NaN
 longitud,Coordenada geografica de longitud GPS,Flotante (Numerico),Grados decimales (WGS84),[-77.20 a -76.70] para Lima,NaN
-ascensor,Variable binaria: indica si el edificio cuenta con ascensor,Entero Binario,0 o 1,"1 (Si cuenta), 0 (No mencionado / No cuenta)",Ninguno (Siempre 0 o 1)
-balcon,Variable binaria: indica si dispone de balcon,Entero Binario,0 o 1,"1 (Si cuenta), 0 (No mencionado / No cuenta)",Ninguno (Siempre 0 o 1)
-terraza,Variable binaria: indica si dispone de terraza privada o azotea,Entero Binario,0 o 1,"1 (Si cuenta), 0 (No mencionado / No cuenta)",Ninguno (Siempre 0 o 1)
-piscina,Variable binaria: indica si el edificio tiene piscina,Entero Binario,0 o 1,"1 (Si cuenta), 0 (No mencionado / No cuenta)",Ninguno (Siempre 0 o 1)
-gimnasio,Variable binaria: indica si el edificio tiene gimnasio equipado,Entero Binario,0 o 1,"1 (Si cuenta), 0 (No mencionado / No cuenta)",Ninguno (Siempre 0 o 1)
-cochera,Variable binaria: indica si incluye cochera o estacionamiento,Entero Binario,0 o 1,"1 (Si cuenta), 0 (No mencionado / No cuenta)",Ninguno (Siempre 0 o 1)
-deposito,Variable binaria: indica si incluye cuarto de deposito o almacen,Entero Binario,0 o 1,"1 (Si cuenta), 0 (No mencionado / No cuenta)",Ninguno (Siempre 0 o 1)
-vista_al_mar,Variable binaria: indica vista al mar o malecon,Entero Binario,0 o 1,"1 (Si cuenta), 0 (No mencionado / No cuenta)",Ninguno (Siempre 0 o 1)
-parrilla,Variable binaria: indica area de parrillas / zona BBQ,Entero Binario,0 o 1,"1 (Si cuenta), 0 (No mencionado / No cuenta)",Ninguno (Siempre 0 o 1)
-areas_verdes,Variable binaria: indica jardines interiores o areas verdes,Entero Binario,0 o 1,"1 (Si cuenta), 0 (No mencionado / No cuenta)",Ninguno (Siempre 0 o 1)
-seguridad_24_7,Variable binaria: indica porteria o vigilancia 24/7,Entero Binario,0 o 1,"1 (Si cuenta), 0 (No mencionado / No cuenta)",Ninguno (Siempre 0 o 1)
-coworking,Variable binaria: indica sala de coworking o SUM,Entero Binario,0 o 1,"1 (Si cuenta), 0 (No mencionado / No cuenta)",Ninguno (Siempre 0 o 1)
-juegos_infantiles,Variable binaria: indica area recreativa infantil,Entero Binario,0 o 1,"1 (Si cuenta), 0 (No mencionado / No cuenta)",Ninguno (Siempre 0 o 1)
-pet_friendly,Variable binaria: indica si admite mascotas,Entero Binario,0 o 1,"1 (Si cuenta), 0 (No mencionado / No cuenta)",Ninguno (Siempre 0 o 1)
+texto_amenidades_crudo,Texto no estructurado consolidado (titulo + descripcion + caracteristicas) para extraccion NLP en EDA,Cadena de texto,Texto libre saneado,Texto descriptivo del inmueble,NaN
+ascensor,Variable binaria: indica si el edificio cuenta con ascensor,Flotante (Binario),0 o 1,"1 (Si cuenta), 0 (No cuenta), NaN (No informado)",NaN
+balcon,Variable binaria: indica si dispone de balcon,Flotante (Binario),0 o 1,"1 (Si cuenta), 0 (No cuenta), NaN (No informado)",NaN
+terraza,Variable binaria: indica si dispone de terraza privada o azotea,Flotante (Binario),0 o 1,"1 (Si cuenta), 0 (No cuenta), NaN (No informado)",NaN
+piscina,Variable binaria: indica si el edificio tiene piscina,Flotante (Binario),0 o 1,"1 (Si cuenta), 0 (No cuenta), NaN (No informado)",NaN
+gimnasio,Variable binaria: indica si el edificio tiene gimnasio equipado,Flotante (Binario),0 o 1,"1 (Si cuenta), 0 (No cuenta), NaN (No informado)",NaN
+cochera,Variable binaria: indica si incluye cochera (derivada de estacionamientos > 0),Flotante (Binario),0 o 1,"1 (Si cuenta), 0 (No cuenta), NaN (No informado)",NaN
+deposito,Variable binaria: indica si incluye cuarto de deposito o almacen,Flotante (Binario),0 o 1,"1 (Si cuenta), 0 (No cuenta), NaN (No informado)",NaN
+vista_al_mar,Variable binaria: indica vista al mar o malecon,Flotante (Binario),0 o 1,"1 (Si cuenta), 0 (No cuenta), NaN (No informado)",NaN
+parrilla,Variable binaria: indica area de parrillas / zona BBQ,Flotante (Binario),0 o 1,"1 (Si cuenta), 0 (No cuenta), NaN (No informado)",NaN
+areas_verdes,Variable binaria: indica jardines interiores o areas verdes,Flotante (Binario),0 o 1,"1 (Si cuenta), 0 (No cuenta), NaN (No informado)",NaN
+seguridad_24_7,Variable binaria: indica porteria o vigilancia 24/7,Flotante (Binario),0 o 1,"1 (Si cuenta), 0 (No cuenta), NaN (No informado)",NaN
+coworking,Variable binaria: indica sala de coworking o SUM,Flotante (Binario),0 o 1,"1 (Si cuenta), 0 (No cuenta), NaN (No informado)",NaN
+juegos_infantiles,Variable binaria: indica area recreativa infantil,Flotante (Binario),0 o 1,"1 (Si cuenta), 0 (No cuenta), NaN (No informado)",NaN
+pet_friendly,Variable binaria: indica si admite mascotas,Flotante (Binario),0 o 1,"1 (Si cuenta), 0 (No cuenta), NaN (No informado)",NaN
 Trimestre,Periodo trimestral estandarizado del dataset panel BCRP,Cadena,YYYY-Tq,[2013-T3 a 2026-T1],Ninguno
 Distrito,Distrito analizado o agregado distrital en el panel BCRP,Categorico / Cadena,Texto,"'Barranco', 'Jesus Maria', 'Miraflores', ..., 'Promedio'",Ninguno
 PER,Indicador Precio de Venta / Alquiler Anual (anos para recuperar la inversion),Flotante (Numerico),Anos,[13.0 - 26.0],Ninguno

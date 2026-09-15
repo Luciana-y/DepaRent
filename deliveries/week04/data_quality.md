@@ -4,7 +4,7 @@
 
 Este informe documenta la evaluacion de calidad de dos fuentes de datos procesadas para el analisis del mercado de alquiler de departamentos en Lima Metropolitana:
 
-1. **Dataset Microinmobiliario (`departamentos_alquiler_lima.csv`)**: Base de corte transversal con **3,801 departamentos individuales en alquiler** extraidos de los portales *Adondevivir* (3,055) y *Urbania* (746).
+1. **Dataset Microinmobiliario (`departamentos_alquiler_lima.csv`)**: Base de corte transversal con **3,822 departamentos individuales en alquiler** extraidos de los portales *Adondevivir* (3,113) y *Urbania* (709), estructurados en 43 columnas.
 2. **Dataset Macroinmobiliario Panel BCRP (`dataset_alquileres_trimestre_bcrp.csv`)**: Base panel balanceada con **663 observaciones trimestrales** (T3-2013 a T1-2026, 51 trimestres para 13 distritos/series).
 3. **Dataset de Paraderos Oficiales ATU (`paraderos.csv`)**: Base georreferenciada con **3,233 paraderos fisicos formales** de Lima Metropolitana y Callao distribuidos en 43 distritos (corte mayo 2021, archivado en repositorio open data mirror).
 
@@ -16,24 +16,28 @@ Este informe documenta la evaluacion de calidad de dos fuentes de datos procesad
 
 | Categoria | Columnas | % Nulos | % Completitud | Diagnostico Tecnico |
 | :--- | :--- | :---: | :---: | :--- |
-| **Identificadores y Metadata** | `id_anuncio`, `fuente`, `tipo_operacion`, `url`, `fecha_scraping`, `titulo`, `inmobiliaria`, `descripcion` | 0.00% | 100.00% | Integridad total en identificadores y textos base. |
-| **Ubicacion y Georreferenciacion** | `distrito`<br>`direccion`<br>`latitud`, `longitud` | 0.00%<br>0.39%<br>8.73% | 100.00%<br>99.61%<br>91.27% | Distrito normalizado al 100%. 3,469 registros con coordenadas GPS directas. |
-| **Variables Monetarias** | `precio`, `moneda`, `precio_soles`, `precio_m2` | 0.16% | 99.84% | Solo 6 registros omiten precio por figurar como "precio a consultar". |
-| **Caracteristicas Fisicas** | `dormitorios`, `area_total`<br>`banos`<br>`area_construida`<br>`antiguedad`<br>`mantenimiento`<br>`estacionamientos` | 0.00%<br>0.45%<br>8.10%<br>22.97%<br>26.07%<br>44.70% | 100.00%<br>99.55%<br>91.90%<br>77.03%<br>73.93%<br>55.30% | Dormitorios y area total completos. Estacionamiento omitido cuando el departamento no incluye cochera. |
-| **14 Amenidades Binarias** | `ascensor`, `balcon`, `terraza`, `piscina`, `gimnasio`, `cochera`, `deposito`, `vista_al_mar`, `parrilla`, `areas_verdes`, `seguridad_24_7`, `coworking`, `juegos_infantiles`, `pet_friendly` | 0.00% | 100.00% | Variables binarias (0 o 1). 1 indica presencia confirmada de la amenidad. |
-| **Campos de Proyectos** | `piso`, `estado_inmueble`, `nombre_proyecto`, `caracteristicas` | 100.00% | 0.00% | Campos no provistos por el catalogo web para unidades individuales de alquiler. |
+| **Identificadores y Metadata** | `id_anuncio`, `fuente`, `tipo_operacion`, `url`, `fecha_scraping`, `titulo`, `inmobiliaria`, `descripcion`, `caracteristicas`, `texto_amenidades_crudo` | 0.00% | 100.00% | Integridad total en identificadores y textos base. Se consolida `texto_amenidades_crudo` para NLP en EDA. |
+| **Ubicacion y Georreferenciacion** | `distrito`<br>`direccion`<br>`latitud`, `longitud` | 0.00%<br>0.39%<br>8.77% | 100.00%<br>99.61%<br>91.23% | Distrito normalizado al 100%. 3,487 registros con coordenadas GPS directas. |
+| **Variables Monetarias** | `precio`, `moneda`, `precio_soles`, `precio_m2` | 0.08% | 99.92% | Solo 3 registros omiten precio por figurar como "precio a consultar". |
+| **Caracteristicas Fisicas** | `dormitorios`, `area_total`<br>`banos`<br>`area_construida`<br>`antiguedad`<br>`mantenimiento`<br>`estacionamientos`<br>`medios_banos` | 0.00%<br>0.55%<br>8.63%<br>23.00%<br>26.19%<br>45.79%<br>76.32% | 100.00%<br>99.45%<br>91.37%<br>77.00%<br>73.81%<br>54.21%<br>23.68% | Dormitorios y area total completos. `medios_banos` capturado desde `CFT4`. En `estacionamientos`, el valor nulo (NaN) es ambiguo (mezcla casos sin cochera con omisiones del anunciante). |
+| **Cochera Estructurada** | `cochera` | 45.79% | 54.21% | Variable binaria atada a `estacionamientos` (1 si > 0, 0 si == 0, NaN si no informado). Se preserva NaN en crudo para evitar imputaciones arbitrarias. |
+| **13 Amenidades No Estructuradas** | `ascensor`, `balcon`, `terraza`, `piscina`, `gimnasio`, `deposito`, `vista_al_mar`, `parrilla`, `areas_verdes`, `seguridad_24_7`, `coworking`, `juegos_infantiles`, `pet_friendly` | 100.00% | 0.00% | Preservadas legítimamente como NaN en adquisición para inferencia/NLP posterior en EDA (Semana 6). |
+| **Campos de Proyectos** | `piso`, `estado_inmueble`, `nombre_proyecto` | 100.00% | 0.00% | Campos no provistos de forma estructurada en el catálogo web para unidades individuales de alquiler. |
+
+> **Nota Metodológica sobre `estacionamientos` y `cochera`:**
+> La ausencia de dato (`NaN`) en `estacionamientos` y `cochera` (45.79% de los registros) representa un estado **ambiguo** en la adquisición: combina anuncios donde el inmueble genuinamente no incluye estacionamiento con anuncios donde el propietario omitió llenar dicho campo en el formulario web. Una validación cruzada sobre el texto libre (`texto_amenidades_crudo`) demuestra que el 10.75% de los anuncios con `estacionamientos = NaN` sí mencionan explícitamente disponer de cochera (ej. *"con cochera"*, *"incluye estacionamiento"*), mientras que el 89.25% restante no hace mención confirmatoria. Por tanto, el scraper no asume `0` ni realiza imputaciones categóricas, preservando el dato faltante para su análisis y tratamiento contextual en la etapa de EDA (Semana 6).
 
 ### 2.2. Deduplicacion
 * Deduplicacion por identificador de anuncio por fuente (`fuente`, `id_anuncio`): 0 duplicados.
 * Deduplicacion por URL de publicacion (`url`): 0 duplicados.
-* Registros unicos consolidados: **3,801 departamentos**.
+* Registros unicos consolidados: **3,822 departamentos**.
 
 ### 2.3. Consistencia y Distribucion de Mercado
-* **Alquiler mensual (`precio_soles`)**: Mediana de S/ 2,750 (Rango intercuartil: S/ 2,100 a S/ 3,910).
-* **Area total (`area_total`)**: Mediana de 75 $m^2$ (Rango intercuartil: 57 a 111 $m^2$).
-* **Precio por $m^2$ (`precio_m2`)**: Mediana de S/ 38.46 / $m^2$ (Rango intercuartil: S/ 28.99 a S/ 48.57 / $m^2$).
+* **Alquiler mensual (`precio_soles`)**: Mediana de S/ 2,750 (Rango intercuartil: S/ 2,100 a S/ 3,850).
+* **Area total (`area_total`)**: Mediana de 75 $m^2$ (Rango intercuartil: 57 a 110 $m^2$).
+* **Precio por $m^2$ (`precio_m2`)**: Mediana de S/ 38.16 / $m^2$ (Rango intercuartil: S/ 29.10 a S/ 48.82 / $m^2$).
 * **Cuota de mantenimiento (`mantenimiento`)**: Mediana de S/ 300 / mes.
-* **Top distritos por volumen**: Miraflores (825), San Isidro (513), Santiago de Surco (329), Barranco (249), San Miguel (225), Jesus Maria (202), Surquillo (145), Lince (134), Magdalena del Mar (118), Pueblo Libre (117).
+* **Top distritos por volumen**: Miraflores (842), San Isidro (504), Santiago de Surco (347), Barranco (239), San Miguel (225), Jesus Maria (198), Lince (144), Surquillo (138), Pueblo Libre (121), Cercado de Lima (117), Magdalena del Mar (115), San Borja (106).
 
 ---
 
