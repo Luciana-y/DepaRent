@@ -1,0 +1,79 @@
+nombre_atributo,descripcion,tipo_dato,formato_o_unidad,valores_posibles,codigo_valores_faltantes
+id_anuncio,Identificador unico de la publicacion asignado por el portal inmobiliario,Entero / Cadena,Cadena numerica de ID,Numeros enteros positivos (ej. '150779893'),NaN
+fuente,Portal inmobiliario de origen de la publicacion,Categorico / Cadena,Texto,"'adondevivir', 'urbania'",NaN
+tipo_operacion,Modalidad de la transaccion inmobiliaria ofrecida,Categorico / Cadena,Texto,'alquiler' (Renta mensual),NaN
+url,Enlace web directo a la ficha del departamento en el portal,Cadena,URL HTTPS,Enlaces web validos (ej. 'https://urbania.pe/inmueble/...'),NaN
+fecha_scraping,Marca de tiempo de extraccion de la informacion,Fecha y Hora (DateTime),YYYY-MM-DD HH:MM:SS (UTC-5),Cadenas de fecha validas,NaN
+titulo,Titulo o titular publicitario del anuncio,Cadena de texto,Texto libre (una sola linea),Texto alfanumerico descriptivo del inmueble,NaN
+precio,Precio nominal publicado por el propietario o agencia,Flotante (Numerico),Monto en moneda original,Numeros reales positivos,NaN
+moneda,Moneda en la que fue publicado el precio original,Categorico / Cadena,Codigo ISO 4217,"'PEN' (Soles peruanos), 'USD' (Dolares americanos)",NaN
+precio_soles,Precio estandarizado y convertido a Soles (PEN) con tipo de cambio de referencia,Flotante (Numerico),PEN (Soles / mes),[850.0 - 50000.0],NaN
+area_total,Superficie total ocupada del departamento,Flotante (Numerico),Metros cuadrados (m²),[20.0 - 1000.0] m²,NaN
+area_construida,Superficie techada / construida del departamento,Flotante (Numerico),Metros cuadrados (m²),[20.0 - 1000.0] m²,NaN
+precio_m2,Precio en soles por metro cuadrado de alquiler (precio_soles / area_total),Flotante (Numerico),PEN / m² / mes,[10.0 - 150.0],NaN
+distrito,Distrito normalizado de Lima Metropolitana,Categorico / Cadena,Nombre en Proper Case,"'Miraflores', 'San Isidro', 'Santiago de Surco', 'San Borja', 'Barranco', etc.",NaN
+direccion,"Calle, avenida, urbanizacion o referencia reportada",Cadena de texto,Texto libre,Direccion fisica o referencia urbana,NaN
+dormitorios,Numero de habitaciones o dormitorios del departamento,Flotante (Numerico),Conteo / Cantidad,Enteros de [1.0 - 8.0],NaN
+banos,Numero de banos completos en el departamento,Flotante (Numerico),Conteo / Cantidad,Enteros de [1.0 - 8.0],NaN
+medios_banos,Numero de medios banos (banos de visita o sin ducha) en el departamento,Flotante (Numerico),Conteo / Cantidad,Enteros de [1.0 - 6.0],NaN
+estacionamientos,Numero de cocheras o espacios de estacionamiento privados,Flotante (Numerico),Conteo / Cantidad,Enteros de [0.0 - 8.0],NaN
+piso,Numero de piso en el que esta ubicado el departamento,Flotante (Numerico),Numero de piso,Enteros de [1.0 - 50.0],NaN
+antiguedad,Anos de antiguedad desde la construccion (0 = Estreno),Flotante (Numerico),Anos,Enteros de [0.0 - 80.0],NaN
+mantenimiento,Cuota mensual de mantenimiento del edificio en Soles,Flotante (Numerico),PEN (Soles / mes),Montos positivos [20.0 - 4000.0],NaN
+estado_inmueble,Estado de entrega o fase del proyecto inmobiliario,Categorico / Cadena,Texto,"'En planos', 'En construccion', 'Entrega inmediata', 'Segundo uso'",NaN
+caracteristicas,Lista en texto plano de etiquetas provistas por el portal,Cadena de texto,Lista separada por comas,Texto descriptivo de caracteristicas,NaN
+nombre_proyecto,Nombre comercial del edificio o desarrollo inmobiliario,Cadena de texto,Texto,Nombres comerciales de proyectos,NaN
+inmobiliaria,"Nombre de la inmobiliaria, constructora, agente o dueno",Cadena de texto,Texto,"Nombres de agencias (ej. 'RE/MAX', 'CENTURY 21', 'Büro')",NaN
+descripcion,Texto publicitario detallando acabados y distribucion,Texto largo,Cadena saneada sin saltos de linea,Texto libre explicativo,NaN
+latitud,Coordenada geografica de latitud GPS,Flotante (Numerico),Grados decimales (WGS84),[-12.50 a -11.70] para Lima,NaN
+longitud,Coordenada geografica de longitud GPS,Flotante (Numerico),Grados decimales (WGS84),[-77.20 a -76.70] para Lima,NaN
+texto_amenidades_crudo,Texto no estructurado consolidado (titulo + descripcion + caracteristicas) para extraccion NLP en EDA,Cadena de texto,Texto libre saneado,Texto descriptivo del inmueble,NaN
+ascensor,Variable binaria: indica si el edificio cuenta con ascensor,Flotante (Binario),0 o 1,"1 (Si cuenta), 0 (No cuenta), NaN (No informado)",NaN
+balcon,Variable binaria: indica si dispone de balcon,Flotante (Binario),0 o 1,"1 (Si cuenta), 0 (No cuenta), NaN (No informado)",NaN
+terraza,Variable binaria: indica si dispone de terraza privada o azotea,Flotante (Binario),0 o 1,"1 (Si cuenta), 0 (No cuenta), NaN (No informado)",NaN
+piscina,Variable binaria: indica si el edificio tiene piscina,Flotante (Binario),0 o 1,"1 (Si cuenta), 0 (No cuenta), NaN (No informado)",NaN
+gimnasio,Variable binaria: indica si el edificio tiene gimnasio equipado,Flotante (Binario),0 o 1,"1 (Si cuenta), 0 (No cuenta), NaN (No informado)",NaN
+cochera,Variable binaria: indica si incluye cochera (derivada de estacionamientos > 0),Flotante (Binario),0 o 1,"1 (Si cuenta), 0 (No cuenta), NaN (No informado)",NaN
+deposito,Variable binaria: indica si incluye cuarto de deposito o almacen,Flotante (Binario),0 o 1,"1 (Si cuenta), 0 (No cuenta), NaN (No informado)",NaN
+vista_al_mar,Variable binaria: indica vista al mar o malecon,Flotante (Binario),0 o 1,"1 (Si cuenta), 0 (No cuenta), NaN (No informado)",NaN
+parrilla,Variable binaria: indica area de parrillas / zona BBQ,Flotante (Binario),0 o 1,"1 (Si cuenta), 0 (No cuenta), NaN (No informado)",NaN
+areas_verdes,Variable binaria: indica jardines interiores o areas verdes,Flotante (Binario),0 o 1,"1 (Si cuenta), 0 (No cuenta), NaN (No informado)",NaN
+seguridad_24_7,Variable binaria: indica porteria o vigilancia 24/7,Flotante (Binario),0 o 1,"1 (Si cuenta), 0 (No cuenta), NaN (No informado)",NaN
+coworking,Variable binaria: indica sala de coworking o SUM,Flotante (Binario),0 o 1,"1 (Si cuenta), 0 (No cuenta), NaN (No informado)",NaN
+juegos_infantiles,Variable binaria: indica area recreativa infantil,Flotante (Binario),0 o 1,"1 (Si cuenta), 0 (No cuenta), NaN (No informado)",NaN
+pet_friendly,Variable binaria: indica si admite mascotas,Flotante (Binario),0 o 1,"1 (Si cuenta), 0 (No cuenta), NaN (No informado)",NaN
+Trimestre,Periodo trimestral estandarizado del dataset panel BCRP,Cadena,YYYY-Tq,[2013-T3 a 2026-T1],Ninguno
+Distrito,Distrito analizado o agregado distrital en el panel BCRP,Categorico / Cadena,Texto,"'Barranco', 'Jesus Maria', 'Miraflores', ..., 'Promedio'",Ninguno
+PER,Indicador Precio de Venta / Alquiler Anual (anos para recuperar la inversion),Flotante (Numerico),Anos,[13.0 - 26.0],Ninguno
+Precio_Venta_USD,Precio promedio de venta de departamentos en dolares por metro cuadrado,Flotante (Numerico),US$ / m²,[1100.0 - 2700.0],Ninguno
+Tipo_Cambio,Tipo de cambio nominal promedio trimestral (Soles por Dolar),Flotante (Numerico),S/ por US$,[2.70 - 4.10],Ninguno
+Alquiler_Mensual_Soles,Variable objetivo: alquiler mensual estimado en soles por metro cuadrado,Flotante (Numerico),PEN / m² / mes,[17.0 - 55.0],Ninguno
+paradero_id,Identificador unico del paradero en el catalogo oficial ATU,Categorico / Cadena,Cadena de ID (formato 'ATU_PAR_xxxx'),'ATU_PAR_0001' a 'ATU_PAR_3233',Ninguno
+nombre_paradero,Nombre oficial del paradero o cruce de referencia,Cadena de texto,Texto libre,"Nombres oficiales (ej. 'Honorio Delgado', 'Javier Prado', 'Angamos')",Ninguno
+distrito,Distrito politico-administrativo de ubicacion,Categorico / Cadena,Nombre de distrito en Proper Case,"'Miraflores', 'San Isidro', 'Magdalena del Mar', 'Jesus Maria', etc.",Ninguno
+corredor_vial,Eje vial o corredor de transporte asignado por la ATU,Categorico / Cadena,Texto,"'Corredor Rojo', 'Corredor Azul', 'Corredor Morado', 'Via Expresa', 'NA'",'NA' (Vias secundarias)
+latitud,Coordenada de latitud geografica del paradero,Flotante (Numerico),Grados decimales (WGS84),[-12.3395 a -11.7590],Ninguno
+longitud,Coordenada de longitud geografica del paradero,Flotante (Numerico),Grados decimales (WGS84),[-77.1655 a -76.8175],Ninguno
+tipo_transporte,Modalidad de transporte publico autorizada,Categorico / Cadena,Texto,"'Transporte Regular', 'Alimentador', 'Corredor', 'Troncal'",Ninguno
+nivel_afluencia_cod,Codigo numerico del nivel de demanda de pasajeros,Categorico / Cadena,Codigo numerico,"'1', '2', '3', '4'",Ninguno
+nivel_afluencia_desc,Descripcion cualitativa de la afluencia de pasajeros,Categorico / Cadena,Texto,"'Moderado', 'Alto', 'Muy Alto', 'Extremo'",Ninguno
+timestamp_oficial,Marca de tiempo del registro en el sistema de la ATU,Fecha y Hora (DateTime),ISO 8601 (YYYY-MM-DDTHH:MM:SS.000Z),Marcas de tiempo validas,Ninguno
+distrito_norm,"Distrito normalizado usado para el modelado: nombres unificados con nombres BCRP/ATU, typos corregidos (validados por geolocalizacion, ej. 'Barranca'->'Barranco'), y distritos con menos de 20 observaciones agrupados en la categoria 'Otros' para evitar sobreajuste en variables categoricas",Categorico / Cadena,Texto,"'Miraflores', 'San Isidro', 'Surco', 'Barranco', ..., 'Otros'",NaN
+precio_m2_real,"Precio por metro cuadrado recalculado sobre el dataset limpio (precio_soles / area_total), posterior al filtro de outliers geograficos, de precio/area y de doble modalidad venta-alquiler",Flotante (Numerico),PEN / m² / mes,[10.0 - 150.0] aprox. (sobre df_clean),NaN
+antiguedad_imputado,"Indicador binario de missingness: 1 si el valor de 'antiguedad' fue imputado (nulo en el dataset original), 0 si es un dato real capturado del portal o recuperado por texto",Flotante (Binario),0 o 1,"1 (Imputado), 0 (Dato real)",Ninguno
+mantenimiento_imputado,"Indicador binario de missingness: 1 si el valor de 'mantenimiento' fue imputado, 0 si es un dato real",Flotante (Binario),0 o 1,"1 (Imputado), 0 (Dato real)",Ninguno
+estacionamientos_imputado,"Indicador binario de missingness: 1 si el valor de 'estacionamientos' fue imputado. NOTA METODOLOGICA: este nulo es ambiguo -- solo 10.75% de los casos se confirma por texto como 'no tiene cochera', el 89.25% restante es dato no informado, por lo que no se asume ausencia categorica",Flotante (Binario),0 o 1,"1 (Imputado), 0 (Dato real)",Ninguno
+banos_imputado,"Indicador binario de missingness: 1 si el valor de 'banos' fue imputado, 0 si es un dato real",Flotante (Binario),0 o 1,"1 (Imputado), 0 (Dato real)",Ninguno
+area_construida_imputado,"Indicador binario de missingness: 1 si el valor de 'area_construida' fue imputado (se asume igual a area_total cuando falta), 0 si es un dato real",Flotante (Binario),0 o 1,"1 (Imputado), 0 (Dato real)",Ninguno
+bcrp_es_promedio_general,"Indicador binario: 1 si el distrito del departamento no tiene serie propia en el panel BCRP y se le asigno el valor 'Promedio general' metropolitano como sustituto (unica forma de imputacion dentro del cruce con BCRP, a diferencia del resto del cruce que es integracion de datos)",Flotante (Binario),0 o 1,"1 (Usa promedio general), 0 (Serie distrital propia)",Ninguno
+bcrp_per,"PER (Precio de Venta / Alquiler Anual) del distrito del departamento, tomado del trimestre BCRP mas reciente disponible (2026-T1); usa el valor 'Promedio general' si bcrp_es_promedio_general=1",Flotante (Numerico),Anos,[13.0 - 26.0],NaN
+bcrp_precio_venta_usd_m2,"Precio de venta promedio en USD por m2 del distrito del departamento, segun el trimestre BCRP mas reciente (2026-T1)",Flotante (Numerico),US$ / m²,[1100.0 - 2700.0],NaN
+bcrp_alquiler_mensual_m2,"Alquiler mensual implicito en soles por m2 del distrito del departamento, derivado de la formula PER/Precio de Venta/Tipo de Cambio, segun el trimestre BCRP mas reciente (2026-T1)",Flotante (Numerico),PEN / m² / mes,[17.0 - 55.0],NaN
+dist_paradero_min_m,"Distancia en metros al paradero de transporte publico oficial (ATU) mas cercano, calculada mediante indexacion espacial (cKDTree) sobre las coordenadas GPS",Flotante (Numerico),Metros,[3.9 - 6053.0] (mediana: 174.8),NaN
+paradero_cercano_tipo,Modalidad de transporte del paradero mas cercano al departamento,Categorico / Cadena,Texto,"'Transporte Regular', 'Alimentador', 'Corredor', 'Troncal'",NaN
+paradero_cercano_afluencia,Nivel de afluencia de pasajeros del paradero mas cercano al departamento,Categorico / Cadena,Texto,"'Moderado', 'Alto', 'Muy Alto', 'Extremo'",NaN
+paraderos_300m,Conteo de paraderos oficiales dentro de un radio de 300 metros del departamento,Entero (Numerico),Conteo / Cantidad,[0 - 20] aprox.,NaN
+paraderos_500m,Conteo de paraderos oficiales dentro de un radio de 500 metros del departamento,Entero (Numerico),Conteo / Cantidad,[0 - 51] (media: 9.3),NaN
+paraderos_1000m,Conteo de paraderos oficiales dentro de un radio de 1000 metros del departamento,Entero (Numerico),Conteo / Cantidad,[0 - 90] aprox.,NaN
+dist_troncal_brt_m,Distancia en metros al paradero Troncal (BRT Metropolitano) mas cercano,Flotante (Numerico),Metros,[16.0 - 27526.6] (mediana aprox: 1767.8),NaN
+dist_corredor_m,Distancia en metros al paradero de Corredor Complementario mas cercano,Flotante (Numerico),Metros,[7.0 - 25902.5],NaN
