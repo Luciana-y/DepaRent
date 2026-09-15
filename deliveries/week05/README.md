@@ -1,21 +1,21 @@
-# Week 05 – Project Proposal, Requirements and Data Product Definition
+# Semana 05 – Propuesta de Proyecto, Requisitos y Definición del Producto de Datos
 
-## Team Members
+## Miembros del Equipo
 
-- Adrian Urbina Mendoza — Team Leader / Data Acquisition & Preprocessing
-- Armando Martinez Palomino — Data Engineering & External Data Integration
-- Breysi Salazar Medina — Machine Learning Engineer
-- Luciana Yangali Cáceres — Application / Visualization
+- Adrian Urbina Mendoza — Líder de Equipo / Adquisición y Preprocesamiento de Datos
+- Armando Martinez Palomino — Ingeniería de Datos e Integración de Datos Externos
+- Breysi Salazar Medina — Ingeniera de Machine Learning
+- Luciana Yangali Cáceres — Aplicación / Visualización
 
 ---
 
-## Working Product Name
+## Nombre del Producto en Desarrollo
 
 **DepaRent – Plataforma inteligente para propietarios de departamentos en alquiler**
 
 ---
 
-## Project Overview
+## Descripción General del Proyecto
 
 DepaRent es una plataforma web de apoyo a la decisión dirigida principalmente a propietarios que desean publicar uno o varios departamentos en alquiler en Lima Metropolitana y Callao.
 
@@ -29,21 +29,21 @@ El sistema no pretende realizar una tasación oficial ni garantizar que una prop
 
 ---
 
-## General Objective
+## Objetivo General
 
 Desarrollar una plataforma web de apoyo a la decisión para propietarios de departamentos en alquiler en Lima Metropolitana y Callao, que integre datos inmobiliarios y territoriales con técnicas descriptivas, predictivas y prescriptivas para analizar el posicionamiento del inmueble, estimar su precio esperado y generar escenarios que apoyen la definición de una estrategia de publicación.
 
 ---
 
-## Target Domain
+## Dominio Objetivo
 
 Mercado inmobiliario de departamentos en alquiler en **Lima Metropolitana y Callao**.
 
 ---
 
-## Target Users
+## Usuarios Objetivo
 
-### Primary User
+### Usuario Principal
 
 El usuario principal es el **propietario de uno o varios departamentos en alquiler**.
 
@@ -58,7 +58,7 @@ El propietario deberá registrarse e iniciar sesión para:
 - simular posibles mejoras;
 - administrar sus publicaciones.
 
-### Secondary User
+### Usuario Secundario
 
 La plataforma también contará con una interfaz pública para personas que buscan alquilar un departamento.
 
@@ -71,298 +71,273 @@ Estos usuarios podrán:
 
 En la primera versión no será obligatorio que el usuario que busca alquilar cree una cuenta.
 
-### Other Stakeholders
+### Otros Interesados (*Stakeholders*)
 
 - Agentes inmobiliarios e inmobiliarias.
 - Equipo de desarrollo.
-- Equipo de Machine Learning / Data.
+- Equipo de Machine Learning / Datos.
 - Administrador de la plataforma.
-- Proveedores externos de datos: ATU, BCRP y SUSALUD / RENIPRESS.
+- Proveedores externos de datos: ATU y BCRP.
 
 ---
 
-## Main Requirements
+## Requerimientos Principales
 
 Para organizar las funcionalidades principales del producto se definieron dos requerimientos generales.
 
-### Requirement 1 – Analyze and Value the Property
+### Requerimiento 1 – Analizar y Valorizar el Inmueble
 
 El sistema deberá permitir al propietario registrar las características de su inmueble y obtener un análisis integral que identifique su segmento competitivo, propiedades comparables, nivel de accesibilidad, precio esperado de alquiler y tendencia inmobiliaria del distrito.
 
 Este requerimiento integra cuatro funcionalidades:
 
-1. **Competitive Property Profile**
-   - Identifica el segmento al que pertenece el inmueble mediante clustering.
+1. **Perfil Competitivo de la Propiedad**
+   - Identifica el segmento al que pertenece el inmueble mediante técnicas de *clustering*.
    - Recupera propiedades realmente comparables.
 
-2. **Property Accessibility Profile**
-   - Caracteriza la conectividad del inmueble utilizando información de transporte público de ATU.
+2. **Perfil de Accesibilidad de la Propiedad**
+   - Caracteriza la conectividad del inmueble utilizando información de transporte público oficial de la ATU.
 
-3. **Expected Rental Price Prediction**
+3. **Predicción del Precio Esperado de Alquiler**
    - Estima el precio esperado de alquiler mediante modelos supervisados de regresión.
 
-4. **District Rental Forecast**
+4. **Pronóstico de Tendencia Distrital de Alquiler**
    - Analiza series históricas del BCRP para estimar si el mercado del distrito presenta una tendencia creciente, estable o decreciente.
 
 ---
 
-### Requirement 2 – Recommend a Publication Strategy
+### Requerimiento 2 – Recomendar una Estrategia de Publicación
 
 El sistema deberá utilizar los resultados del análisis del inmueble y los objetivos indicados por el propietario para generar escenarios de precio de publicación y permitir la simulación de características modificables antes de tomar una decisión.
 
 Este requerimiento integra dos funcionalidades:
 
-5. **Recommended Publication Price**
+5. **Precio de Publicación Recomendado**
    - Combina precio esperado, propiedades comparables y tendencia del distrito.
    - Genera escenarios de posicionamiento:
-     - Competitive
-     - Balanced
-     - Higher-rent
+     - Competitivo (*Competitive*)
+     - Equilibrado (*Balanced*)
+     - Renta Superior (*Higher-rent*)
 
-6. **Property Improvement Simulator**
+6. **Simulador de Mejoras del Inmueble**
    - Permite modificar virtualmente atributos seleccionados del inmueble.
    - Recalcula el precio esperado utilizando el mismo modelo predictivo.
    - Compara el escenario actual con el escenario simulado.
 
 ---
 
-## Analytical Tasks
+## Tareas Analíticas
 
-The analytical workflow follows three levels:
+El flujo de trabajo analítico sigue tres niveles metodológicos:
 
-### Descriptive Analytics
+### 1. Analítica Descriptiva
 
-**Property Segmentation and Comparables**
+**Segmentación de Propiedades y Comparables**
 
-Clustering techniques such as K-Means and DBSCAN will be evaluated to identify groups of similar properties. Once the segment is identified, similarity measures or nearest-neighbor methods will be used to retrieve comparable apartments.
+Se evaluarán técnicas de agrupamiento (*clustering*) como K-Means y DBSCAN para identificar grupos de propiedades homogéneas. Una vez identificado el segmento, se utilizarán medidas de similitud o métodos de vecinos más cercanos (*Nearest Neighbors*) para recuperar departamentos comparables.
 
-**Accessibility Characterization**
+**Caracterización de Accesibilidad Espacial**
 
-Geospatial information from ATU will be integrated with property locations to generate accessibility indicators related to public transportation.
+La información geoespacial de paraderos de la ATU se integrará con la ubicación de los departamentos para generar indicadores de accesibilidad y cobertura de transporte público.
 
-### Predictive Analytics
+### 2. Analítica Predictiva
 
-**Rental Price Prediction**
+**Predicción del Precio de Alquiler**
 
-A supervised regression model will estimate the expected rental price based on variables such as location, area, bedrooms, bathrooms, parking spaces, amenities and other available characteristics.
+Un modelo de regresión supervisada estimará el precio esperado de alquiler en función de variables como ubicación, área total, dormitorios, baños completos, medios baños, estacionamientos, antigüedad y variables derivadas de texto libre.
 
-A linear regression model will be used as a baseline and will be compared with models such as:
+Se utilizará una regresión lineal hedónica como línea base (*baseline*) y se comparará contra modelos avanzados de ensamble:
 
 - Random Forest
 - Gradient Boosting
 - XGBoost
 - CatBoost
+- LightGBM
 
-Performance will be evaluated using metrics such as MAE, RMSE, MAPE and R².
+El rendimiento se evaluará mediante métricas estándar de regresión: MAE, RMSE, MAPE y R².
 
-**District Rental Forecasting**
+**Pronóstico de Tendencia Distrital de Alquiler**
 
-Historical BCRP real-estate series will be used to build a quarterly rental reference by district.
+Se utilizarán las series temporales históricas del panel BCRP para construir una referencia trimestral de alquiler por distrito.
 
-Forecasting approaches such as temporal baselines, ARIMA and regression models with lagged variables will be evaluated depending on the amount of historical information available.
+Se evaluarán enfoques de series temporales como líneas base temporales, modelos autorregresivos (ARIMA / SARIMA) y modelos de regresión con variables rezagadas.
 
-### Prescriptive Analytics
+### 3. Analítica Prescriptiva
 
-**Publication Price Scenarios**
+**Escenarios de Precio de Publicación**
 
-The expected rental price, comparable properties and district trend will be combined to generate different publication strategies:
+El precio esperado, las propiedades comparables y la tendencia distrital se combinarán vectorialmente para generar diferentes estrategias de fijación de precio de salida al mercado:
 
-- Competitive
-- Balanced
-- Higher-rent
+- **Estrategia Competitiva**: Orientada a minimizar el tiempo de vacancia.
+- **Estrategia Equilibrada**: Punto medio óptimo entre renta y absorción de mercado.
+- **Estrategia de Renta Superior**: Captura el percentil superior para inmuebles con atributos diferenciados.
 
-**Property Improvement Simulation**
+**Simulación de Mejoras del Inmueble**
 
-The rental-price model will be reused to compare the current property with a hypothetical scenario in which a modifiable characteristic is changed.
+El modelo de predicción de precios se reutilizará para contrastar la propiedad actual frente a un escenario hipotético donde se modifica una característica (ej. añadir amoblado o remodelación).
 
-The resulting difference will be presented as an estimated association and not as a causal effect.
+La diferencia resultante se presentará estrictamente como una asociación estimada de mercado y no como un efecto causal garantizado.
 
 ---
 
-## Datasets and Data Sources
+## Datasets y Fuentes de Datos
 
-DepaRent integrates a primary real-estate dataset with external official data sources.
+DepaRent integra un dataset microinmobiliario primario con fuentes oficiales de datos públicos:
 
-### 1. Main Real-Estate Dataset
+### 1. Dataset Microinmobiliario Principal
 
-**File:** `departamentos_alquiler_lima.csv`
+**Archivo:** `departamentos_alquiler_lima.csv`
 
-**Sources:**
-- Adondevivir
-- Urbania
+**Fuentes:**
+- Adondevivir (`https://www.adondevivir.com`)
+- Urbania (`https://urbania.pe`)
 
-**Content:**
+**Contenido:**
 
-The dataset contains **3,801 rental apartment listings** with **41 attributes**, including variables related to:
+El dataset contiene **3,822 anuncios de departamentos en alquiler** estructurados en **43 atributos**, incluyendo:
 
-- published rental price;
-- district and location;
-- area;
-- bedrooms;
-- bathrooms;
-- parking spaces;
-- geographic coordinates;
-- property characteristics;
-- amenities.
+- precio de alquiler publicado y moneda;
+- precio estandarizado en Soles (PEN) y precio por m²;
+- distrito y dirección normalizada;
+- área total y área construida saneadas;
+- dormitorios, baños completos y medios baños (`CFT4`);
+- estacionamientos y cochera;
+- coordenadas GPS (latitud y longitud);
+- características del portal y texto consolidado sin procesar (`texto_amenidades_crudo` para NLP);
+- 13 variables de amenidades preservadas para extracción en EDA.
 
-**Format:** CSV
+**Formato:** CSV (UTF-8 con BOM)
 
-The main limitation is that the target variable represents the **published asking price**, not necessarily the final rental price agreed in a contract.
+*Limitación:* La variable objetivo representa el **precio de oferta publicado (*asking price*)**, no necesariamente el precio final de cierre transaccional.
 
 ---
 
 ### 2. Banco Central de Reserva del Perú – BCRP
 
-**File:** `dataset_alquileres_trimestre_bcrp.csv`
+**Archivo:** `dataset_alquileres_trimestre_bcrp.csv`
 
-**Source:** Official BCRP real-estate statistics.
+**Fuente:** Estadísticas macroinmobiliarias oficiales de la API del BCRP.
 
-**Content:**
+**Contenido:**
 
-The current dataset contains **663 quarterly observations**, covering the period from **Q3-2013 to Q1-2026**, with district-level series such as:
+El dataset contiene **663 observaciones trimestrales**, cubriendo el período de **T3-2013 a T1-2026** (51 trimestres) para 13 series distritales:
 
-- Sale Price in US$/m²;
-- Price-to-Rent Ratio (PER);
-- nominal exchange rate;
-- estimated monthly rental reference in S/ per m².
+- Precio de Venta en US$/m²;
+- Ratio Precio de Venta / Alquiler Anual (PER);
+- Tipo de cambio nominal promedio;
+- Alquiler mensual estimado de referencia en S/ por m².
 
-**Main use in DepaRent:**
+**Uso principal en DepaRent:**
 
-District rental forecasting and market-trend analysis.
+Pronóstico de tendencias inmobiliarias distritales y contextualización macro del mercado.
 
-**Format:** CSV
+**Formato:** CSV
 
 ---
 
 ### 3. Autoridad de Transporte Urbano para Lima y Callao – ATU
 
-**Source:** Official ATU Open Data Portal.
+**Archivo:** `paraderos.csv`
 
-**Main use in DepaRent:**
+**Fuente:** Inventario institucional georreferenciado oficial de la ATU (preservado en repositorio de respaldo de datos abiertos).
 
-Generate spatial accessibility indicators related to public transportation, depending on the geographic coverage and variables available in the selected official datasets.
+**Contenido:**
 
-Potential derived variables include:
+Inventario georreferenciado de **3,233 paraderos formales** en 43 distritos de Lima Metropolitana y Callao con atributos de ubicación (coordenadas WGS84), corredor vial, modalidad de servicio y nivel de afluencia.
 
-- proximity to public transport infrastructure;
-- number of nearby transport options;
-- relative accessibility indicators.
+**Uso principal en DepaRent:**
 
-The final variables will depend on the georeferenced information available in the selected ATU files.
+Generación de indicadores de accesibilidad espacial y conectividad urbana hacia el transporte público.
 
----
-
-### 4. SUSALUD – RENIPRESS
-
-**Source:** Registro Nacional de Instituciones Prestadoras de Servicios de Salud (RENIPRESS).
-
-The official dataset contains information such as:
-
-- district;
-- UBIGEO;
-- address;
-- health-establishment category;
-- longitude;
-- latitude.
-
-**Main use in DepaRent:**
-
-Generate contextual variables such as proximity to health establishments or number of facilities located around the property.
-
-These variables will only be incorporated into predictive models if they show sufficient coverage and predictive value during validation.
+**Formato:** CSV
 
 ---
 
-## Data Preparation
+## Preparación y Calidad de Datos
 
-Before modeling, the datasets will go through a preprocessing pipeline that includes:
+Antes de ingresar a los modelos analíticos, los datos atraviesan un pipeline riguroso de preprocesamiento:
 
-- duplicate detection;
-- missing-value analysis;
-- normalization of categorical variables;
-- data-type validation;
-- outlier analysis;
-- geographic consistency checks;
-- integration of external data sources;
-- feature engineering.
+- detección y eliminación de duplicados por identificador, URL y combinación de atributos;
+- análisis de completitud y trazabilidad de valores faltantes (sin imputaciones prematuras);
+- normalización ortográfica y estandarización categórica de nombres distritales;
+- validación de consistencia de tipos de datos numéricos y coordenadas GPS;
+- control y saneamiento de errores de captura en áreas y precios extremos;
+- integración geoespacial con capas de transporte oficial;
+- ingeniería de características y minería de texto sobre `texto_amenidades_crudo`.
 
-The acquisition process is documented in `acquisition.md`, data-quality observations in `data_quality.md`, and attribute definitions in `data_dictionary.csv`.
+El proceso de adquisición se detalla en `acquisition.md`, las métricas de calidad en `data_quality.md` y la especificación de atributos en `data_dictionary.csv`.
 
 ---
 
-## User Requirement Representations
+## Representación de Requisitos de Usuario
 
-The requirements were documented using four complementary representation methods:
+Los requisitos se documentaron mediante cuatro técnicas complementarias:
 
-1. **Use Cases**
+1. **Casos de Uso**
 2. **Wireframes**
 3. **Storyboards**
-4. **User Stories**
+4. **Historias de Usuario**
 
-For the Week 05 presentation, the six analytical functionalities are grouped into two main user journeys:
+Para la presentación de la Semana 05, las seis funcionalidades analíticas se agrupan en dos flujos principales de usuario (*User Journeys*):
 
-### User Journey 1
+### Flujo de Usuario 1: Entender y Valorizar la Propiedad
 
-**Understand and value the property**
+El propietario registra las características de su inmueble y obtiene:
 
-The owner registers the property and obtains:
+Perfil del Inmueble  
+→ Segmento Competitivo  
+→ Propiedades Comparables  
+→ Perfil de Accesibilidad Urbana  
+→ Precio Esperado de Alquiler  
+→ Tendencia del Mercado Distrital  
 
-Property Profile  
-→ Competitive Segment  
-→ Comparable Properties  
-→ Accessibility Profile  
-→ Expected Rental Price  
-→ District Market Trend
+### Flujo de Usuario 2: Decidir la Estrategia de Publicación
 
-### User Journey 2
+Utilizando el diagnóstico previo:
 
-**Decide how to publish**
-
-Using the previous analysis:
-
-Expected Price + Comparables + District Trend  
-→ Publication Price Scenarios  
-→ Improvement Simulation  
-→ Owner Decision  
-→ Property Publication
+Precio Esperado + Comparables + Tendencia Distrital  
+→ Escenarios de Precio de Salida  
+→ Simulación de Mejoras  
+→ Decisión Informada del Propietario  
+→ Publicación Optimizada del Inmueble  
 
 ---
 
-## Initial Scope
+## Alcance Inicial del Producto
 
-The first version of DepaRent will focus exclusively on:
+La primera versión de DepaRent se focaliza exclusivamente en:
 
-- rental apartments;
-- Lima Metropolitana and Callao;
-- owners as the primary user;
-- management of multiple properties;
-- descriptive, predictive and prescriptive analytics;
-- a public inventory for potential tenants.
+- departamentos en modalidad exclusiva de alquiler;
+- ámbito geográfico de Lima Metropolitana y Callao;
+- propietarios como usuario principal de la plataforma;
+- gestión de múltiples propiedades por cuenta de usuario;
+- analítica descriptiva, predictiva y prescriptiva integrada;
+- catálogo público para consulta de inquilinos potenciales.
 
-The following elements are outside the initial scope:
+Quedan explícitamente fuera del alcance inicial:
 
-- purchase or sale of properties;
-- official property appraisal;
-- guaranteed rental prices;
-- exact prediction of time-to-rent;
-- models that depend on clicks or contact history generated by the platform.
+- compra y venta de inmuebles comerciales o residenciales;
+- emisión de tasaciones arancelarias u oficiales con fines legales/periciales;
+- garantía contractual sobre el precio de alquiler final;
+- predicción determinística del tiempo exacto de colocación (*time-to-rent*);
+- modelos dependientes de históricos de clics o interacciones internas de la plataforma.
 
 ---
 
-## Week 05 Deliverables
+## Entregables de la Semana 05
 
-The Week 05 delivery includes:
+El paquete de entrega de la Semana 05 incluye:
 
 - `ProjectProposal.pdf`
-- Editable source of the Project Proposal
+- Fuente editable de la Propuesta de Proyecto
 - `DataProductCanvas.pdf`
 - `Requirements.pdf`
-- `PresentationWeek05.pptx` or PDF
-- Updated `README.md`
+- `PresentationWeek05.pptx` / PDF
+- `README.md` actualizado
 
 ---
 
-## Repository Structure
+## Estructura del Repositorio
 
 ```text
 DepaRent/
@@ -384,3 +359,4 @@ DepaRent/
         ├── Requirements.pdf
         ├── DataProductCanvas.pdf
         └── PresentationWeek05.pptx
+```
