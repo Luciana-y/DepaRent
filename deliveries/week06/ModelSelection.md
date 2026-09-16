@@ -11,7 +11,7 @@ Este documento justifica la selección del método analítico o de modelado para
 
 | # | Componente | Algoritmo seleccionado | Evidencia empírica |
 |:-:|---|---|---|
-| 1 | Perfil competitivo | **K-Means (k=2)** | Silhouette 0.237 vs. DBSCAN descartado por 40.6% de ruido |
+| 1 | Perfil competitivo | **K-Means (k=2) sobre PCA** | Silhouette 0.274 — mejor entre 5 configuraciones evaluadas |
 | 2 | Accesibilidad urbana | **Feature engineering (cKDTree)** | Distancia mediana 174.8 m y 71.6% de cobertura a <300 m, integradas como variables |
 | 3 | Predicción de precio | **HistGradientBoosting Regressor** | MAPE = 15.93% (R² = 0.8236) vs. baseline MAPE = 36.59% |
 | 4 | Forecasting distrital | **SARIMA (d=1, s=4)** | 69.2% de las series del BCRP no son estacionarias (ADF) |
@@ -24,30 +24,40 @@ Este documento justifica la selección del método analítico o de modelado para
 
 **Pregunta que responde:** ¿Contra qué propiedades debería compararse realmente un departamento?
 
-**Features utilizadas:** `area_total`, `dormitorios`, `banos`, `precio_m2_real`, `piscina`, `gimnasio`, `cochera`, `seguridad_24_7`, `coworking` (estandarizadas). Se usó `df_clean_sin_geo` (3,610 filas) en lugar de `df_clean`, para no perder observaciones sin coordenadas válidas en un componente que no depende de geolocalización.
+### Proceso de selección — 5 configuraciones evaluadas
 
-**Comparación de algoritmos:**
+Se realizó una comparación sistemática y rigurosa antes de fijar la configuración final, dado que el silhouette inicial (9 features, sin reducción) resultaba moderado (0.237):
 
-| k (K-Means) | Silhouette |
-|:---:|:---:|
-| 2 | **0.237** |
-| 3 | 0.209 |
-| 4 | 0.191 |
-| 5 | 0.209 |
-| 6 | 0.201 |
+| # | Configuración | Features | Filas (n) | Mejor k | Silhouette | Resultado |
+|:-:|---|:---:|:---:|:---:|:---:|---|
+| 1 | Original (sin PCA) | 9 | 3,128 | 2 | 0.237 | Punto de partida |
+| 2 | Distrito vía one-hot | 9 + ~20 dummies | 3,128 | 7 | 0.041–0.105 | ❌ Descartado — dimensionalidad dispersa diluye la distancia |
+| 3 | Gaussian Mixture Model | 9 | 3,128 | 7 | 0.196 | ❌ Descartado — BIC monotónicamente decreciente indica degeneración del modelo (variables binarias violan el supuesto gaussiano) |
+| 4 | 20 features (con `cochera`) | 20 | 1,894 (47% perdido) | 2 | 0.150 | ❌ Descartado — pérdida masiva de muestra por ambigüedad de nulos en `cochera`/`estacionamientos` |
+| 5 | 19 features (sin `cochera`/`estacionamientos`) + imputación por distrito | 19 | 3,548 (99.4%) | 4 | 0.178 | ❌ Descartado — resultado estable ante distinto método de imputación, pero amenidades de baja prevalencia diluyen la señal |
+| **6** | **9 features + PCA (6 componentes, 90% varianza)** | **9** | **3,128** | **2** | **0.274** | ✅ **Seleccionado** |
 
-**DBSCAN** (eps calculado por vecino más cercano, min_samples=5): 71 clusters, silhouette=0.462, pero con **40.6% de los puntos clasificados como ruido** — se descarta porque casi la mitad del dataset quedaría fuera de cualquier segmento, lo cual no es útil para un producto que debe ofrecer comparables a la mayoría de propietarios.
+**Features finales (9):** `area_total`, `dormitorios`, `banos`, `precio_m2_real`, `piscina`, `gimnasio`, `cochera`, `seguridad_24_7`, `coworking`.
 
-**Modelo elegido: K-Means, k=2.** Silhouette más alto entre los valores evaluados (0.237), sin descartar observaciones.
+**Por qué se descartó `distrito`, `estacionamientos` y las 9 amenidades de menor prevalencia:**
+- `distrito`: aunque es información valiosa para el negocio, su codificación one-hot genera ~20 columnas dispersas que degradan la distancia euclidiana en K-Means. Se traslada a una **segunda etapa** de búsqueda de comparables (k-NN dentro del cluster y filtrado por distrito), consistente con el diseño original del proposal.
+- `estacionamientos`/`cochera`: 41-47% de nulos ambiguos (solo 10.75% confirmable por texto, ver `data_quality.md`); imputar o incluir con `dropna()` degrada la muestra o el resultado. Se preservan como features del **Modelo #3**, donde su tratamiento vía flag de missingness es más apropiado.
+- Amenidades de baja prevalencia (`balcon`, `terraza`, `vista_al_mar`, `parrilla`, `areas_verdes`, `juegos_infantiles`, `pet_friendly`, `deposito`, `ascensor`): agregarlas (con o sin imputación de variables numéricas asociadas) produjo consistentemente peor silhouette (0.178) que la versión de 9 features, confirmado con dos métodos de imputación distintos — la parsimonia gana sobre la exhaustividad en este caso.
 
-**Perfiles resultantes:**
+### Modelo final: K-Means (k=2) sobre componentes PCA
 
-| Cluster | Área media | Dormitorios | Baños | Precio/m² | Piscina | Gimnasio | Coworking |
-|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| 0 — Tradicional/Amplio | 101.1 m² | 2.3 | 1.9 | S/ 34.19 | 3% | 7% | 15% |
-| 1 — Moderno/Alta amenidad | 66.6 m² | 1.8 | 1.6 | S/ 47.95 | 72% | 86% | 65% |
+**Preprocesamiento:** estandarización (`StandardScaler`) → PCA (6 componentes, 90% de varianza explicada) → K-Means.
 
-**Pendiente para Delivery 1:** evaluar si un k mayor con una selección de features distinta (o un preprocesamiento robusto a outliers) revela subsegmentos adicionales dentro de cada cluster.
+**Perfiles resultantes** (K-Means final sobre componentes PCA, calculados sobre las 9 variables originales para mantener interpretabilidad):
+
+| Cluster | Área media | Precio/m² | Piscina | Gimnasio | Coworking | Seguridad 24/7 |
+|---|:---:|:---:|:---:|:---:|:---:|:---:|
+| 0 — Tradicional/Amplio | 102.6 m² | S/ 34.30 | 3% | 5% | 14% | 39% |
+| 1 — Moderno/Alta amenidad | 70.2 m² | S/ 46.50 | 67% | 81% | 60% | 55% |
+
+*Verificado: el perfil de negocio es equivalente al obtenido con K-Means sin PCA (diferencias de 1-5 puntos porcentuales en cada variable), confirmando que la reducción de dimensionalidad mejora el silhouette (0.237 → 0.274) sin alterar la interpretación de los segmentos.*
+
+**Pendiente para Delivery 1:** evaluar si un k mayor, o un clustering *dentro* de cada distrito por separado, revela subsegmentos adicionales útiles para el propietario.
 
 ---
 
@@ -61,7 +71,7 @@ Este documento justifica la selección del método analítico o de modelado para
 - `paraderos_300m`, `paraderos_500m`, `paraderos_1000m` — conteo de paraderos en radios crecientes (promedio en 500m: 9.3)
 - `dist_troncal_brt_m`, `dist_corredor_m` — distancia a infraestructura troncal/corredor
 
-**Justificación de no usar clustering aquí:** el proposal original contemplaba K-Means sobre variables de accesibilidad solo si había "suficiente variedad de indicadores". Con 6 variables numéricas ya interpretables por sí mismas, un perfil directo (percentiles de distancia) es más simple y transparente que un cluster adicional, y estas variables ya demuestran aporte real como features del Modelo #3 (`dist_paradero_min_m` y `dist_troncal_brt_m` aparecen en el top 4 de importancia — ver Modelo #3).
+Estas variables ya demuestran aporte real como features del Modelo #3 (`dist_paradero_min_m` y `dist_troncal_brt_m` aparecen en el top 4 de importancia).
 
 ---
 
@@ -69,9 +79,7 @@ Este documento justifica la selección del método analítico o de modelado para
 
 **Pregunta que responde:** ¿Cuánto debería pedir un propietario por su departamento?
 
-**Metodología:** split 80/20 (train/test) **antes** de cualquier imputación, con `SimpleImputer` dentro de un `ColumnTransformer`/`Pipeline` de scikit-learn, calculado únicamente sobre el set de entrenamiento. Esto evita *data leakage* — un riesgo detectado y corregido explícitamente durante el desarrollo del pipeline, dado que una primera versión del notebook del equipo imputaba antes del split.
-
-**Features:** variables físicas (`area_total`, `dormitorios`, `banos`, `estacionamientos`, `antiguedad`, `mantenimiento`), variables de accesibilidad (Modelo #2), variables de contexto BCRP (Modelo #4 — snapshot más reciente), las 14 amenidades extraídas por texto, los flags de missingness (`_imputado`), y `distrito_norm` (con categorías raras agrupadas en "Otros").
+**Metodología:** split 80/20 (train/test) **antes** de cualquier imputación, con `SimpleImputer` dentro de un `ColumnTransformer`/`Pipeline` de scikit-learn, calculado únicamente sobre el set de entrenamiento — evitando *data leakage*.
 
 **Benchmark de 6 algoritmos (conjunto de prueba, 20% holdout):**
 
@@ -84,11 +92,11 @@ Este documento justifica la selección del método analítico o de modelado para
 | Ridge | 0.7787 | 622.36 | 956.28 | 21.56% |
 | Baseline Dummy (mediana) | -0.0689 | 1,213.26 | 2,101.61 | 36.59% |
 
-**Modelo elegido: HistGradientBoosting.** Menor MAPE (15.93%) y mayor R² (0.8236) de todos los algoritmos evaluados — una reducción del **56.5%** en el error relativo frente al baseline de la mediana. Se prioriza MAPE sobre R² porque el error relativo es la métrica más interpretable para comunicar al propietario (ej. "el precio estimado tiene un margen de error típico de ~16%").
+**Modelo elegido: HistGradientBoosting.** Menor MAPE (15.93%) y mayor R² (0.8236) — una reducción del **56.5%** en el error relativo frente al baseline.
 
-**Feature importance (Random Forest, top 5):** `area_total`, `mantenimiento`, `dist_paradero_min_m`, `dist_troncal_brt_m`, `banos`. Las variables de accesibilidad calculadas en el Modelo #2 confirman aporte real al modelo de precio.
+**Feature importance (Random Forest, top 5):** `area_total`, `mantenimiento`, `dist_paradero_min_m`, `dist_troncal_brt_m`, `banos`.
 
-**Pendiente para Delivery 1:** tuning de hiperparámetros (actualmente se usan valores por defecto razonables, no optimizados vía GridSearch/RandomizedSearch).
+**Pendiente para Delivery 1:** tuning de hiperparámetros (actualmente valores por defecto razonables, no optimizados).
 
 ---
 
@@ -96,37 +104,36 @@ Este documento justifica la selección del método analítico o de modelado para
 
 **Pregunta que responde:** ¿El mercado de un distrito está subiendo, bajando o se mantiene estable?
 
-**Test de estacionariedad (Dickey-Fuller Aumentado, ADF)** sobre las 13 series distritales del BCRP:
+**Test de estacionariedad (ADF)** sobre las 13 series distritales del BCRP: 4 de 13 (30.8%) estacionarias, 9 de 13 (69.2%) no estacionarias.
 
-- Series estacionarias (p < 0.05): **4 de 13 (30.8%)**
-- Series NO estacionarias: **9 de 13 (69.2%)**
+**Modelo elegido: SARIMA (d=1, componente estacional s=4).** La mayoría de series no son estacionarias, descartando ARIMA simple sin diferenciar; la componente estacional captura la oscilación trimestral visible en la serie histórica del BCRP.
 
-**Modelo elegido: SARIMA (d=1, componente estacional s=4).** La mayoría de las series (69.2%) no son estacionarias, lo que descarta un ARIMA simple sin diferenciar. La componente estacional (s=4) se incluye porque las series muestran oscilación trimestral regular superpuesta a la tendencia de largo plazo, visible en el gráfico de la serie completa del BCRP (2013-2026).
+**Baseline de comparación:** modelo naive estacional (mismo trimestre del año anterior).
 
-**Baseline de comparación:** modelo naive estacional (repetir el valor del mismo trimestre del año anterior).
-
-**Pendiente para Delivery 1:** implementar el SARIMA real (`statsmodels.tsa.statespace.SARIMAX`) para al menos los distritos de mayor volumen en el dataset (Miraflores, San Isidro, Surco), y comparar contra el baseline naive con métricas de error de pronóstico (MAE/RMSE sobre ventana de validación temporal).
+**Pendiente para Delivery 1:** implementar `SARIMAX` real para los distritos de mayor volumen (Miraflores, San Isidro, Surco).
 
 ---
 
 ## Modelo #5 — Precio recomendado de publicación
 
-**No es un modelo de ML nuevo.** Combina los outputs de los tres modelos anteriores:
-
-- Rango predictivo del Modelo #3 (HistGradientBoosting) como referencia central.
-- Estadísticas del cluster de comparables (Modelo #1) para contextualizar el segmento del propietario.
-- Tendencia distrital del Modelo #4 (SARIMA) para ajustar según la dirección reciente del mercado.
-
-Se generan tres escenarios (competitivo, equilibrado, premium) como posicionamiento relativo dentro del rango estimado, no como una predicción exacta de tiempo de alquiler.
+**No es un modelo de ML nuevo.** Combina los outputs de los tres modelos anteriores: rango predictivo del Modelo #3, estadísticas del cluster de comparables del Modelo #1, y tendencia distrital del Modelo #4, para generar tres escenarios (competitivo, equilibrado, premium).
 
 ---
 
 ## Modelo #6 — Simulador de mejoras del inmueble
 
-**Reutiliza el Modelo #3 en modo contrafactual.** Se calcula la predicción con el estado actual del inmueble, se modifica virtualmente un atributo (ej. condición de amoblado), y se vuelve a predecir manteniendo las demás variables constantes. La diferencia entre ambas predicciones se reporta como el impacto estimado de la mejora, con la advertencia explícita de que refleja asociación observada en el mercado, no causalidad.
+**Reutiliza el Modelo #3 en modo contrafactual.** Predicción con estado actual → modificación virtual de un atributo → nueva predicción manteniendo el resto constante. La diferencia se reporta como impacto estimado, con advertencia explícita de asociación (no causalidad).
 
 ---
 
-## Limitaciones generales que afectan a los 6 modelos
+## Limitaciones generales
 
-Ver sección 9 de `DataAnalysis.md` para el detalle completo. En síntesis: dependencia de extracción por texto para amenidades y piso, ambigüedad del 89.25% de nulos en `estacionamientos`, 16.3% de departamentos sin serie BCRP propia, y descarte del 18.16% del dataset original por filtros de calidad geográfica, de precio y de doble modalidad venta/alquiler.
+Ver sección 9 de `DataAnalysis.md`. En síntesis: dependencia de extracción por texto para amenidades y piso, ambigüedad del 89.25% de nulos en `estacionamientos`, 16.3% de departamentos sin serie BCRP propia, y descarte del 18.16% del dataset original por filtros de calidad geográfica, de precio y de doble modalidad venta/alquiler.
+
+---
+
+## Pendientes técnicos antes de Delivery 1
+
+1. **Modelo #1:** implementar la segunda etapa de comparables (k-NN dentro del cluster + mismo distrito), ya diseñada conceptualmente pero pendiente de integrar al pipeline final.
+2. **Modelo #3:** tuning de hiperparámetros.
+3. **Modelo #4:** implementación real de SARIMAX con métricas de validación temporal.
