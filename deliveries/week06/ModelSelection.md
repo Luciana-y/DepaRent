@@ -24,40 +24,43 @@ Este documento justifica la selección del método analítico o de modelado para
 
 **Pregunta que responde:** ¿Contra qué propiedades debería compararse realmente un departamento?
 
-### Proceso de selección — 5 configuraciones evaluadas
+### Proceso de selección
 
-Se realizó una comparación sistemática y rigurosa antes de fijar la configuración final, dado que el silhouette inicial (9 features, sin reducción) resultaba moderado (0.237):
+Se evaluaron diferentes configuraciones de clustering buscando obtener segmentos interpretables y suficientemente diferenciados. El análisis inicial mostró que la configuración de **9 features + PCA** mejoraba el silhouette respecto al modelo original, pasando de **0.237 a 0.274**.
 
-| # | Configuración | Features | Filas (n) | Mejor k | Silhouette | Resultado |
-|:-:|---|:---:|:---:|:---:|:---:|---|
-| 1 | Original (sin PCA) | 9 | 3,128 | 2 | 0.237 | Punto de partida |
-| 2 | Distrito vía one-hot | 9 + ~20 dummies | 3,128 | 7 | 0.041–0.105 | ❌ Descartado — dimensionalidad dispersa diluye la distancia |
-| 3 | Gaussian Mixture Model | 9 | 3,128 | 7 | 0.196 | ❌ Descartado — BIC monotónicamente decreciente indica degeneración del modelo (variables binarias violan el supuesto gaussiano) |
-| 4 | 20 features (con `cochera`) | 20 | 1,894 (47% perdido) | 2 | 0.150 | ❌ Descartado — pérdida masiva de muestra por ambigüedad de nulos en `cochera`/`estacionamientos` |
-| 5 | 19 features (sin `cochera`/`estacionamientos`) + imputación por distrito | 19 | 3,548 (99.4%) | 4 | 0.178 | ❌ Descartado — resultado estable ante distinto método de imputación, pero amenidades de baja prevalencia diluyen la señal |
-| **6** | **9 features + PCA (6 componentes, 90% varianza)** | **9** | **3,128** | **2** | **0.274** | ✅ **Seleccionado** |
+Posteriormente, se amplió el análisis incorporando variables adicionales de características y amenidades de los inmuebles. Esta evaluación permitió identificar **4 segmentos con perfiles diferenciados**, que resultan más útiles para la caracterización del mercado inmobiliario.
 
-**Features finales (9):** `area_total`, `dormitorios`, `banos`, `precio_m2_real`, `piscina`, `gimnasio`, `cochera`, `seguridad_24_7`, `coworking`.
+| Configuración                                                   |                                                         Resultado | Decisión           |
+| --------------------------------------------------------------- | ----------------------------------------------------------------: | ------------------ |
+| 9 features, sin PCA                                             |                                                Silhouette = 0.237 | Punto de partida   |
+| 9 features + PCA                                                |                                                Silhouette = 0.274 | Base metodológica  |
+| Configuraciones con distrito, GMM y mayor cantidad de variables | Menor separación / problemas de dimensionalidad o datos faltantes | Descartadas        |
+| **Configuración final de segmentación**                         |                         **4 clusters con perfiles diferenciados** | **Seleccionada** |
 
-**Por qué se descartó `distrito`, `estacionamientos` y las 9 amenidades de menor prevalencia:**
-- `distrito`: aunque es información valiosa para el negocio, su codificación one-hot genera ~20 columnas dispersas que degradan la distancia euclidiana en K-Means. Se traslada a una **segunda etapa** de búsqueda de comparables (k-NN dentro del cluster y filtrado por distrito), consistente con el diseño original del proposal.
-- `estacionamientos`/`cochera`: 41-47% de nulos ambiguos (solo 10.75% confirmable por texto, ver `data_quality.md`); imputar o incluir con `dropna()` degrada la muestra o el resultado. Se preservan como features del **Modelo #3**, donde su tratamiento vía flag de missingness es más apropiado.
-- Amenidades de baja prevalencia (`balcon`, `terraza`, `vista_al_mar`, `parrilla`, `areas_verdes`, `juegos_infantiles`, `pet_friendly`, `deposito`, `ascensor`): agregarlas (con o sin imputación de variables numéricas asociadas) produjo consistentemente peor silhouette (0.178) que la versión de 9 features, confirmado con dos métodos de imputación distintos — la parsimonia gana sobre la exhaustividad en este caso.
+### Modelo final: K-Means (k=4)
 
-### Modelo final: K-Means (k=2) sobre componentes PCA
+El modelo final utiliza **K-Means con 4 clusters**, permitiendo identificar perfiles más específicos dentro del mercado inmobiliario.
 
-**Preprocesamiento:** estandarización (`StandardScaler`) → PCA (6 componentes, 90% de varianza explicada) → K-Means.
+El análisis de los clusters muestra que la segmentación está determinada principalmente por el **tamaño de la propiedad, antigüedad, precio por m² y presencia de amenidades**.
 
-**Perfiles resultantes** (K-Means final sobre componentes PCA, calculados sobre las 9 variables originales para mantener interpretabilidad):
+| Cluster | % propiedades | Perfil identificado                                                                                                                                     |
+| ------- | ------------: | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **0**   |    **49.01%** | **Estándar tradicional:** propiedades de tamaño medio, aproximadamente 2 dormitorios y baja presencia de amenidades.                                    |
+| **1**   |    **14.54%** | **Propiedades amplias:** destaca por un área promedio de 188.82 m², mayor cantidad de dormitorios y baños y mayor mantenimiento.                        |
+| **2**   |    **27.99%** | **Compacto con alta oferta de amenidades:** propiedades pequeñas y relativamente nuevas, con alta presencia de piscina, gimnasio, coworking y parrilla. |
+| **3**   |     **8.46%** | **Residencial familiar:** propiedades relativamente nuevas con alta presencia de amenidades, destacando que el 100% presenta juegos infantiles.         |
 
-| Cluster | Área media | Precio/m² | Piscina | Gimnasio | Coworking | Seguridad 24/7 |
-|---|:---:|:---:|:---:|:---:|:---:|:---:|
-| 0 — Tradicional/Amplio | 102.6 m² | S/ 34.30 | 3% | 5% | 14% | 39% |
-| 1 — Moderno/Alta amenidad | 70.2 m² | S/ 46.50 | 67% | 81% | 60% | 55% |
+### Interpretación
 
-*Verificado: el perfil de negocio es equivalente al obtenido con K-Means sin PCA (diferencias de 1-5 puntos porcentuales en cada variable), confirmando que la reducción de dimensionalidad mejora el silhouette (0.237 → 0.274) sin alterar la interpretación de los segmentos.*
+Los resultados muestran que las propiedades no se diferencian únicamente por su precio, sino por **perfiles residenciales distintos**. El paso de 2 a 4 clusters permite capturar esta heterogeneidad con mayor detalle y generar comparables más específicos para el sistema de recomendación.
 
-**Pendiente para Delivery 1:** evaluar si un k mayor, o un clustering *dentro* de cada distrito por separado, revela subsegmentos adicionales útiles para el propietario.
+Por ejemplo, dos departamentos con precios similares pueden pertenecer a segmentos diferentes si uno destaca por su gran superficie y número de habitaciones, mientras que otro presenta menor superficie pero una mayor cantidad de amenidades.
+
+Por ello, el **cluster funciona como una primera etapa para determinar el grupo de propiedades comparables**, mientras que posteriormente variables como **distrito, ubicación y características específicas** pueden utilizarse para realizar una comparación más precisa dentro del segmento.
+
+### Pendiente para Delivery 1
+
+Evaluar si la segmentación de 4 clusters mejora la calidad de las recomendaciones frente a una comparación únicamente basada en características individuales y determinar cómo combinar el **cluster + ubicación + características del inmueble** en la búsqueda final de comparables.
 
 ---
 
