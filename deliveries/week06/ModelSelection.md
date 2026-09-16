@@ -11,7 +11,7 @@ Este documento justifica la selección del método analítico o de modelado para
 
 | # | Componente | Algoritmo seleccionado | Evidencia empírica |
 |:-:|---|---|---|
-| 1 | Perfil competitivo | **K-Means (k=2) sobre PCA** | Silhouette 0.274 — mejor entre 5 configuraciones evaluadas |
+| 1 | Perfil competitivo | **K-Means (k=4) sobre 19 features (sin PCA)** | Silhouette = 0.1647 — priorizado por interpretabilidad de negocio sobre la alternativa de mejor silhouette (9 features + PCA, k=2, silhouette = 0.274) |
 | 2 | Accesibilidad urbana | **Feature engineering (cKDTree)** | Distancia mediana 174.8 m y 71.6% de cobertura a <300 m, integradas como variables |
 | 3 | Predicción de precio | **HistGradientBoosting Regressor** | MAPE = 15.93% (R² = 0.8236) vs. baseline MAPE = 36.59% |
 | 4 | Forecasting distrital | **SARIMA (d=1, s=4)** | 69.2% de las series del BCRP no son estacionarias (ADF) |
@@ -26,41 +26,48 @@ Este documento justifica la selección del método analítico o de modelado para
 
 ### Proceso de selección
 
-Se evaluaron diferentes configuraciones de clustering buscando obtener segmentos interpretables y suficientemente diferenciados. El análisis inicial mostró que la configuración de **9 features + PCA** mejoraba el silhouette respecto al modelo original, pasando de **0.237 a 0.274**.
+Se evaluaron diferentes configuraciones de clustering buscando obtener segmentos interpretables y suficientemente diferenciados.
 
-Posteriormente, se amplió el análisis incorporando variables adicionales de características y amenidades de los inmuebles. Esta evaluación permitió identificar **4 segmentos con perfiles diferenciados**, que resultan más útiles para la caracterización del mercado inmobiliario.
+| Configuración | Resultado | Decisión |
+|---|---:|---|
+| 9 features, sin PCA | Silhouette = 0.237 | Punto de partida |
+| 9 features + PCA (6 componentes) | Silhouette = 0.274 | Mejor resultado estadístico de todas las configuraciones probadas |
+| Distrito vía one-hot (9 features + ~20 dummies) | Silhouette = 0.041–0.105 | Descartada — dimensionalidad dispersa degrada la distancia |
+| Gaussian Mixture Model | Silhouette = 0.196 | Descartada — BIC monotónicamente decreciente indica degeneración del modelo (variables binarias violan el supuesto gaussiano) |
+| 20 features (incluye `cochera`) | Silhouette = 0.150, con 47% de la muestra perdida por nulos | Descartada — pérdida masiva de datos |
+| 19 features (sin `cochera`/`estacionamientos`) + PCA, k=4 | Silhouette = 0.178 (calculado sobre el espacio reducido por PCA) | Referencia intermedia |
+| **19 features (sin `cochera`/`estacionamientos`), sin PCA, k=4** | **Silhouette = 0.1647 (verificado sobre el modelo final real)** | **Seleccionada** |
 
-| Configuración                                                   |                                                         Resultado | Decisión           |
-| --------------------------------------------------------------- | ----------------------------------------------------------------: | ------------------ |
-| 9 features, sin PCA                                             |                                                Silhouette = 0.237 | Punto de partida   |
-| 9 features + PCA                                                |                                                Silhouette = 0.274 | Base metodológica  |
-| Configuraciones con distrito, GMM y mayor cantidad de variables | Menor separación / problemas de dimensionalidad o datos faltantes | Descartadas        |
-| **Configuración final de segmentación**                         |                         **4 clusters con perfiles diferenciados** | **Seleccionada** |
+**Nota de transparencia metodológica:** el modelo final se ajusta sobre el espacio estandarizado de 19 features **sin** reducción por PCA (a diferencia del experimento intermedio de la fila anterior, que sí aplicaba PCA). El silhouette de 0.1647 fue calculado directamente sobre este fit final (`silhouette_score(X_scaled_19features, labels_kmeans_k4)`), no reutilizado de un experimento con distinta transformación de datos. Es, en términos puramente estadísticos, la configuración con menor silhouette entre las evaluadas — significativamente por debajo de la alternativa de 9 features + PCA (0.274). Se prioriza sobre esa alternativa por la razón que se explica a continuación.
 
-### Modelo final: K-Means (k=4)
+### Modelo final: K-Means (k=4), 19 features estandarizadas, sin PCA
 
-El modelo final utiliza **K-Means con 4 clusters**, permitiendo identificar perfiles más específicos dentro del mercado inmobiliario.
+**Features utilizadas:** `area_total`, `dormitorios`, `banos` (imputado por moda según dormitorios), `precio_m2_real`, `antiguedad` (imputada por mediana de distrito), `mantenimiento` (imputado por mediana de distrito), y las 13 amenidades binarias completas (`piscina`, `gimnasio`, `seguridad_24_7`, `coworking`, `balcon`, `terraza`, `vista_al_mar`, `parrilla`, `areas_verdes`, `juegos_infantiles`, `pet_friendly`, `deposito`, `ascensor`). Se excluyen `cochera` y `estacionamientos` por la ambigüedad de sus nulos (ver `data_quality.md`: solo 10.75% de los nulos son confirmables por texto).
 
-El análisis de los clusters muestra que la segmentación está determinada principalmente por el **tamaño de la propiedad, antigüedad, precio por m² y presencia de amenidades**.
+**Justificación de la elección sobre la alternativa de mejor silhouette:** se prioriza esta configuración porque preserva la interpretabilidad directa de cada amenidad individual (sin pasar por componentes de PCA no interpretables) y porque el propósito del Modelo #1 es generar un perfil descriptivo accionable para el propietario, donde la riqueza de atributos visibles importa tanto como la pureza estadística del agrupamiento. Esta es una decisión consciente de priorizar valor de negocio sobre optimización pura de la métrica, y se documenta explícitamente como tal — el silhouette de 0.1647 indica una estructura de cluster débil según la escala convencional (Kaufman & Rousseeuw: <0.25 = sin estructura sustancial), por lo que los 4 segmentos deben interpretarse como una heurística útil de agrupación, no como grupos naturalmente separados con alta confianza estadística.
 
-| Cluster | % propiedades | Perfil identificado                                                                                                                                     |
-| ------- | ------------: | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **0**   |    **49.01%** | **Estándar tradicional:** propiedades de tamaño medio, aproximadamente 2 dormitorios y baja presencia de amenidades.                                    |
-| **1**   |    **14.54%** | **Propiedades amplias:** destaca por un área promedio de 188.82 m², mayor cantidad de dormitorios y baños y mayor mantenimiento.                        |
-| **2**   |    **27.99%** | **Compacto con alta oferta de amenidades:** propiedades pequeñas y relativamente nuevas, con alta presencia de piscina, gimnasio, coworking y parrilla. |
-| **3**   |     **8.46%** | **Residencial familiar:** propiedades relativamente nuevas con alta presencia de amenidades, destacando que el 100% presenta juegos infantiles.         |
+**Perfiles resultantes:**
+
+| Cluster | % propiedades | Perfil identificado |
+|---|---:|---|
+| **0** | **49.01%** | **Estándar tradicional:** tamaño medio (80.95 m² promedio), ~2 dormitorios, baja presencia de amenidades (piscina 1.4%, gimnasio 3.0%). |
+| **1** | **14.54%** | **Propiedades amplias:** área promedio 188.82 m², mayor número de dormitorios (3.06) y baños (2.91), mayor mantenimiento (S/ 669.90), mayor presencia de terraza (58.3%), ascensor (59.9%) y depósito (38.6%). |
+| **2** | **27.99%** | **Compacto con alta oferta de amenidades:** propiedades pequeñas (61.22 m²) y relativamente nuevas (antigüedad media 3.72 años), con alta presencia de piscina (67.1%), gimnasio (81.7%), coworking (61.5%) y parrilla (84.5%). |
+| **3** | **8.46%** | **Residencial familiar:** propiedades relativamente nuevas (antigüedad media 4.92 años) con alta presencia de amenidades; 100% presenta juegos infantiles (variable distintiva de este segmento). |
 
 ### Interpretación
 
-Los resultados muestran que las propiedades no se diferencian únicamente por su precio, sino por **perfiles residenciales distintos**. El paso de 2 a 4 clusters permite capturar esta heterogeneidad con mayor detalle y generar comparables más específicos para el sistema de recomendación.
+Los resultados muestran que las propiedades no se diferencian únicamente por su precio, sino por **perfiles residenciales distintos**. El paso de 2 a 4 clusters permite capturar esta heterogeneidad con mayor detalle y generar comparables más específicos para el sistema de recomendación, a costa de una segmentación estadísticamente menos nítida (silhouette 0.1647 vs. 0.274 de la alternativa más simple).
 
-Por ejemplo, dos departamentos con precios similares pueden pertenecer a segmentos diferentes si uno destaca por su gran superficie y número de habitaciones, mientras que otro presenta menor superficie pero una mayor cantidad de amenidades.
+Por ejemplo, dos departamentos con precios similares pueden pertenecer a segmentos diferentes si uno destaca por su gran superficie y número de habitaciones (Cluster 1), mientras que otro presenta menor superficie pero mayor cantidad de amenidades (Cluster 2).
 
-Por ello, el **cluster funciona como una primera etapa para determinar el grupo de propiedades comparables**, mientras que posteriormente variables como **distrito, ubicación y características específicas** pueden utilizarse para realizar una comparación más precisa dentro del segmento.
+El **cluster funciona como una primera etapa** para determinar el grupo de propiedades comparables, mientras que posteriormente variables como **distrito, ubicación y características específicas** pueden utilizarse para realizar una comparación más precisa dentro del segmento (ver Modelo #5).
 
 ### Pendiente para Delivery 1
 
-Evaluar si la segmentación de 4 clusters mejora la calidad de las recomendaciones frente a una comparación únicamente basada en características individuales y determinar cómo combinar el **cluster + ubicación + características del inmueble** en la búsqueda final de comparables.
+1. Evaluar si la segmentación de 4 clusters mejora la calidad de las recomendaciones frente a una comparación únicamente basada en características individuales, dado el silhouette débil (0.1647).
+2. Determinar cómo combinar **cluster + ubicación + características del inmueble** en la búsqueda final de comparables.
+3. Considerar validar la estabilidad de los 4 clusters (ej. con bootstrap o distintas semillas aleatorias), dado que un silhouette bajo puede indicar sensibilidad a la inicialización.
 
 ---
 
@@ -133,10 +140,13 @@ Estas variables ya demuestran aporte real como features del Modelo #3 (`dist_par
 
 Ver sección 9 de `DataAnalysis.md`. En síntesis: dependencia de extracción por texto para amenidades y piso, ambigüedad del 89.25% de nulos en `estacionamientos`, 16.3% de departamentos sin serie BCRP propia, y descarte del 18.16% del dataset original por filtros de calidad geográfica, de precio y de doble modalidad venta/alquiler.
 
+**Limitación adicional del Modelo #1:** la imputación de `antiguedad`/`mantenimiento` por mediana de distrito puede fallar en distritos con muestra muy pequeña o sin ningún valor no-nulo disponible (observado como `RuntimeWarning: Mean of empty slice` durante la ejecución) — estas filas se excluyen del clustering final (23 de 3,571, ~0.6%).
+
 ---
 
 ## Pendientes técnicos antes de Delivery 1
 
 1. **Modelo #1:** implementar la segunda etapa de comparables (k-NN dentro del cluster + mismo distrito), ya diseñada conceptualmente pero pendiente de integrar al pipeline final.
-2. **Modelo #3:** tuning de hiperparámetros.
-3. **Modelo #4:** implementación real de SARIMAX con métricas de validación temporal.
+2. **Modelo #1:** validar estabilidad de los 4 clusters ante distintas semillas aleatorias, dado el silhouette bajo (0.1647).
+3. **Modelo #3:** tuning de hiperparámetros.
+4. **Modelo #4:** implementación real de SARIMAX con métricas de validación temporal.
