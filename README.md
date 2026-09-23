@@ -177,17 +177,16 @@ DepaRent/
     └── week07/
         ├── Delivery1Report.pdf
         ├── Delivery1Report.docx
-        ├── PresentationWeek07.pdf
+        ├── PresentationWeek07.pptx
         ├── DataProductCanvas.pdf
         ├── Requirements.pdf
         ├── data_dictionary.csv
         │
         ├── architecture/
-        │   ├── system_architecture.png
-        │   └── product_workflow.png
+        │   ├── product_workflow.png
+        │   └── system_architecture.png
         │
         ├── design/
-        │   ├── README.md
         │   ├── sketch_requirement_1.png
         │   ├── sketch_requirement_2.png
         │   ├── sketch_requirement_3.png
@@ -202,10 +201,129 @@ DepaRent/
         │   └── wireframe_requirement_6.png
         │
         ├── data/
-        │   └── processed/
+        │   ├── bcrp_procesado.csv
+        │   ├── bcrp_serie_completa.csv
+        │   ├── departamentos_procesados.csv
+        │   ├── departamentos_sin_geo_para_clustering.csv
+        │   └── paraderos_procesado.csv
         │
         ├── code/
+        │   └── EDA_week07.ipynb
         │
         └── planning/
-            ├── implementation_plan.md
+            ├── Implementation_Plan.md
             └── team_responsibilities.md
+```
+
+---
+
+# 8. Instrucciones de Ejecución
+
+## Requisitos Previos
+
+- **Python**: Se recomienda utilizar **Python 3.10** o superior (probado con Python 3.10 / 3.11).
+- **Dependencias y librerías**: Actualmente el repositorio no cuenta con un archivo `requirements.txt` o `environment.yml` formalizado. A partir de los módulos importados en los notebooks de análisis y modelado (`deliveries/week06/code/EDA_week06_v5.ipynb` y `deliveries/week07/code/EDA_week07.ipynb`), se requiere la instalación de los siguientes paquetes:
+  - `numpy`
+  - `pandas`
+  - `scipy`
+  - `scikit-learn`
+  - `statsmodels`
+  - `matplotlib`
+  - `seaborn`
+  - `umap-learn`
+  - `notebook` / `jupyter` (para la ejecución de los cuadernos de trabajo)
+
+> [!TIP]
+> Se sugiere crear a corto plazo un archivo `requirements.txt` o `environment.yml` en la raíz del repositorio para congelar las versiones de las librerías y garantizar reproducibilidad automatizada.
+
+## Clonación del Repositorio y Preparación del Entorno
+
+1. **Clonar el repositorio:**
+
+   ```bash
+   git clone https://github.com/Luciana-y/DepaRent.git
+   cd DepaRent
+   ```
+
+2. **Crear y activar un entorno virtual:**
+
+   - En Windows (PowerShell):
+     ```powershell
+     python -m venv venv
+     .\venv\Scripts\Activate.ps1
+     ```
+   - En Linux / macOS:
+     ```bash
+     python3 -m venv venv
+     source venv/bin/activate
+     ```
+
+3. **Instalar dependencias necesarias:**
+
+   ```bash
+   pip install numpy pandas scipy scikit-learn statsmodels matplotlib seaborn umap-learn notebook
+   ```
+
+## Ejecución del Pipeline de Datos, EDA y Modelado
+
+El procesamiento de datos, análisis exploratorio y entrenamiento de los modelos analíticos preliminares están centralizados en cuadernos de Jupyter:
+
+- **Pipeline y EDA de Semana 06:**
+  ```text
+  deliveries/week06/code/EDA_week06_v5.ipynb
+  ```
+- **Pipeline y EDA consolidado de Semana 07 (Delivery 1):**
+  ```text
+  deliveries/week07/code/EDA_week07.ipynb
+  ```
+
+Para ejecutarlos:
+
+1. Iniciar Jupyter Notebook o JupyterLab:
+   ```bash
+   jupyter notebook
+   ```
+2. Abrir cualquiera de los notebooks mencionados (`deliveries/week06/code/EDA_week06_v5.ipynb` o `deliveries/week07/code/EDA_week07.ipynb`).
+3. Ejecutar las celdas secuencialmente (*Run All*). Los notebooks están configurados para detectar automáticamente los datasets crudos ubicados en `deliveries/week04/data/`:
+   - `departamentos_alquiler_lima.csv`
+   - `dataset_alquileres_trimestre_bcrp.csv`
+   - `paraderos.csv`
+
+## Ubicación de Outputs y Artefactos
+
+- **Datasets Procesados:**
+  Al ejecutarse el pipeline en los notebooks, el código (`to_csv`) genera y escribe los archivos procesados en una subcarpeta relativa `processed/` en el directorio de trabajo del notebook en ejecución (por ejemplo, `deliveries/week06/code/processed/` o `deliveries/week07/code/processed/`).
+  
+  Por otro lado, los datasets procesados oficiales y versionados en el repositorio correspondientes a la Semana 07 se encuentran almacenados directamente en:
+  `deliveries/week07/data/`
+
+  Archivos generados:
+  - `departamentos_procesados.csv`: dataset inmobiliario limpio con coordenadas e imputación básica.
+  - `departamentos_sin_geo_para_clustering.csv`: versión estructurada para segmentación y clustering sin variables geoespaciales.
+  - `paraderos_procesado.csv`: paraderos de transporte público de la ATU procesados para cálculo de accesibilidad.
+  - `bcrp_procesado.csv`: corte más reciente de estadísticas distritales del BCRP.
+  - `bcrp_serie_completa.csv`: serie histórica trimestral para pronóstico y análisis temporal.
+
+- **Modelos Serializados:**
+  Actualmente **no existen modelos serializados** (`.joblib` o `.pkl`) almacenados en el repositorio. La serialización y guardado de los artefactos entrenados (clustering K-Means y regresión HistGradientBoosting) está planificada como parte del prototipo funcional en la **Week 10**.
+
+## Variables de Entorno y Credenciales
+
+- **No se requieren variables de entorno ni credenciales externas** (API keys, tokens o contraseñas) para la ejecución actual. Todos los datos necesarios provienen de archivos locales contenidos dentro del repositorio.
+
+---
+
+# 9. Cronograma del Proyecto
+
+| Semana | Prioridad | Trabajo principal | Resultado esperado |
+|---|---|---|---|
+| Week 7 | Alta | Consolidar definición integrada, arquitectura, requirements, datos y plan de implementación. | Delivery 1 completo y repositorio reorganizado. |
+| Week 8 | Alta | Estabilizar pipeline de datos, esquemas y artefactos procesados; pruebas de reproducibilidad. | Pipeline reproducible y datasets versionados. |
+| Week 9 | Alta | Validar estabilidad de K-Means k=4 e implementar segunda etapa de comparables (k-NN dentro de cluster + ubicación). | Perfil competitivo utilizable en producto. |
+| Week 10 | Alta | Tuning y análisis de error del HistGradientBoosting; definición de contrato de inferencia. | Modelo de precio versionado y endpoint/prototipo de inferencia. |
+| Week 11 | Media-Alta | Implementar/validar SARIMA temporal y consolidar módulo de accesibilidad. | Tendencia distrital y accesibilidad integrables. |
+| Week 12 | Alta | Construir motor de escenarios de precio y simulador contrafactual con advertencias de uso. | Módulos prescriptivos funcionales. |
+| Week 13 | Alta | Integrar frontend, backend, persistencia y modelos; flujo propietario de extremo a extremo. | Prototipo integrado. |
+| Week 14 | Alta | Pruebas con usuarios, criterios de aceptación, QA, rendimiento, revisión de explicabilidad y limitaciones. | Versión candidata final con hallazgos de validación. |
+| Week 15 | Alta | Evaluación final, documentación, limpieza de repositorio, presentación y entrega. | Prototipo final y Delivery 2. |
+
