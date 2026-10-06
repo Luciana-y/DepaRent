@@ -42,7 +42,7 @@ deliveries/week06/
 | Entregable | Archivo | Descripción |
 | :--- | :--- | :--- |
 | **Análisis de Datos** | [`DataAnalysis.md`](DataAnalysis.md) | Detalla la estructura y calidad de los datos, decisiones de preprocesamiento, diagnóstico de nulos, reducción de asimetría, correlaciones, integración macroeconómica BCRP, accesibilidad ATU y limitaciones. |
-| **Selección de Modelos** | [`ModelSelection.md`](ModelSelection.md) | Justifica empíricamente los 6 componentes analíticos de DepaRent (Clustering K-Means $k=2$, Accesibilidad `cKDTree`, Regresión HistGradientBoosting, Forecasting SARIMA, Motor de Reglas y Simulador de Mejoras). |
+| **Selección de Modelos** | [`ModelSelection.md`](ModelSelection.md) | Justifica empíricamente los 6 componentes analíticos de DepaRent (Clustering K-Means $k=4$, Accesibilidad `cKDTree`, Regresión HistGradientBoosting, Forecasting SARIMA, Motor de Reglas y Simulador de Mejoras). |
 | **Diccionario de Datos** | [`data_dictionary.csv`](data_dictionary.csv) | Catálogo completo con descripción, tipo de dato, formato, valores posibles y tratamiento de nulos para todas las variables crudas y derivadas. |
 | **Datos Procesados** | [`data/processed/`](data/processed/) | Archivos CSV limpios y estandarizados resultantes del pipeline de ingeniería de características. |
 | **Código y Pipeline** | [`code/EDA_week06_v5.ipynb`](code/EDA_week06_v5.ipynb) | Notebook integral con todas las celdas ejecutadas, gráficos generados y validación sin data leakage. |
@@ -106,7 +106,7 @@ python -m jupyter nbconvert --to notebook --execute EDA_week06_v5.ipynb --inplac
 
 Al completar la ejecución de la Sección 9 del notebook, se exportan automáticamente los datasets depurados a la carpeta `deliveries/week06/data/processed/`:
 - `departamentos_procesados.csv`: Catálogo depurado con 3,128 filas, variables extraídas y métricas de accesibilidad.
-- `departamentos_sin_geo_para_clustering.csv`: Catálogo para clustering (3,610 filas) preservando anuncios sin geolocalización.
+- `departamentos_sin_geo_para_clustering.csv`: Catálogo para clustering (3,571 filas) preservando anuncios sin geolocalización.
 - `bcrp_procesado.csv`: Snapshot del trimestre más reciente del BCRP (2026-T1) con indicador de promedio general.
 - `bcrp_serie_completa.csv`: Serie temporal completa normalizada del BCRP para proyecciones SARIMA.
 - `paraderos_procesado.csv`: Inventario depurado de paraderos de la ATU en Lima Metropolitana y Callao.

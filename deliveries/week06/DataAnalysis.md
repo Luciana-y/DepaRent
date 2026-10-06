@@ -52,8 +52,10 @@ Se aplicaron expresiones regulares sobre `texto_amenidades_crudo` para recuperar
 
 Prevalencia de amenidades tras la extracción por palabras clave:
 
-- **Mayor prevalencia:** `cochera` (100% de los avisos con estacionamientos informados), `seguridad_24_7` (44.6%), `parrilla` (37.6%), `ascensor` (36.1%), `gimnasio` (33.0%), `balcon` (31.9%), `coworking` (30.3%), `terraza` (29.3%).
-- **Presencia media:** `piscina` (27.2%), `pet_friendly` (26.7%), `vista_al_mar` (15.5%), `areas_verdes` (14.1%), `deposito` (12.0%).
+- **Mayor prevalencia:** `cochera` (100% de los avisos con estacionamientos informados), `seguridad_24_7` (44.6%), `parrilla` (37.6%), `ascensor` (36.1%), `gimnasio` (33.0%), `balcon` (31.9%), `terraza` (29.3%).
+- **Presencia media:** `piscina` (27.2%), `coworking` (19.7%), `vista_al_mar` (15.5%), `areas_verdes` (14.1%), `pet_friendly` (13.4%), `deposito` (12.0%).
+
+> **Actualización (semana 08):** `coworking` bajó de 30.3% a 19.7% al eliminar la palabra clave `"sum"` (coincidía con "consumo", "sumamente", etc.) y `pet_friendly` bajó de 26.7% a 13.4% al excluir menciones negativas ("no se aceptan mascotas", "sin mascotas").
 - **Baja cobertura (<10%):** `juegos_infantiles` (8.7%), concentrada en condominios familiares de gran escala.
 
 ### Nota metodológica — ambigüedad de `estacionamientos`
