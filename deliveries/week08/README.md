@@ -61,11 +61,63 @@ Notas:
 | Tendencia distrital | Pronóstico de series de tiempo | `Alquiler_Mensual_Soles` trimestral por distrito (BCRP) |
 | Escenarios y simulador | Prescriptivo (reglas y contrafactual) | Precio recomendado y Δ de precio por mejora |
 
-## 4. Modelos probados, métricas y conclusiones
+## 4. Los 6 modelos de DepaRent y su avance
 
-### Modelo 3 – Precio esperado (regresión)
+DepaRent se compone de seis componentes analíticos. Los cuatro primeros responden al requerimiento R1 (analizar y valorar el inmueble) y los dos últimos al R2 (recomendar una estrategia de publicación). A continuación se explica brevemente cada uno, en orden, junto con su avance actual.
 
-Split 80/20 hecho **antes** de imputar. Toda la imputación ocurre dentro del `Pipeline`, así que no hay fuga de datos.
+**Resumen del avance**
+
+| # | Modelo | Método | Avance |
+|:-:|---|---|---|
+| 1 | Perfil competitivo | K-Means (k=4) | Entrenado y validado; falta la búsqueda de comparables |
+| 2 | Perfil de accesibilidad | Variables espaciales con cKDTree | Implementado |
+| 3 | Precio esperado | HistGradientBoosting | Entrenado y evaluado; falta tuning e intervalos |
+| 4 | Tendencia distrital | SARIMA (d=1, s=4) | Justificado con ADF; falta ajustar el modelo |
+| 5 | Escenarios de precio | Motor de reglas sobre 1 + 3 + 4 | Diseñado; no implementado |
+| 6 | Simulador de mejoras | Uso contrafactual del modelo 3 | Diseñado; no implementado |
+
+### Modelo 1 – Perfil competitivo (clustering)
+
+**Qué hace.** Agrupa los departamentos en segmentos de mercado según área, dormitorios, baños, precio por m², antigüedad, mantenimiento y 13 amenidades. Así el propietario se compara solo contra inmuebles realmente parecidos al suyo y no contra todo el mercado.
+
+**Método.** K-Means con k=4 sobre 19 variables estandarizadas, sin PCA. Antes se probaron otras configuraciones:
+- 9 variables + PCA: silhouette 0.274.
+- Gaussian Mixture Model: silhouette 0.196. Se descartó.
+- Distrito en one-hot: silhouette entre 0.04 y 0.10. Se descartó.
+
+Se eligió la configuración actual porque cada amenidad sigue siendo interpretable para el propietario.
+
+**Avance.**
+- Entrenado, con silhouette de **0.1776**.
+- Los clusters son estables ante distintas semillas aleatorias (ARI ≥ 0.999).
+- Identifica cuatro perfiles: estándar tradicional (49.3%), propiedades amplias (14.7%), compacto con amenidades (27.5%) y residencial familiar (8.5%).
+
+**Pendiente.**
+- Implementar la segunda etapa: buscar los k vecinos más cercanos dentro del cluster, considerando también la ubicación.
+- Quitar la variable de precio del clustering. El propietario todavía no conoce su precio, así que para asignarle un cluster hay que usar el precio predicho por el modelo 3 o no usar precio.
+- El silhouette es bajo (< 0.25): los segmentos son una heurística útil, no grupos naturalmente separados.
+
+### Modelo 2 – Perfil de accesibilidad
+
+**Qué hace.** Mide qué tan bien conectado está el departamento con el transporte público, a partir de los 3,233 paraderos georreferenciados de la ATU.
+
+**Método.** No es un modelo de machine learning: es ingeniería de variables espaciales con un índice `cKDTree`. Calcula:
+- la distancia al paradero más cercano;
+- el número de paraderos a 300 m, 500 m y 1,000 m;
+- la distancia al Metropolitano y a los corredores.
+
+**Avance.**
+- Implementado.
+- La distancia mediana al paradero más cercano es de 174.8 m, y el 71.6% de los departamentos tiene un paradero a menos de 300 m.
+- Estas variables aportan al modelo de precio: la distancia al paradero y la distancia al Metropolitano están entre las cinco más importantes.
+
+**Pendiente.** Empaquetarlo como función reutilizable para el prototipo. Hay que considerar que el inventario de paraderos es de 2021.
+
+### Modelo 3 – Precio esperado de alquiler (regresión)
+
+**Qué hace.** Estima el alquiler mensual esperado (`precio_soles`) a partir de las características del inmueble, su accesibilidad y el contexto del distrito según el BCRP. Es el núcleo del producto.
+
+**Método.** Se compararon seis algoritmos con un split 80/20, hecho antes de imputar. La imputación ocurre dentro del `Pipeline`, así que no hay fuga de datos.
 
 | Modelo | R² | MAE (S/) | RMSE (S/) | MAPE |
 |---|---:|---:|---:|---:|
@@ -76,28 +128,57 @@ Split 80/20 hecho **antes** de imputar. Toda la imputación ocurre dentro del `P
 | Ridge | 0.7786 | 621.74 | 956.53 | 21.51% |
 | Baseline Dummy (mediana) | -0.0689 | 1,213.26 | 2,101.61 | 36.59% |
 
-**Conclusión:** HistGradientBoosting reduce el MAPE en **56.9%** frente al baseline.
-- **Robustez:** con validación cruzada agrupada (GroupKFold de 5 folds, que agrupa anuncios duplicados entre portales) el MAPE es **15.57% ± 0.40**. El resultado no depende de la partición ni de los duplicados.
-- **Variables más influyentes:** `area_total`, `mantenimiento`, `dist_paradero_min_m`, `dist_troncal_brt_m` y `banos`.
+**Avance.**
+- Entrenado y evaluado. HistGradientBoosting reduce el error en **56.9%** frente al baseline.
+- Con validación cruzada agrupada (GroupKFold de 5 folds, que agrupa anuncios duplicados entre portales) el MAPE es **15.57% ± 0.40**. El resultado es robusto a la partición y a los duplicados.
+- Las variables más influyentes son `area_total`, `mantenimiento`, `dist_paradero_min_m`, `dist_troncal_brt_m` y `banos`.
 
-### Modelo 1 – Perfil competitivo (clustering)
+**Pendiente.**
+- Ajuste de hiperparámetros.
+- Intervalos de predicción, para mostrar un rango y no solo un valor.
+- Importancia de variables calculada sobre el propio HistGradientBoosting; hoy se reporta la del Random Forest.
+- Guardar el modelo entrenado (`.joblib`) para el prototipo.
 
-Configuraciones evaluadas: 9 variables + PCA (silhouette 0.274), GMM (0.196, descartado), one-hot de distrito (0.04–0.10, descartado). Se eligió **K-Means con k=4 sobre 19 variables, sin PCA (silhouette 0.1776)** porque cada amenidad sigue siendo interpretable para el propietario.
-- **Estabilidad:** los clusters son estables entre semillas (ARI ≥ 0.999).
-- **Perfiles:** estándar tradicional (49.3%), amplias (14.7%), compacto con amenidades (27.5%) y residencial familiar (8.5%).
-- **Limitación:** el silhouette es bajo (< 0.25), así que los segmentos son una heurística útil, no grupos naturalmente separados.
+### Modelo 4 – Tendencia distrital (series de tiempo)
 
-### Modelo 2 – Accesibilidad
+**Qué hace.** Indica si el alquiler en el distrito del inmueble tiende a subir, bajar o mantenerse, usando las series trimestrales del BCRP (2013-T3 a 2026-T1, 12 distritos más el promedio).
 
-Ingeniería de variables espaciales, no es un modelo de ML. La distancia mediana al paradero más cercano es 174.8 m y el 71.6% de los departamentos está a menos de 300 m. Estas variables están entre las más importantes del modelo de precio.
+**Método.** SARIMA con diferenciación de primer orden y estacionalidad trimestral (d=1, s=4). El baseline de comparación es un naive estacional: el mismo trimestre del año anterior.
 
-### Modelo 4 – Tendencia distrital
+**Avance.** Solo está la justificación del modelo. La prueba ADF muestra que **9 de las 13 series (69.2%) no son estacionarias**, lo que descarta un ARIMA sin diferenciar.
 
-El test ADF indica que **9 de 13 series (69.2%) no son estacionarias**, lo que justifica un **SARIMA (d=1, s=4)** frente a un baseline naive estacional. **El SARIMA todavía no está ajustado** (ver sección 5).
+**Pendiente.**
+- Ajustar el SARIMA. Todavía no está implementado.
+- Validarlo con un esquema temporal (entrenar con trimestres pasados y evaluar en los últimos) contra el baseline naive.
+- Definir qué se muestra en los distritos que no tienen serie propia en el BCRP. Esto afecta al 16.3% de los departamentos, que hoy usan el promedio general.
 
-### Modelos 5 y 6 – Escenarios y simulador
+### Modelo 5 – Escenarios de precio de publicación
 
-Motor de reglas que combina los resultados de los modelos 1, 3 y 4, y uso contrafactual del modelo 3. Están diseñados, pero no implementados.
+**Qué hace.** Propone tres precios de publicación según el objetivo del propietario: competitivo (alquilar rápido), equilibrado y renta superior.
+
+**Método.** No es un modelo de machine learning nuevo. Es un motor de reglas que combina:
+- el precio esperado del modelo 3;
+- el rango de precios de los comparables del modelo 1;
+- la tendencia del distrito del modelo 4.
+
+**Avance.** Diseñado y con wireframe, pero no implementado.
+
+**Pendiente.** Implementarlo cuando los modelos 1, 3 y 4 estén listos (previsto para Week 12) y definir las reglas exactas de cada escenario.
+
+### Modelo 6 – Simulador de mejoras
+
+**Qué hace.** Estima cuánto cambiaría el precio esperado si el propietario hiciera una mejora, por ejemplo agregar cochera o terraza.
+
+**Método.** Reutiliza el modelo 3 de forma contrafactual:
+1. Predice el precio con el estado actual del inmueble.
+2. Cambia virtualmente un atributo.
+3. Vuelve a predecir manteniendo el resto igual.
+
+La diferencia se presenta como una asociación, no como un efecto causal.
+
+**Avance.** Diseñado y con wireframe, pero no implementado.
+
+**Pendiente.** Implementarlo cuando el modelo 3 esté guardado (previsto para Week 12) y limitar los atributos que se pueden modificar a los que el propietario realmente puede cambiar.
 
 ### Correcciones hechas en esta revisión (Week 8)
 
@@ -108,21 +189,16 @@ Motor de reglas que combina los resultados de los modelos 1, 3 y 4, y uso contra
 
 Las cifras de este documento son las de después de estas correcciones. Las del Delivery 1 eran: MAPE 15.93%, R² 0.8236 y silhouette 0.1647.
 
-## 5. Qué funciona y qué falta
+## 5. Estado del producto fuera de los modelos
 
-| Componente | Estado |
+| Elemento | Estado |
 |---|---|
-| Adquisición y limpieza de las 3 fuentes | ✅ Funciona y es reproducible |
-| Variables de accesibilidad (ATU) | ✅ Funciona |
-| Modelo de precio (HistGradientBoosting) | ✅ Entrenado y evaluado. ⏳ Falta tuning e intervalos de predicción |
-| Perfil competitivo (K-Means k=4) | ✅ Entrenado y validado en estabilidad. ⏳ Falta la búsqueda de comparables (k-NN dentro del cluster + ubicación) |
-| Tendencia distrital (SARIMA) | ⚠️ Solo justificado con ADF. ❌ Falta ajustar el modelo y validarlo temporalmente |
-| Escenarios de precio | ❌ Diseñado, no implementado |
-| Simulador de mejoras | ❌ Diseñado, no implementado |
-| Modelos serializados (.joblib) | ❌ Pendiente (Week 10) |
-| Aplicación web (frontend y backend) | ❌ Solo hay wireframes; el desarrollo empieza para Week 10 |
-
-**Problema de diseño identificado:** el clustering usa `precio_m2_real` como variable. En el producto, el propietario todavía no conoce su precio, así que para asignarle un cluster hay que quitar esa variable o reemplazarla por el precio que predice el modelo 3. Se resolverá antes de Week 10.
+| Adquisición y limpieza de las 3 fuentes | Funciona y es reproducible desde el notebook |
+| Datos procesados y diccionario de datos | Disponibles en `week07/data/` |
+| Modelos guardados (`.joblib`) | Pendiente (Week 10) |
+| Pipeline como módulos `.py` reutilizables | Pendiente (Week 9) |
+| Aplicación web (frontend y backend) | Solo wireframes y arquitectura; el desarrollo empieza para Week 10 |
+| Despliegue | Pendiente (Week 14–15) |
 
 ## 6. Resultado que queremos demostrar en la presentación final
 
