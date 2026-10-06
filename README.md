@@ -222,19 +222,7 @@ DepaRent/
 ## Requisitos Previos
 
 - **Python**: Se recomienda utilizar **Python 3.10** o superior (probado con Python 3.10 / 3.11).
-- **Dependencias y librerías**: Actualmente el repositorio no cuenta con un archivo `requirements.txt` o `environment.yml` formalizado. A partir de los módulos importados en los notebooks de análisis y modelado (`deliveries/week06/code/EDA_week06_v5.ipynb` y `deliveries/week07/code/EDA_week07.ipynb`), se requiere la instalación de los siguientes paquetes:
-  - `numpy`
-  - `pandas`
-  - `scipy`
-  - `scikit-learn`
-  - `statsmodels`
-  - `matplotlib`
-  - `seaborn`
-  - `umap-learn`
-  - `notebook` / `jupyter` (para la ejecución de los cuadernos de trabajo)
-
-> [!TIP]
-> Se sugiere crear a corto plazo un archivo `requirements.txt` o `environment.yml` en la raíz del repositorio para congelar las versiones de las librerías y garantizar reproducibilidad automatizada.
+- **Dependencias y librerías**: Las dependencias están definidas en `requirements.txt` en la raíz del repositorio (rangos de versiones compatibles con Python 3.10 – 3.13): `numpy`, `pandas`, `scipy`, `scikit-learn`, `statsmodels`, `matplotlib`, `seaborn`, `umap-learn` y `notebook` / `ipykernel`.
 
 ## Clonación del Repositorio y Preparación del Entorno
 
@@ -261,7 +249,7 @@ DepaRent/
 3. **Instalar dependencias necesarias:**
 
    ```bash
-   pip install numpy pandas scipy scikit-learn statsmodels matplotlib seaborn umap-learn notebook
+   pip install -r requirements.txt
    ```
 
 ## Ejecución del Pipeline de Datos, EDA y Modelado
