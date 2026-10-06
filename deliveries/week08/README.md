@@ -244,6 +244,23 @@ Ejecutar **Run All**. El notebook encuentra solo los datos crudos en `deliveries
 | Week 12 | Escenarios de precio, simulador, evaluación y caso de estudio |
 | Week 13–15 | Integración, pruebas con usuarios, despliegue y Delivery 2 |
 
-**Lo que necesitamos:**
-- Retroalimentación sobre si priorizar el prototipo web completo o la profundidad de los modelos (SARIMA, comparables) para Week 10.
-- Validar si el uso académico de los datos obtenidos por scraping es aceptable en un repositorio público, o si conviene publicar solo una muestra.
+### Lo que necesitamos de usted
+
+**Sobre el producto y su alcance**
+- **Valor del producto.** ¿Le parece que la propuesta resuelve un problema real y relevante para el propietario? ¿Hay algo que cambiaría en el enfoque?
+- **Alcance.** ¿Seis funcionalidades son demasiadas para el tiempo que queda? Si conviene reducir el alcance, ¿cuáles priorizaría para que el producto final sea sólido?
+- **Prioridad para Week 10.** ¿Qué espera ver en el prototipo funcional: un flujo completo aunque sea sencillo, o menos funcionalidades pero más trabajadas?
+
+**Sobre los usuarios y la validación**
+- **Validación con usuarios.** ¿Cómo podríamos validar el producto con propietarios reales? Nos ayudaría saber si conoce contactos (por ejemplo, administradores de edificios o personas del sector inmobiliario) dispuestos a probarlo o darnos su opinión.
+- **Caso de estudio.** Para el caso de estudio de Week 12, ¿es suficiente un propietario representativo con datos reales del mercado, o se espera que sea una persona real usando la plataforma?
+
+**Sobre la evaluación y las entregas**
+- **Criterios de evaluación.** ¿Qué criterios pesarán más en Week 10, Week 12 y la presentación final (funcionalidad, rigor de los modelos, diseño, utilidad para el usuario)?
+- **Proyectos de referencia.** De los proyectos de semestres anteriores compartidos en las guías del curso, ¿hay alguno que considere especialmente cercano a DepaRent o cuyo nivel debamos tomar como referencia?
+- **Formato de la presentación final.** ¿Hay alguna recomendación sobre la exposición pública de Week 15: duración, tipo de público y si la demo debe ser en vivo o puede ser un video?
+
+**Sobre los datos y el despliegue**
+- **Uso de los datos.** ¿Es aceptable tener los anuncios obtenidos por scraping en un repositorio público con fines académicos, o conviene publicar solo una muestra?
+- **Datos de transporte.** El inventario de paraderos de la ATU es de 2021. ¿Conoce alguna fuente más actual o algún contacto en una entidad pública que pueda facilitarla?
+- **Despliegue.** ¿El curso ofrece o recomienda alguna plataforma para publicar el prototipo, o lo decidimos nosotros?
