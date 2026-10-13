@@ -1,4 +1,4 @@
-# prueba.py
+# Archivo de prueba
 # Archivo de prueba creado en deliveries/week10
 
 def main():
