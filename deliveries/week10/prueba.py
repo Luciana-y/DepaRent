@@ -1,9 +1,3 @@
-# Archivo de prueba
-# Archivo de prueba creado en deliveries/week10
-
-def main():
-    print("Prueba: archivo creado en deliveries/week10/prueba.py")
-
-
-if __name__ == "__main__":
-    main()
+# Archivo de prueba (eliminado)
+# Este archivo fue archivado: ver deliveries/week10/archive/prueba.py
+# Se dejó este marcador para indicar que el archivo original fue movido a 'archive/'.
