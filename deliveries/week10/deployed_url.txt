@@ -1,1 +1,3 @@
-No deployed prototype yet. If you have a deployed URL, replace this line with the full URL of the deployed prototype (e.g., https://mi-prototipo.example.com)
+URL del prototipo desplegado: (pendiente)
+
+Si no es posible desplegarlo, explicar aquí el motivo y enlazar el video de demostración.

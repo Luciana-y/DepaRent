@@ -1,31 +1,35 @@
-import os
+"""Estimador mínimo: mediana de alquiler (precio_soles) por distrito.
+
+Es un placeholder del prototipo. Se reemplazará por el modelo HistGradientBoosting
+serializado en models/ cuando esté disponible.
+"""
 import pandas as pd
+
+from config import find_data_file
+
+PRICE_COL = "precio_soles"  # alquiler mensual en soles (precio y moneda originales se mezclan)
+DISTRICT_COL = "distrito"
+
 
 class Estimator:
     def __init__(self, data_path=None):
-        if data_path is None:
-            data_path = os.path.join(os.getcwd(), 'deliveries', 'week07', 'data', 'departamentos_procesados.csv')
-        self.data_path = data_path
-        self.medians = None
+        self.data_path = data_path or find_data_file("departamentos_procesados.csv")
+        self.medians = {}
         self.default = None
         self._load()
 
     def _load(self):
-        if not os.path.exists(self.data_path):
-            raise FileNotFoundError(f"Dataset not found at {self.data_path}. Ensure deliveries/week07/data/departamentos_procesados.csv exists")
         df = pd.read_csv(self.data_path, low_memory=False)
-        # Detect probable column names
-        price_col = next((c for c in df.columns if 'precio' in c.lower()), None)
-        distrito_col = next((c for c in df.columns if 'distrito' in c.lower()), None)
-        if price_col is None or distrito_col is None:
-            raise ValueError(f"No se encontraron las columnas de precio/distrito en {self.data_path}. Columnas disponibles: {df.columns.tolist()}")
-        df = df[[distrito_col, price_col]].dropna()
-        self.medians = df.groupby(distrito_col)[price_col].median().to_dict()
-        self.default = float(df[price_col].median())
+        missing = [c for c in (PRICE_COL, DISTRICT_COL) if c not in df.columns]
+        if missing:
+            raise ValueError(f"Faltan columnas {missing} en {self.data_path}")
+        df = df[[DISTRICT_COL, PRICE_COL]].dropna()
+        self.medians = df.groupby(DISTRICT_COL)[PRICE_COL].median().to_dict()
+        self.default = float(df[PRICE_COL].median())
 
     def predict(self, distrito):
-        if self.medians is None:
-            self._load()
-        if distrito is None:
+        if not distrito:
             return self.default
-        return float(self.medians.get(distrito, self.default))
+        key = str(distrito).strip()
+        lookup = {k.lower(): v for k, v in self.medians.items()}
+        return float(lookup.get(key.lower(), self.default))

@@ -1,11 +1,14 @@
-# Datos procesados — instrucciones
+# Datos del prototipo
 
-Coloca aquí los datasets procesados que el prototipo necesita. Formatos admitidos: `.csv`, `.parquet`, `.json`.
+El prototipo usa los datos procesados de la Semana 7, que no han cambiado:
+`../../week07/data/` (`departamentos_procesados.csv`, `paraderos_procesado.csv`,
+`bcrp_serie_completa.csv`, `bcrp_procesado.csv`).
 
-Nombres sugeridos y su descripción:
-- departamentos_procesados.csv — dataset inmobiliario limpio con coordenadas e imputación básica.
-- departamentos_sin_geo_para_clustering.csv — versión para clustering sin variables geoespaciales.
-- paraderos_procesado.csv — paraderos ATU procesados.
-- bcrp_procesado.csv — indicadores distritales por trimestre.
+`code/config.py` busca primero en esta carpeta y, si el archivo no está, en `week07/data/`.
 
-Nota: los archivos de datos pueden ser grandes; si no puedes subirlos al repositorio público, coloca una versión muestreada (`_sample.csv`) y explica cómo regenerar los archivos completos desde los notebooks en `deliveries/week06/` y `deliveries/week07/`.
+Coloca aquí únicamente archivos **nuevos** generados para el prototipo (por ejemplo, features
+adicionales o tablas de comparables), y descríbelos abajo:
+
+| Archivo | Descripción | Generado por |
+|---|---|---|
+| _(ninguno todavía)_ | | |

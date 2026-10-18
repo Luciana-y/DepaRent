@@ -1,28 +1,33 @@
-# Week 10 — Entregable de prototipo
+# Semana 10 — Prototipo funcional (DepaRent)
 
-Esta carpeta contiene la estructura y plantillas para el Deliverable de la semana 10.
-A continuación se indica qué debe contener la carpeta y cómo organizar los artefactos.
+## Contenido
+| Elemento | Ubicación |
+|---|---|
+| Código del prototipo | `code/` |
+| Datos | `data/` (ver su README; los procesados base están en `../week07/data/`) |
+| Modelos serializados | `models/` (ver `metadata.md`) |
+| Reporte del prototipo | `PrototypeReport.md` |
+| Presentación | `PresentationWeek10.pptx` / `.pdf` _(pendiente de agregar)_ |
+| Capturas / demo | `screenshots/` |
+| URL desplegada | `deployed_url.txt` |
 
-Requisitos (debe incluirse en este directorio):
+## Requisitos
+- Python 3.10 o superior.
+- Dependencias: `code/requirements.txt`.
 
-- Código del prototipo (carpeta `code/`) — todo el código fuente necesario para ejecutar el prototipo.
-- Datos procesados (carpeta `data/`) — CSV o JSON con los datasets procesados usados por el prototipo.
-- Modelos serializados (carpeta `models/`) — archivos .joblib, .pkl, .onnx, etc., con artefactos analíticos.
-- `PrototypeReport.md` — informe con funcionalidades implementadas, arquitectura, limitaciones, desafíos técnicos y trabajo pendiente.
-- `PresentationWeek10.pdf` o `PresentationWeek10.pptx` — presentación de la semana 10 (si no está lista, añade la versión .md como borrador).
-- `screenshots/` — capturas de pantalla del prototipo o `demo/` con video de demostración.
-- `deployed_url.txt` — URL del prototipo desplegado (si aplica).
-- `README.md` (este archivo) — instrucciones de instalación, ejecución, dependencias y despliegue.
-
-Archivos de plantilla en este directorio explican exactamente qué y dónde añadir los artefactos.
-
----
-
-Estado actual: se han añadido archivos plantilla y un script de prueba `prueba.py` en la raíz de `week10`.
-
-Instrucciones rápidas para ejecutar el script de prueba:
-
+## Instalación y ejecución
 ```bash
-# Desde la raíz del repo
-python deliveries/week10/prueba.py
+git clone https://github.com/Luciana-y/DepaRent.git
+cd DepaRent
+python -m venv venv
+# Windows: .\venv\Scripts\Activate.ps1   |   Linux/macOS: source venv/bin/activate
+pip install -r deliveries/week10/code/requirements.txt
+python deliveries/week10/code/app.py
 ```
+Abrir http://127.0.0.1:5000. Funciona desde cualquier directorio de ejecución.
+
+## Despliegue
+_Pendiente. Ver `deployed_url.txt`._
+
+## Credenciales
+No se requieren variables de entorno ni credenciales.

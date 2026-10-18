@@ -1,55 +1,56 @@
-# Prototype Report — Semana 10
+# Prototype Report — DepaRent (Semana 10)
 
-## 1. Resumen ejecutivo
-
-(Describe en 2-4 párrafos el prototipo, su propósito, y la demostración que se entregará.)
+## 1. Resumen
+_2–3 párrafos: qué demuestra el prototipo, con qué datos y qué flujo principal cubre._
 
 ## 2. Funcionalidades implementadas
+_Solo lo que realmente funciona hoy._
 
-- [ ] Listar las funciones concretas implementadas en el prototipo (por ejemplo: carga de datos, preprocesamiento, inferencia del modelo X, dashboard con filtros, exportar resultados).
-
-Ejemplo:
-- Carga de dataset `departamentos_procesados.csv` desde `data/`.
-- Preprocesamiento y generación de features X, Y, Z.
-- Inferencia de precio esperado usando `models/precio_model.joblib`.
-- Visualización web mínima con Flask/Streamlit en `code/app.py`.
+| Funcionalidad | Estado | Ubicación |
+|---|---|---|
+| Entrada de características del inmueble | ☐ | `code/app.py`, `templates/` |
+| Preprocesamiento | ☐ | |
+| Perfil competitivo (K-Means) | ☐ | |
+| Accesibilidad (ATU) | ☐ | |
+| Precio esperado (HistGradientBoosting) | ☐ | `models/` |
+| Visualización de resultados | ☐ | |
 
 ## 3. Arquitectura del sistema
+```mermaid
+flowchart LR
+    U[Propietario] --> F[Frontend Flask / HTML]
+    F --> B[Backend app.py]
+    B --> P[Preprocesamiento]
+    P --> M1[K-Means]
+    P --> M2[Accesibilidad cKDTree]
+    P --> M3[HistGradientBoosting]
+    D[(data/)] --> P
+    MD[(models/)] --> M1
+    MD --> M3
+    M1 --> R[Resultado]
+    M2 --> R
+    M3 --> R
+    R --> F
+```
+_Ajustar el diagrama a lo realmente implementado._
 
-- Diagrama: (adjuntar imagen en `architecture/` y referenciarla aquí).
-- Componentes:
-  - Frontend: (tecnología, rutas, pantallas principales)
-  - Backend: (API / scripts de inferencia)
-  - Almacenamiento: (carpeta `data/`, `models/`)
-  - Orquestación: (notebooks que generan `data/`)
+## 4. Resultados y ejemplos de uso
+_Capturas de `screenshots/` y un ejemplo de entrada → salida._
 
-## 4. Artefactos incluidos
+## 5. Limitaciones conocidas
+- Los precios son de oferta (asking price), no de cierre.
+- Captura única de datos (14-sep-2026).
+- Inventario de paraderos ATU de mayo de 2021.
+- BCRP cubre 12 distritos; el 16.3% de los departamentos usa el promedio general.
+- Clustering débil (silhouette 0.1776).
+- _Agregar las propias del prototipo._
 
-- Código: carpeta `code/` (especificar entrypoints y comandos para ejecutar).
-- Datos procesados: `data/` (lista de archivos incluida y una breve descripción).
-- Modelos serializados: `models/` (formato y cómo cargarlos).
-- Presentación: `PresentationWeek10.*`.
-- Capturas / video: `screenshots/` o `demo/`.
-- URL deploy (si aplica): contenido de `deployed_url.txt`.
+## 6. Desafíos técnicos
+_Ejemplos: ambigüedad de `estacionamientos`, integración de ATU, serialización de modelos, integración backend–modelos._
 
-## 5. Resultados y ejemplos de uso
-
-(Pegar ejemplos de comandos y capturas de salida de inferencia o pantallas.)
-
-## 6. Limitaciones conocidas
-
-- Datos: tamaño, sesgos, calidad.
-- Modelos: rango de valores válidos, advertencias de uso.
-- Performance: tiempos de inferencia, requisitos de memoria.
-
-## 7. Desafíos técnicos encontrados
-
-- Describir problemas relevantes (p.ej., integración de ATU, inconsistencias geocodificación, tiempo de entrenamiento).
-
-## 8. Trabajo pendiente
-
-- Lista priorizada de tareas para completar el prototipo (p.ej., serializar modelos, mejorar UI, pruebas E2E, despliegue).
-
-## 9. Anexos
-
-- Incluir enlaces a notebooks relevantes en `deliveries/week06/` y `deliveries/week07/`.
+## 7. Trabajo pendiente (hacia la Semana 12)
+1. SARIMA ajustado y validado.
+2. Motor de escenarios de precio y simulador de mejoras.
+3. Evaluación con baselines y evidencia de pruebas.
+4. Caso de estudio realista.
+5. Despliegue.
