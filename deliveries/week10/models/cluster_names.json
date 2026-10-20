@@ -1,0 +1,19 @@
+{
+  "description": "Nombres descriptivos de los clusters de clustering_pipeline.joblib. Se definieron después de revisar los perfiles de clustering_metadata.json; son etiquetas de producto, independientes de cluster_id. 'k' y 'cluster_sizes' identifican el modelo al que corresponden: si se reentrena y cambian, la carga falla hasta revisar los nombres.",
+  "k": 3,
+  "cluster_sizes": [468, 1526, 1134],
+  "clusters": {
+    "0": {
+      "name": "Amplio con mantenimiento alto",
+      "evidence": "Área mediana 180 m² (resto 60-75), 3 dormitorios y 3 baños (medianas; resto 2 y 2), mantenimiento mediano S/ 650 (resto S/ 250). Mayor presencia de ascensor (59.4%), terraza (57.5%) y depósito (37.2%)."
+    },
+    "1": {
+      "name": "Tamaño medio con pocas amenidades",
+      "evidence": "Área mediana 75 m², 2 dormitorios, antigüedad mediana 10 años. Tiene la prevalencia más baja de los tres grupos en las 13 amenidades (p. ej. piscina 1.8%, gimnasio 3.6%, parrilla 8.5%, coworking 2.2%)."
+    },
+    "2": {
+      "name": "Compacto y reciente con amenidades de condominio",
+      "evidence": "Área mediana 60 m², antigüedad mediana 2 años (resto 10). Parrilla 86.1%, gimnasio 82.5%, piscina 65.5%, coworking 55.0%."
+    }
+  }
+}

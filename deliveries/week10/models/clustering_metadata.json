@@ -1,0 +1,626 @@
+{
+  "model": "RF1 perfil competitivo - K-Means sin variables de precio",
+  "source": {
+    "file": "departamentos_procesados.csv",
+    "path": "deliveries/week07/data/departamentos_procesados.csv",
+    "sha256": "642ef210bc245bbc644b3d8e0f9505cead8cc9db2ad72aff23c641f73dfe0aef",
+    "rows_in_file": 3128,
+    "canonical_notebook": "deliveries/week07/code/EDA_week07.ipynb"
+  },
+  "trained_at_utc": "2026-10-19T21:55:37+00:00",
+  "n_observations": 3128,
+  "features": [
+    "area_total",
+    "dormitorios",
+    "banos",
+    "antiguedad",
+    "mantenimiento",
+    "ascensor",
+    "balcon",
+    "terraza",
+    "piscina",
+    "gimnasio",
+    "deposito",
+    "vista_al_mar",
+    "parrilla",
+    "areas_verdes",
+    "seguridad_24_7",
+    "coworking",
+    "juegos_infantiles",
+    "pet_friendly"
+  ],
+  "excluded_features": {
+    "precio_soles": "variable de precio (aún no la conoce el propietario)",
+    "precio_m2_real": "transformación directa del precio",
+    "precio": "precio original del anuncio",
+    "precio_m2": "transformación directa del precio",
+    "cochera": "constante (1) en todas las filas no nulas: no informativa",
+    "estacionamientos": "nulos ambiguos (89.25% no confirmables); excluida también en Week 7",
+    "medios_banos": "78% de nulos en el dataset de entrenamiento",
+    "piso": "43% de nulos y no forma parte del clustering canónico",
+    "*_imputado": "banderas de calidad del anuncio, no características del inmueble",
+    "bcrp_*": "BCRP fuera del alcance de Week 10",
+    "dist_*/paraderos_*": "accesibilidad ATU se reporta como RF2 independiente",
+    "distrito": "se usa para priorizar comparables e imputar, no como distancia numérica"
+  },
+  "cleaning": {
+    "rule": "valores fuera de rango -> NaN antes de imputar (mismo rango que valida la entrada)",
+    "ranges": {
+      "area_total": [
+        25.0,
+        450.0
+      ],
+      "dormitorios": [
+        1,
+        10
+      ],
+      "banos": [
+        1,
+        10
+      ],
+      "antiguedad": [
+        0.0,
+        100.0
+      ],
+      "mantenimiento": [
+        50.0,
+        2500.0
+      ]
+    },
+    "values_set_to_nan": {
+      "area_total": 0,
+      "dormitorios": 0,
+      "banos": 1,
+      "antiguedad": 1,
+      "mantenimiento": 34
+    }
+  },
+  "imputation": {
+    "antiguedad": "mediana por grupo distrital (distrito_norm de Week 7; <20 anuncios = 'Otros'); fallback mediana global",
+    "mantenimiento": "mediana por grupo distrital; fallback mediana global",
+    "banos": "moda según dormitorios; fallback moda global (en inferencia banos es obligatorio)",
+    "district_to_group": {
+      "Magdalena": "Magdalena",
+      "Jesus Maria": "Jesus Maria",
+      "Surquillo": "Surquillo",
+      "Miraflores": "Miraflores",
+      "Surco": "Surco",
+      "Lima": "Lima",
+      "San Isidro": "San Isidro",
+      "Barranco": "Barranco",
+      "San Miguel": "San Miguel",
+      "Lince": "Lince",
+      "La Victoria": "La Victoria",
+      "Pueblo Libre": "Pueblo Libre",
+      "Lurín": "Otros",
+      "San Borja": "San Borja",
+      "Ate": "Ate",
+      "La Molina": "La Molina",
+      "Rímac": "Otros",
+      "Los Olivos": "Los Olivos",
+      "Breña": "Breña",
+      "Chorrillos": "Chorrillos",
+      "San Juan de Miraflores": "Otros",
+      "Punta Hermosa": "Otros",
+      "Callao": "Callao",
+      "Comas": "Comas",
+      "San Martín de Porres": "San Martín de Porres",
+      "Santa Anita": "Otros",
+      "San Juan de Lurigancho": "Otros",
+      "Carabayllo": "Otros",
+      "Magdalena Vieja": "Otros",
+      "El Agustino": "Otros",
+      "Villa María del Triunfo": "Otros",
+      "Villa El Salvador": "Otros",
+      "Puente Piedra": "Otros",
+      "Pachacámac": "Otros",
+      "San Luis": "Otros",
+      "Ancón": "Otros",
+      "La Perla": "Otros",
+      "Bellavista": "Otros",
+      "Independencia": "Otros",
+      "Ventanilla": "Otros"
+    },
+    "group_medians": {
+      "antiguedad": {
+        "Ate": 10.0,
+        "Barranco": 5.0,
+        "Breña": 3.0,
+        "Callao": 12.0,
+        "Chorrillos": 5.0,
+        "Comas": 5.0,
+        "Jesus Maria": 3.0,
+        "La Molina": 15.0,
+        "La Victoria": 2.0,
+        "Lima": 2.0,
+        "Lince": 4.0,
+        "Los Olivos": 6.0,
+        "Magdalena": 5.0,
+        "Miraflores": 8.0,
+        "Otros": 5.0,
+        "Pueblo Libre": 5.0,
+        "San Borja": 11.5,
+        "San Isidro": 5.0,
+        "San Martín de Porres": 8.5,
+        "San Miguel": 5.0,
+        "Surco": 10.0,
+        "Surquillo": 5.0
+      },
+      "mantenimiento": {
+        "Ate": 100.0,
+        "Barranco": 290.0,
+        "Breña": 250.0,
+        "Callao": 180.0,
+        "Chorrillos": 200.0,
+        "Comas": 122.5,
+        "Jesus Maria": 250.0,
+        "La Molina": 150.0,
+        "La Victoria": 245.0,
+        "Lima": 180.0,
+        "Lince": 280.0,
+        "Los Olivos": 65.0,
+        "Magdalena": 250.0,
+        "Miraflores": 400.0,
+        "Otros": 150.0,
+        "Pueblo Libre": 220.0,
+        "San Borja": 300.0,
+        "San Isidro": 350.0,
+        "San Martín de Porres": 135.0,
+        "San Miguel": 200.0,
+        "Surco": 300.0,
+        "Surquillo": 250.0
+      }
+    },
+    "global_medians": {
+      "antiguedad": 6.0,
+      "mantenimiento": 290.0
+    },
+    "banos_mode_by_dormitorios": {
+      "1": 1.0,
+      "2": 2.0,
+      "3": 2.0,
+      "4": 3.0,
+      "5": 4.0,
+      "6": 6.0,
+      "7": 6.0,
+      "8": 6.0
+    },
+    "banos_global_mode": 2.0
+  },
+  "scaling": {
+    "method": "StandardScaler ajustado en entrenamiento (incluye amenidades binarias, como en Week 7)",
+    "mean": {
+      "area_total": 88.836714,
+      "dormitorios": 2.138107,
+      "banos": 1.804668,
+      "antiguedad": 8.800831,
+      "mantenimiento": 325.665441,
+      "ascensor": 0.3539,
+      "balcon": 0.332801,
+      "terraza": 0.284207,
+      "piscina": 0.276215,
+      "gimnasio": 0.350384,
+      "deposito": 0.113491,
+      "vista_al_mar": 0.150256,
+      "parrilla": 0.392263,
+      "areas_verdes": 0.140985,
+      "seguridad_24_7": 0.455243,
+      "coworking": 0.217072,
+      "juegos_infantiles": 0.091432,
+      "pet_friendly": 0.139706
+    },
+    "scale": {
+      "area_total": 54.699304,
+      "dormitorios": 0.881817,
+      "banos": 0.76355,
+      "antiguedad": 9.636851,
+      "mantenimiento": 222.555412,
+      "ascensor": 0.478179,
+      "balcon": 0.471216,
+      "terraza": 0.451036,
+      "piscina": 0.447124,
+      "gimnasio": 0.47709,
+      "deposito": 0.317192,
+      "vista_al_mar": 0.357322,
+      "parrilla": 0.488255,
+      "areas_verdes": 0.348006,
+      "seguridad_24_7": 0.497993,
+      "coworking": 0.412252,
+      "juegos_infantiles": 0.288223,
+      "pet_friendly": 0.346682
+    }
+  },
+  "kmeans": {
+    "n_init": 10,
+    "algorithm": "lloyd",
+    "random_state": 42
+  },
+  "random_state": 42,
+  "k_evaluated": [
+    2,
+    3,
+    4,
+    5,
+    6
+  ],
+  "k_evaluation": [
+    {
+      "k": 2,
+      "silhouette": 0.1674,
+      "inertia": 48176.7,
+      "sizes": [
+        1180,
+        1948
+      ],
+      "pcts": [
+        37.72,
+        62.28
+      ],
+      "min_pct": 37.72,
+      "ari_seeds_min": 0.9949,
+      "ari_seeds_mean": 0.9977,
+      "ari_subsample_min": 0.9682,
+      "ari_subsample_mean": 0.9819
+    },
+    {
+      "k": 3,
+      "silhouette": 0.1676,
+      "inertia": 43117.9,
+      "sizes": [
+        468,
+        1526,
+        1134
+      ],
+      "pcts": [
+        14.96,
+        48.79,
+        36.25
+      ],
+      "min_pct": 14.96,
+      "ari_seeds_min": 1.0,
+      "ari_seeds_mean": 1.0,
+      "ari_subsample_min": 0.9882,
+      "ari_subsample_mean": 0.9913
+    },
+    {
+      "k": 4,
+      "silhouette": 0.1751,
+      "inertia": 40500.0,
+      "sizes": [
+        1502,
+        902,
+        273,
+        451
+      ],
+      "pcts": [
+        48.02,
+        28.84,
+        8.73,
+        14.42
+      ],
+      "min_pct": 8.73,
+      "ari_seeds_min": 0.9867,
+      "ari_seeds_mean": 0.9968,
+      "ari_subsample_min": 0.9805,
+      "ari_subsample_mean": 0.9864
+    },
+    {
+      "k": 5,
+      "silhouette": 0.1003,
+      "inertia": 38669.1,
+      "sizes": [
+        891,
+        305,
+        796,
+        270,
+        866
+      ],
+      "pcts": [
+        28.48,
+        9.75,
+        25.45,
+        8.63,
+        27.69
+      ],
+      "min_pct": 8.63,
+      "ari_seeds_min": 0.993,
+      "ari_seeds_mean": 0.9944,
+      "ari_subsample_min": 0.9195,
+      "ari_subsample_mean": 0.9686
+    },
+    {
+      "k": 6,
+      "silhouette": 0.1034,
+      "inertia": 37255.3,
+      "sizes": [
+        245,
+        264,
+        783,
+        748,
+        253,
+        835
+      ],
+      "pcts": [
+        7.83,
+        8.44,
+        25.03,
+        23.91,
+        8.09,
+        26.69
+      ],
+      "min_pct": 7.83,
+      "ari_seeds_min": 0.9527,
+      "ari_seeds_mean": 0.9693,
+      "ari_subsample_min": 0.7145,
+      "ari_subsample_mean": 0.8212
+    }
+  ],
+  "stability_method": "ARI frente a random_state=42 con semillas [0, 1, 7, 42, 123, 2024]; ARI de 10 submuestras del 80% (modelo ajustado en la submuestra y aplicado a todo el dataset)",
+  "k_selected": 3,
+  "silhouette": 0.1676,
+  "cluster_sizes": {
+    "0": 468,
+    "1": 1526,
+    "2": 1134
+  },
+  "cluster_pcts": {
+    "0": 14.96,
+    "1": 48.79,
+    "2": 36.25
+  },
+  "centroids_original_units": {
+    "0": {
+      "area_total": 185.821,
+      "dormitorios": 3.021,
+      "banos": 2.853,
+      "antiguedad": 12.496,
+      "mantenimiento": 665.788,
+      "ascensor": 0.594,
+      "balcon": 0.312,
+      "terraza": 0.575,
+      "piscina": 0.199,
+      "gimnasio": 0.224,
+      "deposito": 0.372,
+      "vista_al_mar": 0.308,
+      "parrilla": 0.259,
+      "areas_verdes": 0.179,
+      "seguridad_24_7": 0.573,
+      "coworking": 0.045,
+      "juegos_infantiles": 0.049,
+      "pet_friendly": 0.15
+    },
+    "1": {
+      "area_total": 78.433,
+      "dormitorios": 2.083,
+      "banos": 1.614,
+      "antiguedad": 11.542,
+      "mantenimiento": 258.224,
+      "ascensor": 0.295,
+      "balcon": 0.197,
+      "terraza": 0.131,
+      "piscina": 0.018,
+      "gimnasio": 0.036,
+      "deposito": 0.05,
+      "vista_al_mar": 0.096,
+      "parrilla": 0.085,
+      "areas_verdes": 0.093,
+      "seguridad_24_7": 0.347,
+      "coworking": 0.022,
+      "juegos_infantiles": 0.016,
+      "pet_friendly": 0.088
+    },
+    "2": {
+      "area_total": 62.811,
+      "dormitorios": 1.847,
+      "banos": 1.629,
+      "antiguedad": 3.587,
+      "mantenimiento": 276.052,
+      "ascensor": 0.334,
+      "balcon": 0.524,
+      "terraza": 0.37,
+      "piscina": 0.655,
+      "gimnasio": 0.825,
+      "deposito": 0.093,
+      "vista_al_mar": 0.159,
+      "parrilla": 0.861,
+      "areas_verdes": 0.19,
+      "seguridad_24_7": 0.552,
+      "coworking": 0.55,
+      "juegos_infantiles": 0.211,
+      "pet_friendly": 0.205
+    }
+  },
+  "cluster_profiles": {
+    "0": {
+      "n": 468,
+      "pct": 14.96,
+      "area_total": {
+        "mediana": 180.0,
+        "media": 185.82,
+        "p25": 134.75,
+        "p75": 220.0,
+        "n_observados": 468
+      },
+      "dormitorios": {
+        "mediana": 3.0,
+        "media": 3.02,
+        "p25": 3.0,
+        "p75": 3.0,
+        "n_observados": 468
+      },
+      "banos": {
+        "mediana": 3.0,
+        "media": 2.85,
+        "p25": 2.0,
+        "p75": 3.0,
+        "n_observados": 468
+      },
+      "antiguedad": {
+        "mediana": 10.0,
+        "media": 12.8,
+        "p25": 6.0,
+        "p75": 16.0,
+        "n_observados": 445
+      },
+      "mantenimiento": {
+        "mediana": 650.0,
+        "media": 710.13,
+        "p25": 475.0,
+        "p75": 900.0,
+        "n_observados": 416
+      },
+      "amenidades_pct": {
+        "ascensor": 59.4,
+        "balcon": 31.2,
+        "terraza": 57.5,
+        "piscina": 19.9,
+        "gimnasio": 22.4,
+        "deposito": 37.2,
+        "vista_al_mar": 30.8,
+        "parrilla": 25.9,
+        "areas_verdes": 17.9,
+        "seguridad_24_7": 57.3,
+        "coworking": 4.5,
+        "juegos_infantiles": 4.9,
+        "pet_friendly": 15.0
+      },
+      "distritos_principales_pct": {
+        "Miraflores": 41.0,
+        "San Isidro": 22.6,
+        "Surco": 17.1,
+        "San Borja": 5.1,
+        "Punta Hermosa": 2.6
+      }
+    },
+    "1": {
+      "n": 1526,
+      "pct": 48.79,
+      "area_total": {
+        "mediana": 75.0,
+        "media": 78.43,
+        "p25": 60.0,
+        "p75": 95.0,
+        "n_observados": 1526
+      },
+      "dormitorios": {
+        "mediana": 2.0,
+        "media": 2.08,
+        "p25": 1.0,
+        "p75": 3.0,
+        "n_observados": 1526
+      },
+      "banos": {
+        "mediana": 2.0,
+        "media": 1.61,
+        "p25": 1.0,
+        "p75": 2.0,
+        "n_observados": 1515
+      },
+      "antiguedad": {
+        "mediana": 10.0,
+        "media": 12.15,
+        "p25": 4.0,
+        "p75": 17.0,
+        "n_observados": 1357
+      },
+      "mantenimiento": {
+        "mediana": 250.0,
+        "media": 271.5,
+        "p25": 179.25,
+        "p75": 350.0,
+        "n_observados": 974
+      },
+      "amenidades_pct": {
+        "ascensor": 29.5,
+        "balcon": 19.7,
+        "terraza": 13.1,
+        "piscina": 1.8,
+        "gimnasio": 3.6,
+        "deposito": 5.0,
+        "vista_al_mar": 9.6,
+        "parrilla": 8.5,
+        "areas_verdes": 9.3,
+        "seguridad_24_7": 34.7,
+        "coworking": 2.2,
+        "juegos_infantiles": 1.6,
+        "pet_friendly": 8.8
+      },
+      "distritos_principales_pct": {
+        "Miraflores": 20.6,
+        "Surco": 10.6,
+        "San Miguel": 7.4,
+        "San Isidro": 6.9,
+        "Barranco": 5.0
+      }
+    },
+    "2": {
+      "n": 1134,
+      "pct": 36.25,
+      "area_total": {
+        "mediana": 60.0,
+        "media": 62.81,
+        "p25": 45.0,
+        "p75": 72.0,
+        "n_observados": 1134
+      },
+      "dormitorios": {
+        "mediana": 2.0,
+        "media": 1.85,
+        "p25": 1.0,
+        "p75": 2.0,
+        "n_observados": 1134
+      },
+      "banos": {
+        "mediana": 2.0,
+        "media": 1.63,
+        "p25": 1.0,
+        "p75": 2.0,
+        "n_observados": 1127
+      },
+      "antiguedad": {
+        "mediana": 2.0,
+        "media": 3.36,
+        "p25": 0.0,
+        "p75": 5.0,
+        "n_observados": 1019
+      },
+      "mantenimiento": {
+        "mediana": 250.0,
+        "media": 277.06,
+        "p25": 200.0,
+        "p75": 345.0,
+        "n_observados": 933
+      },
+      "amenidades_pct": {
+        "ascensor": 33.4,
+        "balcon": 52.4,
+        "terraza": 37.0,
+        "piscina": 65.5,
+        "gimnasio": 82.5,
+        "deposito": 9.3,
+        "vista_al_mar": 15.9,
+        "parrilla": 86.1,
+        "areas_verdes": 19.0,
+        "seguridad_24_7": 55.2,
+        "coworking": 55.0,
+        "juegos_infantiles": 21.1,
+        "pet_friendly": 20.5
+      },
+      "distritos_principales_pct": {
+        "Miraflores": 18.3,
+        "San Isidro": 16.6,
+        "Barranco": 10.9,
+        "Jesus Maria": 9.1,
+        "San Miguel": 7.7
+      }
+    }
+  },
+  "versions": {
+    "python": "3.13.2",
+    "numpy": "2.2.6",
+    "pandas": "2.3.3",
+    "scipy": "1.15.3",
+    "scikit-learn": "1.7.2",
+    "joblib": "1.6.0"
+  }
+}

@@ -1,6 +1,11 @@
-Flask>=2.0
-pandas>=2.2
-# Agregar al incorporar los modelos:
-# scikit-learn>=1.5,<1.8
-# joblib
-# numpy>=1.26,<2.3
+# Prototipo descriptivo Week 10 (RF1 perfil competitivo + comparables, RF2 accesibilidad ATU).
+# Versiones fijadas: models/clustering_pipeline.joblib se serializó con exactamente estas
+# versiones (Python 3.13.2). Cargarlo con otra versión de scikit-learn no está garantizado.
+numpy==2.2.6
+pandas==2.3.3
+scipy==1.15.3
+scikit-learn==1.7.2
+joblib==1.6.0
+Flask==3.1.3
+# Tests
+pytest==8.4.2
