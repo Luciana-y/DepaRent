@@ -19,6 +19,12 @@ from src.input_validation import AMENITIES
 
 STRATEGY_DISTRICT = "mismo_cluster_mismo_distrito"
 STRATEGY_EXPANDED = "mismo_cluster_ampliado_a_otros_distritos"
+SOURCE_LABELS = {"adondevivir": "Adondevivir", "urbania": "Urbania"}
+
+
+def source_label(fuente):
+    """Nombre del portal de origen para mostrar (valor de la columna `fuente`)."""
+    return SOURCE_LABELS.get(str(fuente).lower(), str(fuente).title())
 
 
 def _clean(value):
@@ -45,13 +51,24 @@ class ComparablesIndex:
         self.ids = df["id_anuncio"].to_numpy()
         self.districts = df["distrito"].to_numpy()
         self.records = df.reset_index(drop=True)
+        self.dataset_info = {
+            "properties_reference_count": int(len(self.records)),
+            "source_type": "anuncios inmobiliarios",
+            "sources": sorted({source_label(f) for f in self.records["fuente"].dropna()}),
+            "listings_by_source": {source_label(k): int(v) for k, v in self.records["fuente"].value_counts().items()},
+            "capture_dates": sorted({str(f)[:10] for f in self.records["fecha_scraping"].dropna()}),
+            "file": self.model.metadata["source"]["path"],
+            "sha256": self.model.metadata["source"]["sha256"],
+            "price_type": "precio publicado de oferta (no precio de transacción)",
+        }
 
     def _item(self, i, distance, same_district):
         r = self.records.iloc[i]
         return {
             "id_anuncio": int(r["id_anuncio"]),
-            "fuente": r["fuente"],
+            "fuente": source_label(r["fuente"]),
             "url": r["url"],
+            "fecha_scraping": r["fecha_scraping"],
             "distrito": r["distrito"],
             "area_total": _clean(r["area_total"]),
             "dormitorios": None if np.isnan(r["dormitorios"]) else int(r["dormitorios"]),

@@ -11,11 +11,14 @@ El prototipo está orientado exclusivamente al **propietario del inmueble**: la 
 | Funcionalidad | Estado | Ubicación |
 |---|---|---|
 | Formulario del propietario (distrito, área, dormitorios, baños, antigüedad, mantenimiento, 13 amenidades, coordenadas) | Implementado | `code/templates/index.html`, `code/static/` |
+| Casos reales del dataset (uno por cluster, sin resultados precalculados) | Implementado | `code/src/examples.py`, `GET /api/example-properties` |
+| Posición del inmueble frente a su segmento | Implementado | `code/src/descriptive_service.py` |
+| Resumen descriptivo de precios publicados de los comparables | Implementado | `code/src/descriptive_service.py` |
 | Validación de entrada (frontend + backend) | Implementado | `code/src/input_validation.py` |
 | RF1 Perfil competitivo | Implementado | `code/src/clustering.py`, `models/` |
 | RF1 Propiedades comparables | Implementado | `code/src/comparables.py` |
 | RF2 Perfil de accesibilidad ATU | Implementado | `code/src/accessibility.py` |
-| API Flask (`/`, `/health`, `/analyze`) | Implementado | `code/app.py` |
+| API Flask (`/`, `/health`, `/api/example-properties`, `/analyze`) | Implementado | `code/app.py` |
 | Despliegue público | Pendiente | `deployed_url.txt` |
 
 ### RF1 Perfil competitivo
@@ -54,7 +57,14 @@ El modelo, el dataset de referencia de comparables y el índice ATU se cargan un
 | `deliveries/week07/data/departamentos_procesados.csv` | Entrenamiento del clustering y universo de comparables (anuncios con coordenadas validadas en Lima/Callao) | 3,128 |
 | `deliveries/week07/data/paraderos_procesado.csv` | Índice de accesibilidad ATU (corte 2021-05-24) | 3,233 |
 
-Ambos son salidas verificadas del notebook canónico `deliveries/week07/code/EDA_week07.ipynb`: regenerarlo produce archivos idénticos. El SHA-256 del dataset de departamentos queda registrado en `models/clustering_metadata.json` y se verifica al cargar el modelo.
+**Procedencia.** La base inmobiliaria proviene de **scraping** de los portales Adondevivir y Urbania: 3,822 anuncios originales (3,113 y 709) con 43 atributos (`deliveries/week04/acquisition.md`), capturados el 2026-09-14 según la columna `fecha_scraping`. El procesamiento de Week 7 (filtros de coordenadas, precio, área y doble modalidad venta/alquiler) deja **3,128 anuncios**: 2,657 de Adondevivir y 471 de Urbania.
+- Sobre esos anuncios se construyen los perfiles.
+- Los comparables y los casos de demostración son filas reales de ese archivo.
+- Los precios son **precios publicados de oferta (asking prices)**, no precios de transacción.
+- Para cada comparable se conservan en el backend el portal, el `id_anuncio` original, la URL y `fecha_scraping`. No se consultan los portales en tiempo real.
+- El inventario ATU es una fuente externa georreferenciada.
+
+Ambos archivos son salidas verificadas del notebook canónico `deliveries/week07/code/EDA_week07.ipynb`: regenerarlo produce archivos idénticos. El SHA-256 del dataset de departamentos queda registrado en `models/clustering_metadata.json` y se verifica al cargar el modelo.
 
 No se usó `departamentos_sin_geo_para_clustering.csv`, la base del K-Means de Week 7, porque incluye 135 anuncios de otras ciudades y 308 sin coordenadas.
 
@@ -96,6 +106,13 @@ No se usó `departamentos_sin_geo_para_clustering.csv`, la base del K-Means de W
 | 1 | Tamaño medio con pocas amenidades | 1,526 (48.8%) | 75 m² | 2 | 2 | 10 | S/ 250 | menor prevalencia en las 13 amenidades |
 | 2 | Compacto y reciente con amenidades de condominio | 1,134 (36.3%) | 60 m² | 2 | 2 | 2 | S/ 250 | parrilla 86.1%, gimnasio 82.5%, piscina 65.5% |
 
+**Estadísticas del segmento y posición del inmueble.** Las estadísticas de cada perfil se calculan sobre los 3,128 anuncios durante el entrenamiento y se guardan en `models/clustering_metadata.json`:
+- n y %;
+- mediana, media y p25/p75 de área, dormitorios, baños, antigüedad y mantenimiento (valores observados);
+- prevalencia de cada amenidad.
+
+No hay estadísticas fijas en el frontend. La respuesta incluye `segment_comparison`, que pone el valor de cada variable del inmueble junto a la mediana y el rango intercuartílico del segmento, e indica la prevalencia de cada amenidad. Es una comparación solo descriptiva, sin puntajes ni calificaciones.
+
 **Limitaciones.** La segmentación es débil y las amenidades provienen de palabras clave. Además, la imputación distrital de antigüedad y mantenimiento influye en la asignación de cluster.
 
 ## 6. Propiedades comparables
@@ -104,6 +121,7 @@ No se usó `departamentos_sin_geo_para_clustering.csv`, la base del K-Means de W
 - **Prioridad distrital:** si existen al menos 5 candidatos del mismo cluster en el mismo distrito, los comparables se eligen solo entre ellos.
 - **Fallback:** si no, se incluyen todos los del mismo distrito y se completa con los más cercanos del mismo cluster en otros distritos. La interfaz los marca como "otro distrito" y explica el criterio.
 - **Exclusión del precio:** el precio no interviene en la similitud. Un test baraja los precios del dataset y verifica que los comparables no cambian. En la interfaz el precio aparece como "Precio publicado", solo como referencia descriptiva.
+- **Resumen descriptivo de precios:** mediana, mínimo y máximo del precio publicado, y mediana del precio publicado por m², calculados solo sobre los 5 comparables devueltos. Estas estadísticas resumen únicamente los precios publicados de los anuncios comparables recuperados y no constituyen una estimación del precio del inmueble analizado. No se calcula ningún precio sugerido.
 - **Limitación:** la similitud utiliza actualmente 18 dimensiones, de las cuales 13 corresponden a amenidades binarias. Por ello, las amenidades pueden tener un peso importante en la selección de comparables. La ponderación de características será objeto de evaluación posterior.
 
 ## 7. Accesibilidad ATU
@@ -116,21 +134,29 @@ No se usó `departamentos_sin_geo_para_clustering.csv`, la base del K-Means de W
 
 ## 8. Flujo del prototipo
 
-1. El propietario completa el formulario. El distrito se elige de un selector generado desde el modelo (40 distritos) y las coordenadas se ingresan a mano, de forma temporal.
-2. Pulsa **Analizar inmueble**. El navegador hace una validación HTML básica y envía JSON a `POST /analyze`.
-3. El backend valida todo de nuevo y llama a `analyze_descriptive()`.
+1. El propietario elige una de dos formas de análisis:
+   - **Ingreso manual:** completa el formulario. El distrito se elige de un selector generado desde el modelo (40 distritos) y las coordenadas se ingresan a mano, de forma temporal.
+   - **Caso real del dataset:** carga uno de los tres anuncios reales que devuelve `GET /api/example-properties`. El formulario se rellena con los valores del CSV, incluidas sus coordenadas reales, y un indicador muestra el `id_anuncio`, el portal y la fecha de captura. Si se edita cualquier campo, pasa a ingreso manual.
+2. Pulsa **Analizar inmueble**. El navegador hace una validación HTML básica y envía JSON a `POST /analyze`. Si se cargó un caso real, el JSON incluye `id_anuncio_origen`.
+3. El backend valida todo de nuevo y llama a `analyze_descriptive()`. En un caso real verifica que los valores coincidan con la fila del CSV y excluye el anuncio de sus propios comparables. No hay resultados precalculados: el flujo completo se ejecuta en cada análisis.
 4. La interfaz muestra:
-   1. el perfil competitivo, con estadísticas del segmento;
-   2. la tabla **Comparables de mercado**: 5 anuncios históricos similares, con "No disponible" en los datos faltantes y el precio rotulado como "Precio publicado". Los enlaces a los anuncios no se muestran porque la publicación original puede haber finalizado después de la captura; la URL se conserva en la respuesta JSON solo por trazabilidad y RF1 no depende de que siga activa;
-   3. los indicadores ATU;
-   4. las notas sobre valores imputados o comparables de otros distritos.
+   1. **Perfil competitivo:** nombre, descripción, tamaño del segmento, sus estadísticas y la comparación del inmueble frente a la mediana y el rango intercuartílico del segmento;
+   2. **Comparables de mercado:** tabla de 5 anuncios reales con distrito, área, dormitorios, baños, antigüedad, mantenimiento, amenidades, precio publicado, precio publicado por m², distancia de similitud y portal de origen ("No disponible" en los datos faltantes). Debajo, el resumen de sus precios publicados y las notas metodológicas. Los enlaces a los anuncios no se muestran porque la publicación original puede haber finalizado después de la captura; la URL se conserva en la respuesta JSON solo por trazabilidad y RF1 no depende de que siga activa;
+   3. **Perfil de accesibilidad:** indicadores ATU;
+   4. las notas sobre valores imputados o comparables de otros distritos, y la procedencia de los datos.
 5. Si la entrada es inválida, se muestran los errores devueltos por el backend.
 
-Los ejemplos A, B y C de la interfaz (uno por cluster) rellenan solo el formulario, con valores derivados de anuncios reales. No contienen resultados precargados.
+**Casos reales seleccionados** (regla determinista de `src/examples.py`: por cada cluster, el anuncio con baños, antigüedad y mantenimiento informados más cercano al centroide; los empates se resuelven por el menor `id_anuncio`):
+
+| Caso | id_anuncio | Portal | Distrito | Área | Cluster asignado al analizarlo |
+|---|---|---|---|---|---|
+| 1 | 150419968 | Adondevivir | Miraflores | 170 m² | 0 |
+| 2 | 151083944 | Adondevivir | Lince | 72 m² | 1 |
+| 3 | 150693755 | Adondevivir | Magdalena | 63 m² | 2 |
 
 ## 9. Pruebas
 
-**66 tests con pytest, todos aprobados** (`code/tests/`):
+**84 tests con pytest, todos aprobados** (`code/tests/`):
 
 | Archivo | Tests | Qué valida |
 |---|---|---|
@@ -138,7 +164,8 @@ Los ejemplos A, B y C de la interfaz (uno por cluster) rellenan solo el formular
 | `test_comparables.py` | 10 | 5 resultados; exclusión de la propia propiedad; mismo cluster; prioridad distrital; fallback; distancias finitas y ordenadas; que cambiar los precios no cambia los comparables |
 | `test_accessibility.py` | 10 | Indicadores esperados; índice construido una vez; paridad exacta con Week 7; coordenadas inválidas |
 | `test_descriptive_service.py` | 7 | Respuesta JSON-serializable; advertencias de imputación; casos reales; errores agregados de RF1 y RF2 |
-| `test_app.py` | 21 | GET `/`, `/health` y estáticos; POST `/analyze` válido (un caso por cluster); HTTP 400 ante datos, distrito o coordenadas inválidos; HTTP 500 genérico sin stack trace; ausencia de campos predictivos; precios solo como dato observado; Estimator antiguo eliminado; debug no fijado en el código |
+| `test_app.py` | 21 | GET `/`, `/health` y estáticos; POST `/analyze` válido (un caso por cluster); HTTP 400 ante datos, distrito o coordenadas inválidos; HTTP 500 genérico sin stack trace; ausencia de campos predictivos; precios solo como dato observado o resumen descriptivo; Estimator antiguo eliminado; debug no fijado en el código |
+| `test_real_cases.py` | 18 | Los casos reales existen en el CSV canónico, sus valores provienen de él y no están en el frontend; la selección es determinista; un caso por cluster ejecuta el flujo completo; los comparables son filas reales; las estadísticas de los perfiles se reproducen desde el dataset; la comparación con el segmento es coherente; el resumen de precios coincide con los 5 comparables; ningún campo es predictivo; RF2 usa las coordenadas reales del caso; `meta` reporta 3,128 anuncios; el origen inconsistente o inexistente se rechaza; `GET /api/example-properties` funciona |
 
 ## 10. Limitaciones conocidas
 

@@ -115,3 +115,33 @@ td.num, th.num { text-align: right; }
 .metrics dd { margin: 2px 0 0; font-size: 1.1rem; font-weight: 600; }
 
 .footer { font-size: 0.82rem; padding-bottom: 28px; }
+
+.cases { background: #f7f9fb; border: 1px solid var(--border); border-radius: 6px; padding: 12px 14px; margin-bottom: 12px; }
+.cases-title { margin: 0 0 2px; font-size: 1rem; }
+.cases .muted { margin: 0 0 8px; font-size: 0.88rem; }
+.case-buttons { display: flex; flex-wrap: wrap; gap: 8px; }
+.case-btn {
+  font: inherit;
+  font-size: 0.9rem;
+  background: #fff;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  border-radius: 6px;
+  padding: 5px 12px;
+  cursor: pointer;
+}
+.case-btn:hover { background: var(--info-bg); }
+.source-badge {
+  display: inline-block;
+  margin: 0 0 12px;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  background: #eceff3;
+  color: var(--muted);
+}
+.source-badge.real { background: var(--info-bg); color: var(--info-text); }
+h4 { margin: 18px 0 8px; font-size: 1rem; }
+table.compact td, table.compact th { white-space: normal; }
+td.wrap { white-space: normal; min-width: 180px; }
+.summary { margin-top: 16px; }

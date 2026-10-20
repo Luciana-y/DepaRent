@@ -17,15 +17,15 @@
 
     <main class="wrap">
       <section class="card">
-        <div class="card-head">
-          <h2>Datos del inmueble</h2>
-          <div class="examples">
-            <span class="muted">Cargar ejemplo:</span>
-            <button type="button" class="link-btn" data-example="A">A</button>
-            <button type="button" class="link-btn" data-example="B">B</button>
-            <button type="button" class="link-btn" data-example="C">C</button>
-          </div>
+        <h2>Datos del inmueble</h2>
+
+        <div class="cases">
+          <h3 class="cases-title">Casos reales del dataset</h3>
+          <p class="muted">Propiedades observadas en los anuncios inmobiliarios utilizados para construir el prototipo.</p>
+          <div id="example-cases" class="case-buttons"><span class="muted">Cargando casos…</span></div>
         </div>
+
+        <p id="input-source" class="source-badge">Ingreso manual</p>
 
         <form id="property-form" novalidate>
           <div class="grid">
@@ -92,9 +92,20 @@
 
         <article class="card">
           <h3>1. Perfil competitivo</h3>
+          <p class="section-lead">Este perfil representa un agrupamiento descriptivo de propiedades con características
+            similares observadas en los anuncios disponibles.</p>
           <div id="profile"></div>
-          <p class="note">Los perfiles representan agrupaciones descriptivas obtenidas a partir de características
-            observadas en los anuncios disponibles.</p>
+          <h4>Tu inmueble frente a su segmento</h4>
+          <div class="table-wrap">
+            <table class="compact">
+              <thead><tr><th>Característica</th><th class="num">Tu inmueble</th><th class="num">Mediana del segmento</th>
+                <th class="num">Rango intercuartílico del segmento</th></tr></thead>
+              <tbody id="segment-body"></tbody>
+            </table>
+          </div>
+          <p id="segment-amenities" class="muted"></p>
+          <p class="note">El análisis competitivo utiliza anuncios inmobiliarios recopilados de Adondevivir y Urbania y
+            procesados para el proyecto DepaRent.<span id="dataset-detail"></span></p>
         </article>
 
         <article class="card">
@@ -105,16 +116,27 @@
             <table>
               <thead>
                 <tr>
-                  <th>Distrito</th><th>Área (m²)</th><th>Dormitorios</th><th>Baños</th>
-                  <th>Antigüedad (años)</th><th>Mantenimiento (S/)</th><th>Precio publicado (S/)</th>
-                  <th>Distancia de similitud</th>
+                  <th>Distrito</th><th class="num">Área (m²)</th><th class="num">Dorm.</th><th class="num">Baños</th>
+                  <th class="num">Antigüedad (años)</th><th class="num">Mantenimiento (S/)</th><th>Amenidades</th>
+                  <th class="num">Precio publicado (S/)</th><th class="num">Precio publicado por m² (S/)</th>
+                  <th class="num">Distancia de similitud</th><th>Fuente</th>
                 </tr>
               </thead>
               <tbody id="comparables-body"></tbody>
             </table>
           </div>
+
+          <div class="summary">
+            <h4>Resumen de los comparables</h4>
+            <dl id="comparables-summary" class="metrics"></dl>
+            <p class="note">Estas estadísticas resumen únicamente los precios publicados de los anuncios comparables
+              recuperados y no constituyen una estimación del precio del inmueble analizado.</p>
+          </div>
+
           <p class="note">El precio no interviene en el cálculo de similitud y se muestra únicamente como referencia
             descriptiva del mercado.</p>
+          <p class="note">Los precios mostrados corresponden a precios publicados de oferta y no necesariamente a precios
+            finales de transacción.</p>
           <p class="note">Los comparables corresponden a anuncios observados en la fecha de captura del dataset.
             La publicación original puede haber finalizado posteriormente.</p>
         </article>
@@ -122,8 +144,8 @@
         <article class="card">
           <h3>3. Perfil de accesibilidad</h3>
           <dl id="accessibility" class="metrics"></dl>
-          <p class="note" id="accessibility-note">Indicadores calculados a partir del inventario georreferenciado ATU
-            utilizado en el proyecto.</p>
+          <p class="note">Los indicadores de transporte utilizan el inventario georreferenciado de la ATU disponible en
+            el proyecto.<span id="accessibility-detail"></span></p>
         </article>
       </section>
     </main>

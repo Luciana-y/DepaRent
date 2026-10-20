@@ -8,24 +8,15 @@ CODE_DIR = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(CODE_DIR))
 
 from src.clustering import FEATURES, get_model, load_training_frame  # noqa: E402
-from src.input_validation import AMENITIES  # noqa: E402
+from src import examples  # noqa: E402
 
 
 def row_to_property(row, with_location=True):
     """Fila real del dataset -> diccionario de entrada del contrato (sin precio)."""
-    prop = {
-        "distrito": row["distrito"],
-        "area_total": float(row["area_total"]),
-        "dormitorios": int(row["dormitorios"]),
-        "banos": int(row["banos"]),
-        "amenidades": [a for a in AMENITIES if row[a] == 1],
-    }
-    for col in ("antiguedad", "mantenimiento"):
-        if not np.isnan(row[col]):
-            prop[col] = float(row[col])
-    if with_location:
-        prop["latitud"] = float(row["latitud"])
-        prop["longitud"] = float(row["longitud"])
+    prop = examples.row_to_property(row)
+    if not with_location:
+        prop.pop("latitud")
+        prop.pop("longitud")
     return prop
 
 

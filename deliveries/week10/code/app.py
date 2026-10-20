@@ -10,7 +10,7 @@ import os
 
 from flask import Flask, jsonify, render_template, request
 
-from src import accessibility, comparables
+from src import accessibility, comparables, examples
 from src.descriptive_service import analyze_descriptive
 from src.input_validation import AMENITIES, LIMA_BBOX, RANGES, InputValidationError
 
@@ -32,6 +32,7 @@ def create_app():
     # Carga única de modelo, dataset de referencia e índice ATU (falla al iniciar si falta un artefacto).
     comp_index = comparables.get_index()
     accessibility.get_index()
+    examples.get_example_properties()
     districts = comp_index.model.known_districts
 
     @app.get("/")
@@ -47,6 +48,14 @@ def create_app():
     @app.get("/health")
     def health():
         return jsonify({"status": "ok"})
+
+    @app.get("/api/example-properties")
+    def example_properties():
+        return jsonify({
+            "selection_criterion": examples.SELECTION_CRITERION,
+            "dataset": comp_index.dataset_info["file"],
+            "cases": examples.get_example_properties(),
+        })
 
     @app.post("/analyze")
     def analyze():

@@ -10,10 +10,19 @@ Demostrar un flujo web funcional y reproducible en el que un propietario ingresa
 
 | Requerimiento | Funcionalidad | Implementación |
 |---|---|---|
-| RF1 | Perfil competitivo | K-Means (k=3) sobre 18 características sin precio (`code/src/clustering.py`) |
-| RF1 | Propiedades comparables (en la interfaz: "Comparables de mercado") | 5 anuncios históricos más similares del mismo perfil, con prioridad al mismo distrito (`code/src/comparables.py`); sin enlaces externos en la interfaz |
+| RF1 | Perfil competitivo | K-Means (k=3) sobre 18 características sin precio (`code/src/clustering.py`), con estadísticas reales del segmento y comparación del inmueble frente a su segmento |
+| RF1 | Propiedades comparables (en la interfaz: "Comparables de mercado") | 5 anuncios reales más similares del mismo perfil, con prioridad al mismo distrito, más un resumen descriptivo de sus precios publicados (`code/src/comparables.py`); sin enlaces externos en la interfaz |
 | RF2 | Perfil de accesibilidad | Indicadores ATU con `cKDTree` (`code/src/accessibility.py`) |
+| — | Dos formas de análisis | Ingreso manual de una propiedad nueva, o carga de un **caso real del dataset** (`GET /api/example-properties`, `code/src/examples.py`) |
 | — | Interfaz web | Flask + HTML/CSS/JS locales (`code/app.py`, `code/templates/`, `code/static/`) |
+
+### Procedencia de los datos
+
+- **Base inmobiliaria:** anuncios de departamentos en alquiler obtenidos por scraping de Adondevivir y Urbania. Fueron 3,822 anuncios originales (`deliveries/week04/`), capturados el 2026-09-14 según la columna `fecha_scraping`. Tras el procesamiento de Week 7 quedan **3,128 anuncios** (`deliveries/week07/data/departamentos_procesados.csv`).
+- **Uso en el prototipo:** los perfiles se construyen sobre esos 3,128 anuncios, y los comparables y los casos de demostración son observaciones reales de ese archivo.
+- **Precios:** son precios publicados de oferta (asking prices), no precios finales de transacción.
+- **Accesibilidad:** proviene de una fuente externa georreferenciada, el inventario de 3,233 paraderos de la ATU (corte 2021-05-24).
+- **Alcance:** ninguna funcionalidad predictiva o prescriptiva forma parte de Week 10.
 
 ## 3. Fuera del alcance de Week 10
 
@@ -32,7 +41,7 @@ deliveries/week10/
 │   ├── app.py                   # Flask: GET /, GET /health, POST /analyze
 │   ├── config.py                # rutas (independientes del directorio de ejecución)
 │   ├── requirements.txt         # dependencias con versiones fijadas
-│   ├── src/                     # input_validation, clustering, comparables, accessibility, descriptive_service
+│   ├── src/                     # input_validation, clustering, comparables, accessibility, examples, descriptive_service
 │   ├── scripts/train_clustering.py
 │   ├── templates/index.html
 │   ├── static/css/styles.css, static/js/app.js
@@ -68,7 +77,7 @@ python deliveries/week10/code/app.py
 
 Abrir **http://127.0.0.1:5000**. Para verificar que la aplicación está activa: http://127.0.0.1:5000/health → `{"status": "ok"}`.
 
-Los botones **Cargar ejemplo A / B / C** rellenan el formulario con un caso de cada perfil (cluster 0, 1 y 2). Los valores derivan de anuncios reales con pequeñas modificaciones, así que el anuncio original suele aparecer entre sus comparables. Solo rellenan la entrada; los resultados siempre se calculan en el backend.
+La sección **Casos reales del dataset** carga desde `GET /api/example-properties` tres anuncios reales de `departamentos_procesados.csv`, uno por cluster. Se eligen con una regla determinista: el anuncio con datos completos más cercano al centroide. Solo rellenan el formulario con los valores del CSV, incluidas sus coordenadas reales. Al pulsar **Analizar inmueble**, el backend ejecuta el flujo completo, verifica que los valores coincidan con el anuncio de origen y lo excluye de sus propios comparables. Si se edita cualquier campo, el análisis pasa a ser un ingreso manual.
 
 El modo debug de Flask está desactivado por defecto. Para desarrollo: `DEPARENT_DEBUG=1 python deliveries/week10/code/app.py` (PowerShell: `$env:DEPARENT_DEBUG="1"`).
 
@@ -92,11 +101,19 @@ Formulario → `POST /analyze` (JSON) → `analyze_descriptive()`:
 
 1. validación de la entrada (si hay errores responde HTTP 400 con `{"error": "validation_error", "details": [...]}`);
 2. normalización del distrito e imputación con parámetros de entrenamiento;
-3. perfil competitivo;
-4. 5 comparables;
+3. perfil competitivo y posición del inmueble frente a su segmento;
+4. 5 comparables y resumen de sus precios publicados;
 5. accesibilidad ATU.
 
+La respuesta incluye además `input_source` (manual o caso real, con su `id_anuncio`) y `meta`: alcance "descriptive", número de anuncios de referencia, portales y fecha de captura.
+
 La interfaz muestra los tres bloques y las advertencias de imputación o de fallback de comparables.
+
+Endpoints:
+- `GET /` interfaz;
+- `GET /health`;
+- `GET /api/example-properties` casos reales;
+- `POST /analyze` análisis.
 
 ## 12. Limitaciones conocidas
 

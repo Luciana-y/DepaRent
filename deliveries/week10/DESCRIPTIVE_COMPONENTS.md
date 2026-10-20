@@ -5,6 +5,17 @@ Alcance de Week 10: solo funcionalidades descriptivas. **No hay predicción de p
 Fuente canónica: `deliveries/week07/code/EDA_week07.ipynb` y `deliveries/week07/data/`.
 Código: `code/src/`. Entrenamiento: `code/scripts/train_clustering.py`. Artefactos: `models/`.
 
+## Procedencia de los datos
+
+| Fuente | Qué es | Uso en Week 10 |
+|---|---|---|
+| Anuncios inmobiliarios (scraping) | 3,822 anuncios originales de departamentos en alquiler recopilados de **Adondevivir** (3,113) y **Urbania** (709), 43 atributos (`deliveries/week04/acquisition.md`, `data_quality.md`). Captura del 2026-09-14 (columna `fecha_scraping`, UTC-5). | Tras el procesamiento de Week 7 (filtros de coordenadas, precio, área y doble modalidad venta/alquiler) quedan **3,128 anuncios** en `deliveries/week07/data/departamentos_procesados.csv` (Adondevivir 2,657 y Urbania 471). Sobre ellos se construyen los perfiles, y los comparables son filas reales de este archivo. |
+| ATU | Inventario georreferenciado de 3,233 paraderos de transporte público, fuente externa (`timestamp_oficial` 2021-05-24). | Indicadores de accesibilidad (RF2). |
+
+- Los precios mostrados son **precios publicados de oferta (asking prices)**, no precios finales de transacción.
+- Para cada comparable se conservan en el backend el portal (`fuente`), el identificador original (`id_anuncio`), la URL y `fecha_scraping`. La interfaz muestra solo el portal. No se consultan los portales en tiempo real ni se verifica si los anuncios siguen activos.
+- **Ninguna funcionalidad predictiva o prescriptiva forma parte de Week 10.**
+
 ## Uso
 
 ```python
@@ -41,6 +52,7 @@ cd deliveries/week10/code && python -m pytest tests
 | `antiguedad` | número | no | 0–100 años |
 | `mantenimiento` | número | no | S/ 50–2,500 por mes |
 | `latitud`, `longitud` | número | sí (RF2) | Lima/Callao: lat [-12.35, -11.75], lon [-77.20, -76.80] |
+| `id_anuncio_origen` | entero | no | solo para **casos reales del dataset**: identificador del anuncio cargado. Los demás valores deben coincidir con su fila del CSV (si no, error) y el anuncio se excluye de sus propios comparables |
 
 Una entrada inválida levanta `InputValidationError`, cuyo atributo `.errors` reúne todos los problemas, incluidos los de RF1 y RF2. Nunca se sustituye un valor inválido en silencio.
 
@@ -109,6 +121,10 @@ Una entrada inválida levanta `InputValidationError`, cuyo atributo `.errors` re
 
 Como comprobación posterior (el precio no se usó en el entrenamiento), la mediana del precio publicado es S/ 6,100, S/ 2,400 y S/ 2,600, respectivamente.
 
+**Estadísticas del segmento.** Se generan en `scripts/train_clustering.py` (`build_cluster_profiles`) a partir de los 3,128 anuncios y se guardan en `models/clustering_metadata.json`: n, %, mediana, media y p25/p75 de cada variable numérica (valores observados, sin imputar), prevalencia de cada amenidad y distritos principales. El frontend no contiene estadísticas fijas. `tests/test_real_cases.py` las recalcula desde el dataset.
+
+**Posición frente al segmento.** `segment_comparison` compara cada variable numérica del inmueble con la mediana y el rango intercuartílico de su segmento, e indica para cada amenidad su prevalencia en el segmento. Es solo una comparación descriptiva: sin puntajes ni calificaciones.
+
 ## RF1 — Propiedades comparables
 
 - **Espacio:** el mismo vector estandarizado de 18 variables del clustering; distancia euclidiana. No se usan precio, identificadores, URL ni texto.
@@ -118,7 +134,14 @@ Como comprobación posterior (el precio no se usó en el entrenamiento), la medi
   3. si no, se toman todos los del mismo distrito y se completa con los más cercanos del mismo cluster en otros distritos (`mismo_cluster_ampliado_a_otros_distritos`); cada resultado lleva `mismo_distrito`;
   4. dentro de cada grupo se ordena por distancia, con desempate por `id_anuncio`.
 - **N = 5** por defecto. `exclude_ids` permite excluir la propia propiedad cuando proviene del dataset.
-- **Salida:** distrito, área, dormitorios, baños, antigüedad, mantenimiento (los valores observados; `null` si el anuncio no los informa), amenidades, `precio_soles_observado`, `precio_m2_real_observado`, `distancia_similitud`, `id_anuncio`, `fuente` y `url`. El precio es solo informativo.
+- **Salida:** distrito, área, dormitorios, baños, antigüedad, mantenimiento (los valores observados; `null` si el anuncio no los informa), amenidades, `precio_soles_observado`, `precio_m2_real_observado`, `distancia_similitud`, `id_anuncio`, `fuente`, `url` y `fecha_scraping`. El precio es solo informativo.
+- **Resumen de los comparables** (`comparables_summary`): mediana, mínimo y máximo del precio publicado, y mediana del precio publicado por m², calculados solo sobre los comparables devueltos. Estas estadísticas resumen únicamente los precios publicados de los anuncios comparables recuperados y no constituyen una estimación del precio del inmueble analizado. No existe "precio sugerido".
+
+## Casos reales del dataset
+
+`GET /api/example-properties` devuelve 3 anuncios reales de `departamentos_procesados.csv`, uno por cluster. Para cada uno entrega solo las características del formulario, más `id_anuncio`, `fuente` y `fecha_scraping`.
+- **Regla determinista** (`src/examples.py`): por cada cluster, el anuncio más cercano al centroide en el espacio estandarizado, entre los que tienen baños, antigüedad y mantenimiento informados. Los empates se resuelven por el menor `id_anuncio`.
+- **Sin resultados precalculados:** al analizar, el backend ejecuta el flujo completo. El caso usa sus coordenadas reales para RF2 y se excluye de sus propios comparables.
 
 ## RF2 — Perfil de accesibilidad
 

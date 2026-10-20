@@ -11,6 +11,8 @@ VALID = {
     "mantenimiento": 350, "amenidades": ["ascensor", "gimnasio"], "latitud": -12.1211, "longitud": -77.0297,
 }
 DESCRIPTIVE_PRICE_KEYS = {"precio_soles_observado", "precio_m2_real_observado"}
+SUMMARY_PRICE_KEYS = {"mediana_precio_publicado", "minimo_precio_publicado", "maximo_precio_publicado",
+                      "mediana_precio_publicado_m2", "n_con_precio_publicado"}
 PREDICTIVE_FRAGMENTS = ["estimat", "estimad", "predic", "predict", "forecast", "recomend", "recommend", "esperado",
                         "expected", "rent"]
 
@@ -76,8 +78,9 @@ def test_no_price_prediction_fields(client):
         low = key.lower()
         assert not any(f in low for f in PREDICTIVE_FRAGMENTS), path
         if "precio" in low:
-            # El único precio permitido es el observado de los anuncios comparables.
-            assert path.startswith(".comparables[].") and key in DESCRIPTIVE_PRICE_KEYS, path
+            # Solo se permiten precios publicados observados de los comparables y su resumen descriptivo.
+            assert (path.startswith(".comparables[].") and key in DESCRIPTIVE_PRICE_KEYS) or (
+                path.startswith(".comparables_summary.") and key in SUMMARY_PRICE_KEYS), path
 
 
 def test_comparable_prices_are_observed_listing_prices(client, training_frame):
