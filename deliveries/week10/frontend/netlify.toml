@@ -1,0 +1,10 @@
+# Despliegue del frontend estático (pendiente). En Netlify: Base directory = deliveries/week10/frontend.
+# Antes de publicar, poner en config.js la URL pública de la API.
+[build]
+  publish = "."
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
