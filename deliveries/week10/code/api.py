@@ -9,6 +9,7 @@ import json
 import math
 import os
 import re
+from urllib.parse import urlparse
 from typing import List, Optional
 
 import joblib
@@ -28,7 +29,7 @@ from escenarios import ADVERTENCIA, CAMBIABLES, comparar, verificar_modelo_conge
 from escenarios_precio import escenarios_publicacion
 from evidencia_distrital import evidencia_distrital
 from laboratorio_area import AVISO as AVISO_AREA, explorar_area
-from modelo import BINARY, LIMITS, ROOT, predecir, preparar
+from modelo import BINARY, LIMITS, ROOT, SOURCE, predecir, preparar
 from perfil_competitivo import ARCHIVO as ARCHIVO_PERFIL, asignar_perfil, comparables
 from tendencia import cargar_tendencias, tendencia_distrital
 
@@ -37,6 +38,9 @@ MODELO_PRECIO = joblib.load(ROOT / "models/modelo_docente.joblib")
 MODELO_PERFIL = joblib.load(ARCHIVO_PERFIL)
 DEMOS = json.loads((ROOT / "data/demo_casos.json").read_text(encoding="utf-8"))
 MERCADO = construir_mercado(MODELO_PRECIO, MODELO_PERFIL)
+# Enlace al anuncio original, solo para la ficha de los anuncios de mercado (decisión del equipo).
+ORIGINALES = pd.read_csv(SOURCE, usecols=["url", "fuente", "fecha_scraping"], low_memory=False)
+PORTALES = {"www.adondevivir.com": "Adondevivir", "adondevivir.com": "Adondevivir", "urbania.pe": "Urbania", "www.urbania.pe": "Urbania"}
 FRONTEND = ROOT / "frontend"
 
 app = FastAPI(title="DepaRent API", version="0.10")
@@ -363,12 +367,18 @@ def ver_anuncio(anuncio_id: str, conexion=Depends(base_datos)):
     distancia = float(fila["dist_paradero_min_m"])
     mas_lejos = 100 * (1 - np.searchsorted(red["ref_distancia"], distancia, side="right") / len(red["ref_distancia"]))
     tendencia = tendencia_distrital(vivienda["distrito_norm"])
-    publicacion = None
+    publicacion, original = None, None
+    if not propio:
+        fila_original = ORIGINALES.iloc[int(anuncio_id[1:])]
+        enlace = urlparse(str(fila_original["url"]))
+        # Solo enlaces https a los portales de origen; cualquier otro valor no se muestra.
+        if enlace.scheme == "https" and enlace.netloc in PORTALES:
+            original = {"url": enlace.geturl(), "portal": PORTALES[enlace.netloc], "capturado": str(fila_original["fecha_scraping"])[:10]}
     if propio:
         d = cuentas.publicado(conexion, int(anuncio_id[1:]))
         publicacion = {"propietario": d["propietario"], "escenario": d["publicacion"]["escenario"], "desde": d["publicacion"]["desde"]}
     return limpiar({
-        "anuncio": formatear(fila), "vivienda": vivienda, "publicacion": publicacion,
+        "anuncio": formatear(fila), "vivienda": vivienda, "publicacion": publicacion, "original": original,
         "precio": predecir(vivienda, MODELO_PRECIO), "perfil": competencia,
         # Sin nombres de paraderos ni mapa: revelarían la ubicación del anuncio original.
         "acceso": {"dist_paradero_min_m": distancia, "paraderos_500m": int(fila["paraderos_500m"]),

@@ -107,7 +107,11 @@ def comparables(values, artifact, k=8, excluir=None):
     if excluir is not None:
         candidatos = candidatos[candidatos["grupo"] != ref.loc[excluir, "grupo"]]
     elegidos = (candidatos.sort_values(["prioridad", "distancia"]).drop_duplicates("grupo").head(k))
-    tabla = [{"Distrito": r.distrito_norm.title(), "Perfil": artifact["nombres"][int(r.cluster)],
+    # La búsqueda guarda cada posible inmueble con el id de su primer anuncio ("m" + fila); el comparable apunta a esa ficha.
+    if "_primero" not in artifact:
+        artifact["_primero"] = ref.reset_index().groupby("grupo")["index"].min()
+    tabla = [{"anuncio_id": f"m{int(artifact['_primero'][r.grupo])}",
+              "Distrito": r.distrito_norm.title(), "Perfil": artifact["nombres"][int(r.cluster)],
               "Área (m²)": r.area_total, "Dormitorios": r.dormitorios, "Baños": r.banos,
               "Antigüedad": r.antiguedad, "Mantenimiento (S/)": r.mantenimiento,
               "Precio pedido (S/)": r.precio_soles, "S/ por m²": round(r.precio_m2, 2),

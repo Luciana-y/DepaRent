@@ -1,6 +1,6 @@
 import { llamar } from "./api.js";
 import { escala, panelComparables, ticks } from "./analisis.js";
-import { $, esc, num, pct, soles, titulo, conBoton, mensaje, ETIQUETAS_AMENIDAD } from "./util.js";
+import { $, esc, num, pct, soles, titulo, conBoton, mensaje, ETIQUETAS_AMENIDAD, enlazarFilas, copiarEnlace } from "./util.js";
 
 const banos = (n) => `${num(n)} ${n === 1 ? "baño" : "baños"}`;
 const fecha = (segundos) => new Date(segundos * 1000).toLocaleDateString("es-PE", { day: "numeric", month: "long", year: "numeric" });
@@ -21,7 +21,11 @@ export async function vistaAnuncio(lienzo, params, id) {
     <section class="panel object-head">
       <div class="cover" aria-hidden="true">${num(v.area_total)}<br>m²</div>
       <div><h1>${esc(nombre)}</h1><p class="meta">${esc(titulo(x.distrito))} · ${num(v.area_total)} m² · ${esc(x.perfil)} · ${origen}</p></div>
-      ${f.publicacion ? '<div class="title-actions"><a class="btn primary" href="#contacto" data-ir-contacto>Me interesa</a></div>' : ""}
+      <div class="title-actions">
+        <button class="btn" type="button" data-copiar>Copiar enlace</button>
+        ${f.original ? `<a class="btn primary" href="${esc(f.original.url)}" target="_blank" rel="noopener noreferrer nofollow">Ver el anuncio original en ${esc(f.original.portal)}</a>` : ""}
+        ${f.publicacion ? '<a class="btn primary" href="#contacto" data-ir-contacto>Me interesa</a>' : ""}
+      </div>
     </section>
     <div class="grid">
       <div class="kpis span-6">
@@ -81,12 +85,16 @@ export async function vistaAnuncio(lienzo, params, id) {
       <section class="panel span-6" id="contacto" aria-labelledby="t-contacto">
         <header><h2 id="t-contacto">${f.publicacion ? `Escríbele a ${esc(f.publicacion.propietario)}` : "Contacto"}</h2></header>
         ${f.publicacion ? formularioInteres(f.publicacion.propietario)
-          : `<p>Este anuncio viene de un portal inmobiliario (captura del 14 de septiembre de 2026) y puede ya no estar disponible.
-              DepaRent no guarda su dirección ni el contacto de su propietario.</p>`}
+          : f.original ? `<p>Este anuncio viene de ${esc(f.original.portal)} (captura del ${fecha(Date.parse(f.original.capturado + "T12:00:00") / 1000)}) y puede ya no estar disponible.
+              La dirección y el contacto están en el anuncio original; DepaRent no los guarda ni los muestra.</p>
+              <p style="margin-top:12px"><a class="btn" href="${esc(f.original.url)}" target="_blank" rel="noopener noreferrer nofollow">Ver el anuncio original en ${esc(f.original.portal)}</a></p>`
+          : "<p>Este anuncio viene de un portal inmobiliario y DepaRent no guarda su dirección ni el contacto de su propietario.</p>"}
       </section>
     </div>
     <p class="panel-note">${esc(f.aviso)}</p>`;
 
+  $("[data-copiar]", lienzo).addEventListener("click", (e) => copiarEnlace(e.currentTarget));
+  enlazarFilas(lienzo);
   $("[data-ir-contacto]", lienzo)?.addEventListener("click", (e) => {
     e.preventDefault();
     $("#contacto", lienzo).scrollIntoView({ block: "start" });

@@ -7,7 +7,7 @@ uno a su medida. El prototipo web tiene tres recorridos:
 |---|---|---|
 | Inicio | `#/` | Página informativa: problema, qué buscamos, cómo funciona, equipo y límites |
 | Propietario | `#/ingresar` → `#/mis-departamentos` | Registro e inicio de sesión; lista de sus departamentos (o invitación a agregar el primero); análisis de cada uno con los 6 componentes; publicación con el precio elegido |
-| Inquilino | `#/buscar` | Búsqueda por distrito, presupuesto, dormitorios, baños, área, amenidades y cercanía a paraderos, sobre 3,013 anuncios de mercado y los departamentos publicados en DepaRent; cada resultado indica si su precio está por debajo, en línea o por encima del estimado y abre su ficha (`#/anuncio/:id`): precio frente al estimado, anuncios parecidos, transporte y, si está publicado en DepaRent, un formulario «Me interesa» que llega al propietario |
+| Inquilino | `#/buscar` | Búsqueda por distrito, presupuesto, dormitorios, baños, área, amenidades y cercanía a paraderos, sobre 3,013 anuncios de mercado y los departamentos publicados en DepaRent; cada resultado indica si su precio está por debajo, en línea o por encima del estimado y abre su ficha (`#/anuncio/:id`, con «Copiar enlace»): precio frente al estimado, anuncios parecidos (cada uno abre su ficha), transporte y, según el origen, el enlace al anuncio original en Adondevivir o Urbania o un formulario «Me interesa» que llega al propietario |
 | Prueba rápida | `#/probar` | El análisis completo sin crear cuenta |
 
 Los seis componentes analíticos:
@@ -64,7 +64,7 @@ con Python, como Render (ver `deployed_url.txt`). `code/app.py` (Streamlit) se c
 | `escenarios.py`, `laboratorio_area.py` | Modelo 6 y exploración del área (del profesor) |
 | `evidencia_distrital.py`, `ayuda_interfaz.py` | Error por distrito y textos (del profesor) |
 | `app.py` | Versión Streamlit del profesor, como respaldo |
-| `test_*.py` | Pruebas (42) |
+| `test_*.py` | Pruebas (43) |
 
 ## Requisitos
 - Python 3.12 o 3.13 y conexión a internet la primera vez (para instalar dependencias; el mapa usa teselas de OpenStreetMap).
@@ -104,4 +104,4 @@ _Pendiente._ Pasos en `deployed_url.txt`. Requiere conectar el repositorio de Gi
 ## Credenciales y datos
 No se requieren variables de entorno ni credenciales para el uso local. Variables opcionales: `DEPARENT_DB` (ruta de
 la base SQLite) y, en despliegue, `DEPARENT_ORIGENES` (dominios que pueden llamar a la API). En un servicio gratuito
-como Render el disco no es persistente: las cuentas se borran al reiniciar, salvo que se use un disco o una base externa. Los comparables no muestran dirección, coordenadas, URL ni descripción de los anuncios.
+como Render el disco no es persistente: las cuentas se borran al reiniciar, salvo que se use un disco o una base externa. Ninguna pantalla muestra dirección, coordenadas ni descripción de los anuncios; solo la ficha de un anuncio de mercado enlaza a su original en Adondevivir o Urbania (ver `PRODUCT.md`).

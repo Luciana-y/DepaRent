@@ -41,3 +41,31 @@ export async function conBoton(boton, textoOcupado, tarea) {
     boton.textContent = original;
   }
 }
+
+// Filas de tabla que abren otra pantalla: la fila entera es el blanco del clic; el enlace de la primera celda sirve al teclado.
+export function enlazarFilas(raiz) {
+  raiz.querySelectorAll("tr[data-href]").forEach((tr) => tr.addEventListener("click", (e) => {
+    if (!e.target.closest("a")) location.hash = tr.dataset.href;
+  }));
+}
+
+// Copia el enlace de la pantalla actual y confirma en el mismo botón (sin ventanas emergentes).
+export async function copiarEnlace(boton) {
+  const original = boton.textContent;
+  let copiado = false;
+  try {
+    await navigator.clipboard.writeText(location.href);
+    copiado = true;
+  } catch {
+    // Sin permiso de portapapeles (página sin foco, http sin TLS): copia con una selección temporal.
+    const campo = Object.assign(document.createElement("textarea"), { value: location.href });
+    campo.setAttribute("readonly", "");
+    campo.style.cssText = "position:fixed;opacity:0;pointer-events:none";
+    document.body.append(campo);
+    campo.select();
+    copiado = document.execCommand("copy");
+    campo.remove();
+  }
+  boton.textContent = copiado ? "Enlace copiado" : "Copia la dirección del navegador";
+  setTimeout(() => { boton.textContent = original; }, 2000);
+}

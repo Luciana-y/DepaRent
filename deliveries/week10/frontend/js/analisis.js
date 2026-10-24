@@ -1,5 +1,5 @@
 import { llamar } from "./api.js";
-import { $, $$, esc, num, pct, soles, titulo, conBoton, mensaje } from "./util.js";
+import { $, $$, esc, num, pct, soles, titulo, conBoton, mensaje, enlazarFilas } from "./util.js";
 
 const PESTANAS = [["resumen", "Resumen"], ["comparables", "Comparables"], ["acceso", "Accesibilidad"], ["tendencia", "Tendencia"], ["simulador", "Simular una mejora"]];
 
@@ -51,6 +51,7 @@ export function mostrarAnalisis(contenedor, a, opciones, acciones = {}) {
     conBoton(boton, "Publicando…", () => acciones.alPublicar(s)).catch((e) => mensaje($(".pub-msg", contenedor), e.message));
   }));
   activarSimulador(contenedor, a.vivienda, opciones);
+  enlazarFilas(contenedor);
 }
 
 /* ---------- Resumen ---------- */
@@ -171,8 +172,8 @@ export function panelComparables(c) {
     <header><h2 id="t-comp">Los 8 anuncios más parecidos</h2><span class="meta">Perfil ${esc(c.perfil.perfil)} · ${c.en_mismo_distrito} del mismo distrito</span></header>
     <div class="table-wrap"><table class="list-table">
       <thead><tr><th>Anuncio</th><th class="n">Área</th><th class="n">Dorm.</th><th class="n">Baños</th><th class="n">Antigüedad</th><th class="n">Mantenimiento</th><th class="n">S/ por m²</th><th class="n">Precio pedido</th></tr></thead>
-      <tbody>${c.comparables.map((x) => `<tr>
-        <td><span class="id">${esc(x.Distrito)}</span><span class="sub">${esc(x.Perfil)}</span></td>
+      <tbody>${c.comparables.map((x) => `<tr data-href="#/anuncio/${esc(x.anuncio_id)}">
+        <td><a class="id" href="#/anuncio/${esc(x.anuncio_id)}">${esc(x.Distrito)}</a><span class="sub">${esc(x.Perfil)}</span></td>
         <td class="n more" data-label="Área">${num(x["Área (m²)"])} m²</td>
         <td class="n more" data-label="Dorm.">${num(x.Dormitorios)}</td>
         <td class="n more" data-label="Baños">${num(x["Baños"])}</td>
@@ -182,7 +183,7 @@ export function panelComparables(c) {
         <td class="n key"><b>${soles(x["Precio pedido (S/)"])}</b></td></tr>`).join("")}</tbody>
     </table></div>
     <p class="list-foot"><span>Mediana ${soles(c.precio_mediana_soles)} · percentiles 25 y 75: ${soles(c.precio_p25_soles)} y ${soles(c.precio_p75_soles)}</span></p>
-    <p class="panel-note">${esc(c.aviso)} Un guion es un dato que el anuncio no informaba.</p>
+    <p class="panel-note">Cada fila abre la ficha del anuncio. ${esc(c.aviso)} Un guion es un dato que el anuncio no informaba.</p>
   </section>`;
 }
 

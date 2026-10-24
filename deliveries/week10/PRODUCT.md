@@ -29,7 +29,10 @@ Combina seis componentes con datos reales de Lima que un portal de anuncios no m
 ## Constraints
 
 - Son precios pedidos en anuncios de una sola captura, no contratos ni tasaciones; la interfaz lo dice donde muestra precios.
-- Nunca mostrar dirección, coordenadas exactas, URL ni texto de los anuncios originales.
+- Nunca mostrar dirección, coordenadas exactas ni texto de los anuncios originales.
+- Enlace al anuncio original: solo en la ficha de un anuncio de mercado, por decisión del equipo (24-oct-2026),
+  con el portal y la fecha de captura, `rel="noopener noreferrer nofollow"` y solo hacia Adondevivir o Urbania por https.
+  La guía del profesor pide no proyectar las columnas sensibles de los originales: conviene confirmarlo con él.
 - Español de Perú, soles con formato `S/ 3,656`.
 - Las vistas y rutas existentes se conservan: inicio, ingreso y registro, mis departamentos, detalle con análisis y publicación, búsqueda, prueba sin cuenta.
 

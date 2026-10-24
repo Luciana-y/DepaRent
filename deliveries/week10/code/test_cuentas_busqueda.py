@@ -163,11 +163,24 @@ class FichaAnuncioTest(unittest.TestCase):
         self.assertIsNone(f["publicacion"])
         self.assertEqual(f["precio"]["precio_estimado_soles"], f["anuncio"]["precio_estimado_soles"])
         self.assertEqual(len(f["perfil"]["comparables"]), 8)
-        texto = json.dumps(f)
+        # El enlace al original va solo en "original"; dirección, coordenadas y texto del anuncio nunca.
+        texto = json.dumps({k: v for k, v in f.items() if k != "original"})
         for privado in ("direccion", "latitud", "longitud", "url", "descripcion", "paradero_cercano_nombre"):
             self.assertNotIn(privado, texto)
+        self.assertEqual(set(f["original"]), {"url", "portal", "capturado"})
         self.assertEqual(self.cliente.post(f"/api/anuncios/{anuncio_id}/interes",
                                            json={"nombre": "Ana", "email": "ana@deparent.test", "mensaje": "Me interesa"}).status_code, 422)
+
+    def test_comparables_llevan_a_su_ficha_y_el_original_solo_va_a_los_portales(self):
+        f = self.cliente.get(f"/api/anuncios/{MERCADO.iloc[100]['id']}").json()
+        self.assertIn(f["original"]["portal"], {"Adondevivir", "Urbania"})
+        self.assertTrue(f["original"]["url"].startswith(("https://www.adondevivir.com/", "https://urbania.pe/")))
+        for c in f["perfil"]["comparables"]:
+            self.assertEqual(self.cliente.get(f"/api/anuncios/{c['anuncio_id']}").status_code, 200, c["anuncio_id"])
+        analisis = self.cliente.post("/api/analizar", json={"vivienda": DEMOS[1]["entrada"]}).json()
+        ids = [c["anuncio_id"] for c in analisis["perfil"]["comparables"]]
+        self.assertEqual(len(set(ids)), 8)
+        self.assertTrue(set(ids) <= set(MERCADO["id"]))
 
     def test_ids_invalidos_o_inexistentes_dan_404(self):
         for anuncio_id in ("m99999999", "x1", "d99999", "1"):
@@ -185,6 +198,7 @@ class FichaAnuncioTest(unittest.TestCase):
         self.cliente.post(f"/api/departamentos/{depto_id}/publicacion", headers=dueno, json={"precio_soles": 2100, "escenario": "Equilibrado"})
         ficha = self.cliente.get(f"/api/anuncios/d{depto_id}").json()
         self.assertEqual(ficha["publicacion"]["propietario"], "Propietaria")
+        self.assertIsNone(ficha["original"])
         self.assertNotIn("ficha.dueno@deparent.test", json.dumps(ficha))
         self.assertEqual(self.cliente.post(f"/api/anuncios/d{depto_id}/interes", json={**mensaje, "email": "sin-arroba"}).status_code, 422)
         self.assertEqual(self.cliente.post(f"/api/anuncios/d{depto_id}/interes", json=mensaje).status_code, 200)
