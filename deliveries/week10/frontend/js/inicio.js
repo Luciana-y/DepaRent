@@ -114,7 +114,7 @@ export async function vistaInicio(main) {
       </section>
 
       <footer class="home-footer">
-        <p class="blocks" role="img" aria-label="DepaRent">${LETRAS.map((l, i) => `<span class="block block-${i % 4}" style="--h:${[100, 72, 86, 64, 96, 70, 82, 90][i]}%" aria-hidden="true">${l}</span>`).join("")}</p>
+        <p class="blocks" role="img" aria-label="DepaRent">${LETRAS.map((l, i) => `<span class="bloque bloque-${i % 4}" style="--h:${[100, 72, 86, 64, 96, 70, 82, 90][i]}%" aria-hidden="true">${l}</span>`).join("")}</p>
         <nav class="footer-cols" aria-label="Pie de página">
           <div><h3>Propietarios</h3><a href="#/ingresar?modo=registro">Crear cuenta</a><a href="#/ingresar">Ingresar</a><a href="#/probar">Probar sin cuenta</a></div>
           <div><h3>Inquilinos</h3><a href="#/buscar">Buscar departamentos</a></div>

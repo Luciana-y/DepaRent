@@ -303,7 +303,7 @@ tr[data-href] { cursor: pointer; }
   /* filtros en una fila: el resto se despliega con «Más filtros» */
   .filters .field.optional { display: none; }
   .filters.expand .field.optional { display: grid; }
-  .filters .field:first-child { flex: 1; }
+  .filters .field:first-child { flex: 1 1 100%; }
   .fields { grid-template-columns: 1fr 1fr; }
   .kpis { grid-template-columns: minmax(0, 1fr); }
   .kpi:nth-child(n) { border-left: 0; }
