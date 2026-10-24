@@ -1,0 +1,180 @@
+{
+  "modelo": "K-Means sobre variables estandarizadas, sin precio",
+  "k": 4,
+  "semilla": 42,
+  "variables": [
+    "area_total",
+    "dormitorios",
+    "banos",
+    "antiguedad",
+    "mantenimiento",
+    "ascensor",
+    "balcon",
+    "terraza",
+    "piscina",
+    "gimnasio",
+    "pet_friendly"
+  ],
+  "filas": 3128,
+  "silhouette": 0.20753314796495453,
+  "ari_medio_semillas": 1.0,
+  "seleccion_k": [
+    {
+      "k": 2,
+      "silhouette": 0.1824140695776544,
+      "ari_medio_semillas": 0.9969954488568841,
+      "tamanos": [
+        2039,
+        1089
+      ]
+    },
+    {
+      "k": 3,
+      "silhouette": 0.2011587819758802,
+      "ari_medio_semillas": 0.9988208872569592,
+      "tamanos": [
+        391,
+        1019,
+        1718
+      ]
+    },
+    {
+      "k": 4,
+      "silhouette": 0.20753314796495453,
+      "ari_medio_semillas": 1.0,
+      "tamanos": [
+        815,
+        1540,
+        363,
+        410
+      ]
+    },
+    {
+      "k": 5,
+      "silhouette": 0.16227490019016072,
+      "ari_medio_semillas": 0.9396537555612436,
+      "tamanos": [
+        410,
+        811,
+        676,
+        972,
+        259
+      ]
+    },
+    {
+      "k": 6,
+      "silhouette": 0.16123390283380704,
+      "ari_medio_semillas": 0.6246523071422067,
+      "tamanos": [
+        782,
+        701,
+        379,
+        410,
+        607,
+        249
+      ]
+    },
+    {
+      "k": 7,
+      "silhouette": 0.1770410143026799,
+      "ari_medio_semillas": 0.5487447204667394,
+      "tamanos": [
+        574,
+        944,
+        410,
+        1,
+        288,
+        491,
+        420
+      ]
+    }
+  ],
+  "justificacion_k": "k=4 tiene el mayor silhouette entre 2 y 7, es estable (ARI ~1) y mantiene los 4 perfiles del diseño.",
+  "referencia_semana7": "K-Means k=4 con 19 variables que incluían precio por m²: silhouette 0.1776.",
+  "perfiles": {
+    "Compacto moderno con amenidades": {
+      "anuncios": 815.0,
+      "area_total": 60.0,
+      "dormitorios": 2.0,
+      "banos": 2.0,
+      "antiguedad": 3.0,
+      "mantenimiento": 250.0,
+      "ascensor": 0.291,
+      "balcon": 0.583,
+      "terraza": 0.389,
+      "piscina": 0.737,
+      "gimnasio": 0.892,
+      "pet_friendly": 0.0,
+      "precio_p25": 2200.0,
+      "precio_mediana": 2650.0,
+      "precio_p75": 3250.0,
+      "precio_m2_mediana": 46.58
+    },
+    "Estándar tradicional": {
+      "anuncios": 1540.0,
+      "area_total": 74.0,
+      "dormitorios": 2.0,
+      "banos": 2.0,
+      "antiguedad": 9.0,
+      "mantenimiento": 260.0,
+      "ascensor": 0.312,
+      "balcon": 0.205,
+      "terraza": 0.143,
+      "piscina": 0.017,
+      "gimnasio": 0.054,
+      "pet_friendly": 0.0,
+      "precio_p25": 1800.0,
+      "precio_mediana": 2479.5,
+      "precio_p75": 3100.0,
+      "precio_m2_mediana": 34.0
+    },
+    "Amplio de alta gama": {
+      "anuncios": 363.0,
+      "area_total": 200.0,
+      "dormitorios": 3.0,
+      "banos": 3.0,
+      "antiguedad": 11.0,
+      "mantenimiento": 700.0,
+      "ascensor": 0.581,
+      "balcon": 0.298,
+      "terraza": 0.614,
+      "piscina": 0.231,
+      "gimnasio": 0.242,
+      "pet_friendly": 0.074,
+      "precio_p25": 5100.0,
+      "precio_mediana": 7000.0,
+      "precio_p75": 9338.0,
+      "precio_m2_mediana": 35.2
+    },
+    "Moderno que admite mascotas": {
+      "anuncios": 410.0,
+      "area_total": 67.0,
+      "dormitorios": 2.0,
+      "banos": 2.0,
+      "antiguedad": 3.0,
+      "mantenimiento": 277.5,
+      "ascensor": 0.437,
+      "balcon": 0.346,
+      "terraza": 0.315,
+      "piscina": 0.373,
+      "gimnasio": 0.483,
+      "pet_friendly": 1.0,
+      "precio_p25": 2000.0,
+      "precio_mediana": 2725.0,
+      "precio_p75": 3324.25,
+      "precio_m2_mediana": 41.005
+    }
+  },
+  "entorno": {
+    "python": "3.13.5",
+    "sklearn": "1.7.2",
+    "numpy": "2.3.5",
+    "pandas": "2.3.3",
+    "joblib": "1.5.2"
+  },
+  "limites": [
+    "Silhouette bajo: segmentación heurística.",
+    "El perfil 'Moderno que admite mascotas' queda definido casi solo por pet_friendly.",
+    "Amenidades extraídas del texto de los anuncios con reglas; pueden tener errores."
+  ]
+}
