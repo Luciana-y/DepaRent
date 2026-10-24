@@ -40,7 +40,7 @@ con Python, como Render (ver `deployed_url.txt`). `code/app.py` (Streamlit) se c
 ## Contenido
 | Elemento | Ubicación |
 |---|---|
-| Frontend web | `frontend/` (`index.html`, `styles.css`, `js/`) |
+| Frontend web | `frontend/` (`index.html`, `styles.css`, `inicio.css`, `js/`); diseño en `DESIGN.md` y contexto en `PRODUCT.md` |
 | API y modelos | `code/` |
 | Datos | `data/` (ver su README; los procesados base están en `../week07/data/`) |
 | Modelos serializados | `models/` (ver `metadata.md`) |
@@ -64,7 +64,7 @@ con Python, como Render (ver `deployed_url.txt`). `code/app.py` (Streamlit) se c
 | `escenarios.py`, `laboratorio_area.py` | Modelo 6 y exploración del área (del profesor) |
 | `evidencia_distrital.py`, `ayuda_interfaz.py` | Error por distrito y textos (del profesor) |
 | `app.py` | Versión Streamlit del profesor, como respaldo |
-| `test_*.py` | Pruebas (38) |
+| `test_*.py` | Pruebas (39) |
 
 ## Requisitos
 - Python 3.12 o 3.13 y conexión a internet la primera vez (para instalar dependencias; el mapa usa teselas de OpenStreetMap).

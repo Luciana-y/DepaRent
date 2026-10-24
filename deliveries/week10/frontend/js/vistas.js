@@ -20,8 +20,8 @@ export function vistaIngresar(lienzo, params) {
     ${filaTitulo(registro ? "Crear cuenta" : "Ingresar", "Guarda tus departamentos, revisa su análisis y publícalos con el precio que elijas.")}
     <section class="panel auth-panel">
       <nav class="tabs" aria-label="Ingreso o registro">
-        <a href="${enlace(false)}" aria-selected="${!registro}">Ingresar</a>
-        <a href="${enlace(true)}" aria-selected="${registro}">Crear cuenta</a>
+        <a href="${enlace(false)}" ${registro ? "" : 'aria-current="page"'}>Ingresar</a>
+        <a href="${enlace(true)}" ${registro ? 'aria-current="page"' : ""}>Crear cuenta</a>
       </nav>
       <form class="auth-form" novalidate>
         ${registro ? '<div class="field"><label for="a-nombre">Nombre</label><input class="input" id="a-nombre" name="nombre" autocomplete="name" required></div>' : ""}
