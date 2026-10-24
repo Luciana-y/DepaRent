@@ -1,0 +1,3567 @@
+{
+  "fecha": "2026-10-24",
+  "fuente": "BCRP, series trimestrales 2013-T3 a 2026-T1; Alquiler_Mensual_Soles = precio de venta × tipo de cambio ÷ PER ÷ 12 (S/ por m²)",
+  "metodo": "SARIMA (p,1,q)(P,D,Q,4) con orden elegido por AIC sobre los primeros 47 trimestres",
+  "validacion": "Últimos 4 trimestres reservados; SARIMA supera al naive estacional en 10 y al naive (último valor) en 7 de 13 series",
+  "regla_tendencia": "Cambio entre el promedio pronosticado de 4 trimestres y el promedio de los últimos 4 observados: más de +2% al alza, menos de -2% a la baja; si no, estable",
+  "entorno": {
+    "python": "3.13.5",
+    "statsmodels": "0.15.0"
+  },
+  "limites": [
+    "La serie es derivada del precio de venta y el PER; no es alquiler observado en anuncios.",
+    "Solo 12 distritos tienen serie propia; los demás usan el promedio.",
+    "Validación con 4 trimestres: poca evidencia para comparar métodos."
+  ],
+  "series": {
+    "barranco": {
+      "distrito": "Barranco",
+      "orden": [
+        0,
+        1,
+        1
+      ],
+      "orden_estacional": [
+        0,
+        1,
+        1,
+        4
+      ],
+      "aic_entrenamiento": 178.672429471652,
+      "historia": [
+        {
+          "trimestre": "2013-T3",
+          "valor": 20.3322
+        },
+        {
+          "trimestre": "2013-T4",
+          "valor": 19.9469
+        },
+        {
+          "trimestre": "2014-T1",
+          "valor": 22.8124
+        },
+        {
+          "trimestre": "2014-T2",
+          "valor": 21.0517
+        },
+        {
+          "trimestre": "2014-T3",
+          "valor": 25.3144
+        },
+        {
+          "trimestre": "2014-T4",
+          "valor": 24.0134
+        },
+        {
+          "trimestre": "2015-T1",
+          "valor": 21.9221
+        },
+        {
+          "trimestre": "2015-T2",
+          "valor": 24.7175
+        },
+        {
+          "trimestre": "2015-T3",
+          "valor": 21.3999
+        },
+        {
+          "trimestre": "2015-T4",
+          "valor": 28.0575
+        },
+        {
+          "trimestre": "2016-T1",
+          "valor": 28.119
+        },
+        {
+          "trimestre": "2016-T2",
+          "valor": 17.5049
+        },
+        {
+          "trimestre": "2016-T3",
+          "valor": 21.7561
+        },
+        {
+          "trimestre": "2016-T4",
+          "valor": 22.4763
+        },
+        {
+          "trimestre": "2017-T1",
+          "valor": 23.2939
+        },
+        {
+          "trimestre": "2017-T2",
+          "valor": 20.8458
+        },
+        {
+          "trimestre": "2017-T3",
+          "valor": 17.2084
+        },
+        {
+          "trimestre": "2017-T4",
+          "valor": 21.8039
+        },
+        {
+          "trimestre": "2018-T1",
+          "valor": 21.7331
+        },
+        {
+          "trimestre": "2018-T2",
+          "valor": 25.4747
+        },
+        {
+          "trimestre": "2018-T3",
+          "valor": 23.1943
+        },
+        {
+          "trimestre": "2018-T4",
+          "valor": 21.9706
+        },
+        {
+          "trimestre": "2019-T1",
+          "valor": 23.2932
+        },
+        {
+          "trimestre": "2019-T2",
+          "valor": 23.8595
+        },
+        {
+          "trimestre": "2019-T3",
+          "valor": 24.4647
+        },
+        {
+          "trimestre": "2019-T4",
+          "valor": 21.2438
+        },
+        {
+          "trimestre": "2020-T1",
+          "valor": 25.1276
+        },
+        {
+          "trimestre": "2020-T2",
+          "valor": 22.8436
+        },
+        {
+          "trimestre": "2020-T3",
+          "valor": 21.2588
+        },
+        {
+          "trimestre": "2020-T4",
+          "valor": 26.6195
+        },
+        {
+          "trimestre": "2021-T1",
+          "valor": 27.8497
+        },
+        {
+          "trimestre": "2021-T2",
+          "valor": 23.1329
+        },
+        {
+          "trimestre": "2021-T3",
+          "valor": 25.155
+        },
+        {
+          "trimestre": "2021-T4",
+          "valor": 27.6682
+        },
+        {
+          "trimestre": "2022-T1",
+          "valor": 23.9638
+        },
+        {
+          "trimestre": "2022-T2",
+          "valor": 26.4518
+        },
+        {
+          "trimestre": "2022-T3",
+          "valor": 26.0018
+        },
+        {
+          "trimestre": "2022-T4",
+          "valor": 25.3266
+        },
+        {
+          "trimestre": "2023-T1",
+          "valor": 26.1941
+        },
+        {
+          "trimestre": "2023-T2",
+          "valor": 24.9675
+        },
+        {
+          "trimestre": "2023-T3",
+          "valor": 24.8909
+        },
+        {
+          "trimestre": "2023-T4",
+          "valor": 26.4454
+        },
+        {
+          "trimestre": "2024-T1",
+          "valor": 30.0936
+        },
+        {
+          "trimestre": "2024-T2",
+          "valor": 27.9472
+        },
+        {
+          "trimestre": "2024-T3",
+          "valor": 28.8222
+        },
+        {
+          "trimestre": "2024-T4",
+          "valor": 28.0706
+        },
+        {
+          "trimestre": "2025-T1",
+          "valor": 25.6137
+        },
+        {
+          "trimestre": "2025-T2",
+          "valor": 26.417
+        },
+        {
+          "trimestre": "2025-T3",
+          "valor": 26.2388
+        },
+        {
+          "trimestre": "2025-T4",
+          "valor": 25.6534
+        },
+        {
+          "trimestre": "2026-T1",
+          "valor": 25.0216
+        }
+      ],
+      "pronostico": [
+        {
+          "trimestre": "2026-T2",
+          "valor": 25.9678,
+          "inferior_80": 22.824,
+          "superior_80": 29.1117
+        },
+        {
+          "trimestre": "2026-T3",
+          "valor": 26.0088,
+          "inferior_80": 22.7872,
+          "superior_80": 29.2303
+        },
+        {
+          "trimestre": "2026-T4",
+          "valor": 26.9488,
+          "inferior_80": 23.649,
+          "superior_80": 30.2485
+        },
+        {
+          "trimestre": "2027-T1",
+          "valor": 27.3904,
+          "inferior_80": 24.017,
+          "superior_80": 30.7639
+        }
+      ],
+      "validacion": {
+        "trimestres": [
+          "2025-T2",
+          "2025-T3",
+          "2025-T4",
+          "2026-T1"
+        ],
+        "SARIMA": {
+          "MAE": 1.8063907167835005,
+          "MAPE_porcentaje": 7.099174884054969
+        },
+        "naive_estacional": {
+          "MAE": 1.7807249999999986,
+          "MAPE_porcentaje": 6.856773730108278
+        },
+        "naive": {
+          "MAE": 0.5150500000000005,
+          "MAPE_porcentaje": 1.9860763742541476
+        },
+        "sarima_supera_naive_estacional": false,
+        "sarima_supera_naive": false
+      },
+      "tendencia": "Al alza",
+      "cambio_porcentaje": 2.89,
+      "promedio_ultimos_4": 25.8327,
+      "promedio_pronostico_4": 26.579
+    },
+    "jesus maria": {
+      "distrito": "Jesús María",
+      "orden": [
+        0,
+        1,
+        1
+      ],
+      "orden_estacional": [
+        0,
+        1,
+        1,
+        4
+      ],
+      "aic_entrenamiento": 171.25497799761848,
+      "historia": [
+        {
+          "trimestre": "2013-T3",
+          "valor": 31.8252
+        },
+        {
+          "trimestre": "2013-T4",
+          "valor": 29.8557
+        },
+        {
+          "trimestre": "2014-T1",
+          "valor": 29.9512
+        },
+        {
+          "trimestre": "2014-T2",
+          "valor": 33.8708
+        },
+        {
+          "trimestre": "2014-T3",
+          "valor": 31.9883
+        },
+        {
+          "trimestre": "2014-T4",
+          "valor": 33.9343
+        },
+        {
+          "trimestre": "2015-T1",
+          "valor": 34.4828
+        },
+        {
+          "trimestre": "2015-T2",
+          "valor": 33.3255
+        },
+        {
+          "trimestre": "2015-T3",
+          "valor": 34.1096
+        },
+        {
+          "trimestre": "2015-T4",
+          "valor": 37.3719
+        },
+        {
+          "trimestre": "2016-T1",
+          "valor": 38.8446
+        },
+        {
+          "trimestre": "2016-T2",
+          "valor": 38.7737
+        },
+        {
+          "trimestre": "2016-T3",
+          "valor": 38.2386
+        },
+        {
+          "trimestre": "2016-T4",
+          "valor": 43.5161
+        },
+        {
+          "trimestre": "2017-T1",
+          "valor": 37.0416
+        },
+        {
+          "trimestre": "2017-T2",
+          "valor": 37.0784
+        },
+        {
+          "trimestre": "2017-T3",
+          "valor": 38.8434
+        },
+        {
+          "trimestre": "2017-T4",
+          "valor": 36.9864
+        },
+        {
+          "trimestre": "2018-T1",
+          "valor": 37.8968
+        },
+        {
+          "trimestre": "2018-T2",
+          "valor": 35.383
+        },
+        {
+          "trimestre": "2018-T3",
+          "valor": 37.1135
+        },
+        {
+          "trimestre": "2018-T4",
+          "valor": 39.4187
+        },
+        {
+          "trimestre": "2019-T1",
+          "valor": 37.8591
+        },
+        {
+          "trimestre": "2019-T2",
+          "valor": 35.256
+        },
+        {
+          "trimestre": "2019-T3",
+          "valor": 36.5669
+        },
+        {
+          "trimestre": "2019-T4",
+          "valor": 36.5092
+        },
+        {
+          "trimestre": "2020-T1",
+          "valor": 37.8997
+        },
+        {
+          "trimestre": "2020-T2",
+          "valor": 36.7371
+        },
+        {
+          "trimestre": "2020-T3",
+          "valor": 40.8011
+        },
+        {
+          "trimestre": "2020-T4",
+          "valor": 34.8191
+        },
+        {
+          "trimestre": "2021-T1",
+          "valor": 37.5054
+        },
+        {
+          "trimestre": "2021-T2",
+          "valor": 37.4387
+        },
+        {
+          "trimestre": "2021-T3",
+          "valor": 41.2312
+        },
+        {
+          "trimestre": "2021-T4",
+          "valor": 37.2381
+        },
+        {
+          "trimestre": "2022-T1",
+          "valor": 36.1251
+        },
+        {
+          "trimestre": "2022-T2",
+          "valor": 36.4121
+        },
+        {
+          "trimestre": "2022-T3",
+          "valor": 39.6478
+        },
+        {
+          "trimestre": "2022-T4",
+          "valor": 40.9888
+        },
+        {
+          "trimestre": "2023-T1",
+          "valor": 40.926
+        },
+        {
+          "trimestre": "2023-T2",
+          "valor": 39.1644
+        },
+        {
+          "trimestre": "2023-T3",
+          "valor": 37.146
+        },
+        {
+          "trimestre": "2023-T4",
+          "valor": 40.2559
+        },
+        {
+          "trimestre": "2024-T1",
+          "valor": 39.7853
+        },
+        {
+          "trimestre": "2024-T2",
+          "valor": 40.6507
+        },
+        {
+          "trimestre": "2024-T3",
+          "valor": 42.2668
+        },
+        {
+          "trimestre": "2024-T4",
+          "valor": 41.8991
+        },
+        {
+          "trimestre": "2025-T1",
+          "valor": 43.7238
+        },
+        {
+          "trimestre": "2025-T2",
+          "valor": 42.1854
+        },
+        {
+          "trimestre": "2025-T3",
+          "valor": 41.4541
+        },
+        {
+          "trimestre": "2025-T4",
+          "valor": 40.6461
+        },
+        {
+          "trimestre": "2026-T1",
+          "valor": 39.6817
+        }
+      ],
+      "pronostico": [
+        {
+          "trimestre": "2026-T2",
+          "valor": 40.3569,
+          "inferior_80": 37.4825,
+          "superior_80": 43.2313
+        },
+        {
+          "trimestre": "2026-T3",
+          "valor": 41.4512,
+          "inferior_80": 38.292,
+          "superior_80": 44.6104
+        },
+        {
+          "trimestre": "2026-T4",
+          "valor": 41.7071,
+          "inferior_80": 38.2853,
+          "superior_80": 45.1289
+        },
+        {
+          "trimestre": "2027-T1",
+          "valor": 41.5751,
+          "inferior_80": 37.9122,
+          "superior_80": 45.2379
+        }
+      ],
+      "validacion": {
+        "trimestres": [
+          "2025-T2",
+          "2025-T3",
+          "2025-T4",
+          "2026-T1"
+        ],
+        "SARIMA": {
+          "MAE": 2.328957663063804,
+          "MAPE_porcentaje": 5.765955564052862
+        },
+        "naive_estacional": {
+          "MAE": 1.9106250000000014,
+          "MAPE_porcentaje": 4.716871053871912
+        },
+        "naive": {
+          "MAE": 2.7319749999999985,
+          "MAPE_porcentaje": 6.72005584066894
+        },
+        "sarima_supera_naive_estacional": false,
+        "sarima_supera_naive": true
+      },
+      "tendencia": "Estable",
+      "cambio_porcentaje": 0.68,
+      "promedio_ultimos_4": 40.9918,
+      "promedio_pronostico_4": 41.2726
+    },
+    "la molina": {
+      "distrito": "La Molina",
+      "orden": [
+        1,
+        1,
+        1
+      ],
+      "orden_estacional": [
+        0,
+        1,
+        1,
+        4
+      ],
+      "aic_entrenamiento": 165.72714636074312,
+      "historia": [
+        {
+          "trimestre": "2013-T3",
+          "valor": 27.5282
+        },
+        {
+          "trimestre": "2013-T4",
+          "valor": 24.6421
+        },
+        {
+          "trimestre": "2014-T1",
+          "valor": 24.9116
+        },
+        {
+          "trimestre": "2014-T2",
+          "valor": 27.8139
+        },
+        {
+          "trimestre": "2014-T3",
+          "valor": 28.0465
+        },
+        {
+          "trimestre": "2014-T4",
+          "valor": 29.3796
+        },
+        {
+          "trimestre": "2015-T1",
+          "valor": 27.508
+        },
+        {
+          "trimestre": "2015-T2",
+          "valor": 25.7185
+        },
+        {
+          "trimestre": "2015-T3",
+          "valor": 29.0537
+        },
+        {
+          "trimestre": "2015-T4",
+          "valor": 27.6842
+        },
+        {
+          "trimestre": "2016-T1",
+          "valor": 28.7717
+        },
+        {
+          "trimestre": "2016-T2",
+          "valor": 27.4761
+        },
+        {
+          "trimestre": "2016-T3",
+          "valor": 24.9515
+        },
+        {
+          "trimestre": "2016-T4",
+          "valor": 24.5708
+        },
+        {
+          "trimestre": "2017-T1",
+          "valor": 26.7312
+        },
+        {
+          "trimestre": "2017-T2",
+          "valor": 23.9451
+        },
+        {
+          "trimestre": "2017-T3",
+          "valor": 26.3726
+        },
+        {
+          "trimestre": "2017-T4",
+          "valor": 25.7593
+        },
+        {
+          "trimestre": "2018-T1",
+          "valor": 27.0583
+        },
+        {
+          "trimestre": "2018-T2",
+          "valor": 27.6121
+        },
+        {
+          "trimestre": "2018-T3",
+          "valor": 25.5432
+        },
+        {
+          "trimestre": "2018-T4",
+          "valor": 27.5871
+        },
+        {
+          "trimestre": "2019-T1",
+          "valor": 25.894
+        },
+        {
+          "trimestre": "2019-T2",
+          "valor": 26.4943
+        },
+        {
+          "trimestre": "2019-T3",
+          "valor": 23.8235
+        },
+        {
+          "trimestre": "2019-T4",
+          "valor": 25.5153
+        },
+        {
+          "trimestre": "2020-T1",
+          "valor": 28.1395
+        },
+        {
+          "trimestre": "2020-T2",
+          "valor": 28.3965
+        },
+        {
+          "trimestre": "2020-T3",
+          "valor": 27.2635
+        },
+        {
+          "trimestre": "2020-T4",
+          "valor": 26.6602
+        },
+        {
+          "trimestre": "2021-T1",
+          "valor": 28.4481
+        },
+        {
+          "trimestre": "2021-T2",
+          "valor": 30.2984
+        },
+        {
+          "trimestre": "2021-T3",
+          "valor": 27.9841
+        },
+        {
+          "trimestre": "2021-T4",
+          "valor": 27.4382
+        },
+        {
+          "trimestre": "2022-T1",
+          "valor": 25.6874
+        },
+        {
+          "trimestre": "2022-T2",
+          "valor": 28.5265
+        },
+        {
+          "trimestre": "2022-T3",
+          "valor": 34.1374
+        },
+        {
+          "trimestre": "2022-T4",
+          "valor": 33.6616
+        },
+        {
+          "trimestre": "2023-T1",
+          "valor": 33.0412
+        },
+        {
+          "trimestre": "2023-T2",
+          "valor": 31.6706
+        },
+        {
+          "trimestre": "2023-T3",
+          "valor": 32.596
+        },
+        {
+          "trimestre": "2023-T4",
+          "valor": 32.9018
+        },
+        {
+          "trimestre": "2024-T1",
+          "valor": 29.9298
+        },
+        {
+          "trimestre": "2024-T2",
+          "valor": 29.5532
+        },
+        {
+          "trimestre": "2024-T3",
+          "valor": 31.484
+        },
+        {
+          "trimestre": "2024-T4",
+          "valor": 29.828
+        },
+        {
+          "trimestre": "2025-T1",
+          "valor": 34.6313
+        },
+        {
+          "trimestre": "2025-T2",
+          "valor": 35.9705
+        },
+        {
+          "trimestre": "2025-T3",
+          "valor": 31.8908
+        },
+        {
+          "trimestre": "2025-T4",
+          "valor": 36.6275
+        },
+        {
+          "trimestre": "2026-T1",
+          "valor": 38.1688
+        }
+      ],
+      "pronostico": [
+        {
+          "trimestre": "2026-T2",
+          "valor": 36.9479,
+          "inferior_80": 34.1513,
+          "superior_80": 39.7445
+        },
+        {
+          "trimestre": "2026-T3",
+          "valor": 36.3916,
+          "inferior_80": 33.1068,
+          "superior_80": 39.6764
+        },
+        {
+          "trimestre": "2026-T4",
+          "valor": 36.436,
+          "inferior_80": 32.8884,
+          "superior_80": 39.9837
+        },
+        {
+          "trimestre": "2027-T1",
+          "valor": 36.9206,
+          "inferior_80": 33.1775,
+          "superior_80": 40.6636
+        }
+      ],
+      "validacion": {
+        "trimestres": [
+          "2025-T2",
+          "2025-T3",
+          "2025-T4",
+          "2026-T1"
+        ],
+        "SARIMA": {
+          "MAE": 3.131636403017005,
+          "MAPE_porcentaje": 8.588084274058522
+        },
+        "naive_estacional": {
+          "MAE": 4.290274999999998,
+          "MAPE_porcentaje": 11.73700426320337
+        },
+        "naive": {
+          "MAE": 2.403349999999998,
+          "MAPE_porcentaje": 6.758620648418927
+        },
+        "sarima_supera_naive_estacional": true,
+        "sarima_supera_naive": false
+      },
+      "tendencia": "Al alza",
+      "cambio_porcentaje": 2.83,
+      "promedio_ultimos_4": 35.6644,
+      "promedio_pronostico_4": 36.674
+    },
+    "lince": {
+      "distrito": "Lince",
+      "orden": [
+        0,
+        1,
+        1
+      ],
+      "orden_estacional": [
+        0,
+        1,
+        1,
+        4
+      ],
+      "aic_entrenamiento": 194.78661729518686,
+      "historia": [
+        {
+          "trimestre": "2013-T3",
+          "valor": 33.2624
+        },
+        {
+          "trimestre": "2013-T4",
+          "valor": 33.0275
+        },
+        {
+          "trimestre": "2014-T1",
+          "valor": 33.8632
+        },
+        {
+          "trimestre": "2014-T2",
+          "valor": 36.1962
+        },
+        {
+          "trimestre": "2014-T3",
+          "valor": 32.4417
+        },
+        {
+          "trimestre": "2014-T4",
+          "valor": 35.9446
+        },
+        {
+          "trimestre": "2015-T1",
+          "valor": 38.22
+        },
+        {
+          "trimestre": "2015-T2",
+          "valor": 34.8874
+        },
+        {
+          "trimestre": "2015-T3",
+          "valor": 40.7031
+        },
+        {
+          "trimestre": "2015-T4",
+          "valor": 39.6935
+        },
+        {
+          "trimestre": "2016-T1",
+          "valor": 41.2797
+        },
+        {
+          "trimestre": "2016-T2",
+          "valor": 40.4403
+        },
+        {
+          "trimestre": "2016-T3",
+          "valor": 38.8358
+        },
+        {
+          "trimestre": "2016-T4",
+          "valor": 48.1843
+        },
+        {
+          "trimestre": "2017-T1",
+          "valor": 45.2715
+        },
+        {
+          "trimestre": "2017-T2",
+          "valor": 40.1734
+        },
+        {
+          "trimestre": "2017-T3",
+          "valor": 37.132
+        },
+        {
+          "trimestre": "2017-T4",
+          "valor": 45.7639
+        },
+        {
+          "trimestre": "2018-T1",
+          "valor": 40.0124
+        },
+        {
+          "trimestre": "2018-T2",
+          "valor": 42.1637
+        },
+        {
+          "trimestre": "2018-T3",
+          "valor": 40.0962
+        },
+        {
+          "trimestre": "2018-T4",
+          "valor": 39.2633
+        },
+        {
+          "trimestre": "2019-T1",
+          "valor": 43.8229
+        },
+        {
+          "trimestre": "2019-T2",
+          "valor": 42.3479
+        },
+        {
+          "trimestre": "2019-T3",
+          "valor": 39.52
+        },
+        {
+          "trimestre": "2019-T4",
+          "valor": 42.709
+        },
+        {
+          "trimestre": "2020-T1",
+          "valor": 40.2032
+        },
+        {
+          "trimestre": "2020-T2",
+          "valor": 44.4134
+        },
+        {
+          "trimestre": "2020-T3",
+          "valor": 37.4551
+        },
+        {
+          "trimestre": "2020-T4",
+          "valor": 36.1038
+        },
+        {
+          "trimestre": "2021-T1",
+          "valor": 37.3914
+        },
+        {
+          "trimestre": "2021-T2",
+          "valor": 36.1513
+        },
+        {
+          "trimestre": "2021-T3",
+          "valor": 38.4878
+        },
+        {
+          "trimestre": "2021-T4",
+          "valor": 34.2512
+        },
+        {
+          "trimestre": "2022-T1",
+          "valor": 35.2534
+        },
+        {
+          "trimestre": "2022-T2",
+          "valor": 39.4365
+        },
+        {
+          "trimestre": "2022-T3",
+          "valor": 41.1712
+        },
+        {
+          "trimestre": "2022-T4",
+          "valor": 41.4251
+        },
+        {
+          "trimestre": "2023-T1",
+          "valor": 39.1231
+        },
+        {
+          "trimestre": "2023-T2",
+          "valor": 39.5819
+        },
+        {
+          "trimestre": "2023-T3",
+          "valor": 38.3998
+        },
+        {
+          "trimestre": "2023-T4",
+          "valor": 43.1064
+        },
+        {
+          "trimestre": "2024-T1",
+          "valor": 44.3972
+        },
+        {
+          "trimestre": "2024-T2",
+          "valor": 40.2495
+        },
+        {
+          "trimestre": "2024-T3",
+          "valor": 38.2899
+        },
+        {
+          "trimestre": "2024-T4",
+          "valor": 40.7977
+        },
+        {
+          "trimestre": "2025-T1",
+          "valor": 40.7438
+        },
+        {
+          "trimestre": "2025-T2",
+          "valor": 49.9957
+        },
+        {
+          "trimestre": "2025-T3",
+          "valor": 47.0548
+        },
+        {
+          "trimestre": "2025-T4",
+          "valor": 46.3789
+        },
+        {
+          "trimestre": "2026-T1",
+          "valor": 48.7791
+        }
+      ],
+      "pronostico": [
+        {
+          "trimestre": "2026-T2",
+          "valor": 48.364,
+          "inferior_80": 44.0137,
+          "superior_80": 52.7143
+        },
+        {
+          "trimestre": "2026-T3",
+          "valor": 46.9932,
+          "inferior_80": 42.1717,
+          "superior_80": 51.8147
+        },
+        {
+          "trimestre": "2026-T4",
+          "valor": 48.9358,
+          "inferior_80": 43.6832,
+          "superior_80": 54.1883
+        },
+        {
+          "trimestre": "2027-T1",
+          "valor": 49.0674,
+          "inferior_80": 43.4207,
+          "superior_80": 54.7141
+        }
+      ],
+      "validacion": {
+        "trimestres": [
+          "2025-T2",
+          "2025-T3",
+          "2025-T4",
+          "2026-T1"
+        ],
+        "SARIMA": {
+          "MAE": 7.182570940428851,
+          "MAPE_porcentaje": 14.876361542306121
+        },
+        "naive_estacional": {
+          "MAE": 8.0319,
+          "MAPE_porcentaje": 16.656958962286378
+        },
+        "naive": {
+          "MAE": 7.308325,
+          "MAPE_porcentaje": 15.135096020693364
+        },
+        "sarima_supera_naive_estacional": true,
+        "sarima_supera_naive": true
+      },
+      "tendencia": "Estable",
+      "cambio_porcentaje": 0.6,
+      "promedio_ultimos_4": 48.0521,
+      "promedio_pronostico_4": 48.3401
+    },
+    "magdalena": {
+      "distrito": "Magdalena",
+      "orden": [
+        0,
+        1,
+        1
+      ],
+      "orden_estacional": [
+        0,
+        1,
+        1,
+        4
+      ],
+      "aic_entrenamiento": 156.65595546102352,
+      "historia": [
+        {
+          "trimestre": "2013-T3",
+          "valor": 25.6987
+        },
+        {
+          "trimestre": "2013-T4",
+          "valor": 25.6094
+        },
+        {
+          "trimestre": "2014-T1",
+          "valor": 28.2604
+        },
+        {
+          "trimestre": "2014-T2",
+          "valor": 30.8572
+        },
+        {
+          "trimestre": "2014-T3",
+          "valor": 28.8308
+        },
+        {
+          "trimestre": "2014-T4",
+          "valor": 27.7504
+        },
+        {
+          "trimestre": "2015-T1",
+          "valor": 31.6419
+        },
+        {
+          "trimestre": "2015-T2",
+          "valor": 29.5341
+        },
+        {
+          "trimestre": "2015-T3",
+          "valor": 30.7884
+        },
+        {
+          "trimestre": "2015-T4",
+          "valor": 32.1471
+        },
+        {
+          "trimestre": "2016-T1",
+          "valor": 32.6462
+        },
+        {
+          "trimestre": "2016-T2",
+          "valor": 29.6591
+        },
+        {
+          "trimestre": "2016-T3",
+          "valor": 30.4383
+        },
+        {
+          "trimestre": "2016-T4",
+          "valor": 27.4249
+        },
+        {
+          "trimestre": "2017-T1",
+          "valor": 32.9769
+        },
+        {
+          "trimestre": "2017-T2",
+          "valor": 31.3491
+        },
+        {
+          "trimestre": "2017-T3",
+          "valor": 29.4238
+        },
+        {
+          "trimestre": "2017-T4",
+          "valor": 27.8259
+        },
+        {
+          "trimestre": "2018-T1",
+          "valor": 27.0588
+        },
+        {
+          "trimestre": "2018-T2",
+          "valor": 25.4021
+        },
+        {
+          "trimestre": "2018-T3",
+          "valor": 25.9665
+        },
+        {
+          "trimestre": "2018-T4",
+          "valor": 27.4935
+        },
+        {
+          "trimestre": "2019-T1",
+          "valor": 29.6367
+        },
+        {
+          "trimestre": "2019-T2",
+          "valor": 29.2243
+        },
+        {
+          "trimestre": "2019-T3",
+          "valor": 29.6533
+        },
+        {
+          "trimestre": "2019-T4",
+          "valor": 28.4209
+        },
+        {
+          "trimestre": "2020-T1",
+          "valor": 32.3196
+        },
+        {
+          "trimestre": "2020-T2",
+          "valor": 30.0426
+        },
+        {
+          "trimestre": "2020-T3",
+          "valor": 29.4282
+        },
+        {
+          "trimestre": "2020-T4",
+          "valor": 29.3985
+        },
+        {
+          "trimestre": "2021-T1",
+          "valor": 26.3951
+        },
+        {
+          "trimestre": "2021-T2",
+          "valor": 30.2831
+        },
+        {
+          "trimestre": "2021-T3",
+          "valor": 28.8401
+        },
+        {
+          "trimestre": "2021-T4",
+          "valor": 29.286
+        },
+        {
+          "trimestre": "2022-T1",
+          "valor": 30.9431
+        },
+        {
+          "trimestre": "2022-T2",
+          "valor": 32.2657
+        },
+        {
+          "trimestre": "2022-T3",
+          "valor": 28.4811
+        },
+        {
+          "trimestre": "2022-T4",
+          "valor": 31.1124
+        },
+        {
+          "trimestre": "2023-T1",
+          "valor": 32.6831
+        },
+        {
+          "trimestre": "2023-T2",
+          "valor": 31.6297
+        },
+        {
+          "trimestre": "2023-T3",
+          "valor": 31.0009
+        },
+        {
+          "trimestre": "2023-T4",
+          "valor": 31.8163
+        },
+        {
+          "trimestre": "2024-T1",
+          "valor": 30.819
+        },
+        {
+          "trimestre": "2024-T2",
+          "valor": 32.0568
+        },
+        {
+          "trimestre": "2024-T3",
+          "valor": 32.3421
+        },
+        {
+          "trimestre": "2024-T4",
+          "valor": 33.189
+        },
+        {
+          "trimestre": "2025-T1",
+          "valor": 32.7517
+        },
+        {
+          "trimestre": "2025-T2",
+          "valor": 33.0832
+        },
+        {
+          "trimestre": "2025-T3",
+          "valor": 33.6253
+        },
+        {
+          "trimestre": "2025-T4",
+          "valor": 32.5418
+        },
+        {
+          "trimestre": "2026-T1",
+          "valor": 33.351
+        }
+      ],
+      "pronostico": [
+        {
+          "trimestre": "2026-T2",
+          "valor": 33.5451,
+          "inferior_80": 31.2413,
+          "superior_80": 35.849
+        },
+        {
+          "trimestre": "2026-T3",
+          "valor": 32.9967,
+          "inferior_80": 30.3785,
+          "superior_80": 35.6149
+        },
+        {
+          "trimestre": "2026-T4",
+          "valor": 32.963,
+          "inferior_80": 30.0637,
+          "superior_80": 35.8623
+        },
+        {
+          "trimestre": "2027-T1",
+          "valor": 34.1219,
+          "inferior_80": 30.9679,
+          "superior_80": 37.2758
+        }
+      ],
+      "validacion": {
+        "trimestres": [
+          "2025-T2",
+          "2025-T3",
+          "2025-T4",
+          "2026-T1"
+        ],
+        "SARIMA": {
+          "MAE": 0.4256444188275097,
+          "MAPE_porcentaje": 1.2711695589539111
+        },
+        "naive_estacional": {
+          "MAE": 0.8890249999999984,
+          "MAPE_porcentaje": 2.6761073611024275
+        },
+        "naive": {
+          "MAE": 0.5035749999999997,
+          "MAPE_porcentaje": 1.510506766928812
+        },
+        "sarima_supera_naive_estacional": true,
+        "sarima_supera_naive": true
+      },
+      "tendencia": "Estable",
+      "cambio_porcentaje": 0.77,
+      "promedio_ultimos_4": 33.1503,
+      "promedio_pronostico_4": 33.4067
+    },
+    "miraflores": {
+      "distrito": "Miraflores",
+      "orden": [
+        0,
+        1,
+        1
+      ],
+      "orden_estacional": [
+        1,
+        1,
+        1,
+        4
+      ],
+      "aic_entrenamiento": 127.95088225925608,
+      "historia": [
+        {
+          "trimestre": "2013-T3",
+          "valor": 21.3422
+        },
+        {
+          "trimestre": "2013-T4",
+          "valor": 22.6957
+        },
+        {
+          "trimestre": "2014-T1",
+          "valor": 21.1004
+        },
+        {
+          "trimestre": "2014-T2",
+          "valor": 20.9788
+        },
+        {
+          "trimestre": "2014-T3",
+          "valor": 24.0037
+        },
+        {
+          "trimestre": "2014-T4",
+          "valor": 25.7623
+        },
+        {
+          "trimestre": "2015-T1",
+          "valor": 23.9241
+        },
+        {
+          "trimestre": "2015-T2",
+          "valor": 24.7084
+        },
+        {
+          "trimestre": "2015-T3",
+          "valor": 25.9336
+        },
+        {
+          "trimestre": "2015-T4",
+          "valor": 24.2441
+        },
+        {
+          "trimestre": "2016-T1",
+          "valor": 24.9436
+        },
+        {
+          "trimestre": "2016-T2",
+          "valor": 23.3642
+        },
+        {
+          "trimestre": "2016-T3",
+          "valor": 23.0232
+        },
+        {
+          "trimestre": "2016-T4",
+          "valor": 22.2218
+        },
+        {
+          "trimestre": "2017-T1",
+          "valor": 25.2233
+        },
+        {
+          "trimestre": "2017-T2",
+          "valor": 25.3117
+        },
+        {
+          "trimestre": "2017-T3",
+          "valor": 23.8705
+        },
+        {
+          "trimestre": "2017-T4",
+          "valor": 24.6814
+        },
+        {
+          "trimestre": "2018-T1",
+          "valor": 25.8491
+        },
+        {
+          "trimestre": "2018-T2",
+          "valor": 26.0406
+        },
+        {
+          "trimestre": "2018-T3",
+          "valor": 25.2153
+        },
+        {
+          "trimestre": "2018-T4",
+          "valor": 26.0394
+        },
+        {
+          "trimestre": "2019-T1",
+          "valor": 26.8716
+        },
+        {
+          "trimestre": "2019-T2",
+          "valor": 26.5267
+        },
+        {
+          "trimestre": "2019-T3",
+          "valor": 27.7423
+        },
+        {
+          "trimestre": "2019-T4",
+          "valor": 27.3047
+        },
+        {
+          "trimestre": "2020-T1",
+          "valor": 29.021
+        },
+        {
+          "trimestre": "2020-T2",
+          "valor": 26.941
+        },
+        {
+          "trimestre": "2020-T3",
+          "valor": 23.9736
+        },
+        {
+          "trimestre": "2020-T4",
+          "valor": 24.9544
+        },
+        {
+          "trimestre": "2021-T1",
+          "valor": 26.0621
+        },
+        {
+          "trimestre": "2021-T2",
+          "valor": 25.3544
+        },
+        {
+          "trimestre": "2021-T3",
+          "valor": 24.7454
+        },
+        {
+          "trimestre": "2021-T4",
+          "valor": 27.2688
+        },
+        {
+          "trimestre": "2022-T1",
+          "valor": 28.4164
+        },
+        {
+          "trimestre": "2022-T2",
+          "valor": 27.6752
+        },
+        {
+          "trimestre": "2022-T3",
+          "valor": 27.3852
+        },
+        {
+          "trimestre": "2022-T4",
+          "valor": 28.211
+        },
+        {
+          "trimestre": "2023-T1",
+          "valor": 29.0108
+        },
+        {
+          "trimestre": "2023-T2",
+          "valor": 29.1701
+        },
+        {
+          "trimestre": "2023-T3",
+          "valor": 30.0437
+        },
+        {
+          "trimestre": "2023-T4",
+          "valor": 28.6602
+        },
+        {
+          "trimestre": "2024-T1",
+          "valor": 30.2375
+        },
+        {
+          "trimestre": "2024-T2",
+          "valor": 30.4821
+        },
+        {
+          "trimestre": "2024-T3",
+          "valor": 30.3751
+        },
+        {
+          "trimestre": "2024-T4",
+          "valor": 27.6425
+        },
+        {
+          "trimestre": "2025-T1",
+          "valor": 30.6602
+        },
+        {
+          "trimestre": "2025-T2",
+          "valor": 32.5416
+        },
+        {
+          "trimestre": "2025-T3",
+          "valor": 35.4493
+        },
+        {
+          "trimestre": "2025-T4",
+          "valor": 33.6228
+        },
+        {
+          "trimestre": "2026-T1",
+          "valor": 33.3846
+        }
+      ],
+      "pronostico": [
+        {
+          "trimestre": "2026-T2",
+          "valor": 33.9948,
+          "inferior_80": 32.224,
+          "superior_80": 35.7655
+        },
+        {
+          "trimestre": "2026-T3",
+          "valor": 34.9005,
+          "inferior_80": 32.4555,
+          "superior_80": 37.3455
+        },
+        {
+          "trimestre": "2026-T4",
+          "valor": 34.1145,
+          "inferior_80": 31.1459,
+          "superior_80": 37.0831
+        },
+        {
+          "trimestre": "2027-T1",
+          "valor": 34.8853,
+          "inferior_80": 31.4726,
+          "superior_80": 38.298
+        }
+      ],
+      "validacion": {
+        "trimestres": [
+          "2025-T2",
+          "2025-T3",
+          "2025-T4",
+          "2026-T1"
+        ],
+        "SARIMA": {
+          "MAE": 3.802547358330048,
+          "MAPE_porcentaje": 11.164270780144072
+        },
+        "naive_estacional": {
+          "MAE": 3.959600000000001,
+          "MAPE_porcentaje": 11.647469381494973
+        },
+        "naive": {
+          "MAE": 3.0893750000000004,
+          "MAPE_porcentaje": 9.065792790940838
+        },
+        "sarima_supera_naive_estacional": true,
+        "sarima_supera_naive": false
+      },
+      "tendencia": "Al alza",
+      "cambio_porcentaje": 2.15,
+      "promedio_ultimos_4": 33.7496,
+      "promedio_pronostico_4": 34.4738
+    },
+    "promedio": {
+      "distrito": "Promedio",
+      "orden": [
+        0,
+        1,
+        1
+      ],
+      "orden_estacional": [
+        0,
+        1,
+        1,
+        4
+      ],
+      "aic_entrenamiento": 108.38070368341691,
+      "historia": [
+        {
+          "trimestre": "2013-T3",
+          "valor": 22.63
+        },
+        {
+          "trimestre": "2013-T4",
+          "valor": 23.2408
+        },
+        {
+          "trimestre": "2014-T1",
+          "valor": 22.1893
+        },
+        {
+          "trimestre": "2014-T2",
+          "valor": 22.5294
+        },
+        {
+          "trimestre": "2014-T3",
+          "valor": 23.2469
+        },
+        {
+          "trimestre": "2014-T4",
+          "valor": 24.4163
+        },
+        {
+          "trimestre": "2015-T1",
+          "valor": 23.5763
+        },
+        {
+          "trimestre": "2015-T2",
+          "valor": 23.8225
+        },
+        {
+          "trimestre": "2015-T3",
+          "valor": 25.7698
+        },
+        {
+          "trimestre": "2015-T4",
+          "valor": 25.1885
+        },
+        {
+          "trimestre": "2016-T1",
+          "valor": 26.0409
+        },
+        {
+          "trimestre": "2016-T2",
+          "valor": 24.6518
+        },
+        {
+          "trimestre": "2016-T3",
+          "valor": 23.4163
+        },
+        {
+          "trimestre": "2016-T4",
+          "valor": 24.1956
+        },
+        {
+          "trimestre": "2017-T1",
+          "valor": 25.1866
+        },
+        {
+          "trimestre": "2017-T2",
+          "valor": 22.8934
+        },
+        {
+          "trimestre": "2017-T3",
+          "valor": 23.2654
+        },
+        {
+          "trimestre": "2017-T4",
+          "valor": 24.5488
+        },
+        {
+          "trimestre": "2018-T1",
+          "valor": 25.136
+        },
+        {
+          "trimestre": "2018-T2",
+          "valor": 26.6451
+        },
+        {
+          "trimestre": "2018-T3",
+          "valor": 25.2954
+        },
+        {
+          "trimestre": "2018-T4",
+          "valor": 26.5941
+        },
+        {
+          "trimestre": "2019-T1",
+          "valor": 27.0982
+        },
+        {
+          "trimestre": "2019-T2",
+          "valor": 26.5736
+        },
+        {
+          "trimestre": "2019-T3",
+          "valor": 27.5133
+        },
+        {
+          "trimestre": "2019-T4",
+          "valor": 26.8505
+        },
+        {
+          "trimestre": "2020-T1",
+          "valor": 29.105
+        },
+        {
+          "trimestre": "2020-T2",
+          "valor": 27.1505
+        },
+        {
+          "trimestre": "2020-T3",
+          "valor": 28.108
+        },
+        {
+          "trimestre": "2020-T4",
+          "valor": 26.6176
+        },
+        {
+          "trimestre": "2021-T1",
+          "valor": 27.0809
+        },
+        {
+          "trimestre": "2021-T2",
+          "valor": 27.195
+        },
+        {
+          "trimestre": "2021-T3",
+          "valor": 27.6011
+        },
+        {
+          "trimestre": "2021-T4",
+          "valor": 28.5449
+        },
+        {
+          "trimestre": "2022-T1",
+          "valor": 27.9462
+        },
+        {
+          "trimestre": "2022-T2",
+          "valor": 28.8333
+        },
+        {
+          "trimestre": "2022-T3",
+          "valor": 29.2456
+        },
+        {
+          "trimestre": "2022-T4",
+          "valor": 29.1818
+        },
+        {
+          "trimestre": "2023-T1",
+          "valor": 29.7079
+        },
+        {
+          "trimestre": "2023-T2",
+          "valor": 28.3546
+        },
+        {
+          "trimestre": "2023-T3",
+          "valor": 29.2037
+        },
+        {
+          "trimestre": "2023-T4",
+          "valor": 29.5556
+        },
+        {
+          "trimestre": "2024-T1",
+          "valor": 30.2213
+        },
+        {
+          "trimestre": "2024-T2",
+          "valor": 30.1888
+        },
+        {
+          "trimestre": "2024-T3",
+          "valor": 31.0969
+        },
+        {
+          "trimestre": "2024-T4",
+          "valor": 30.7784
+        },
+        {
+          "trimestre": "2025-T1",
+          "valor": 31.2684
+        },
+        {
+          "trimestre": "2025-T2",
+          "valor": 32.5032
+        },
+        {
+          "trimestre": "2025-T3",
+          "valor": 31.5179
+        },
+        {
+          "trimestre": "2025-T4",
+          "valor": 31.9019
+        },
+        {
+          "trimestre": "2026-T1",
+          "valor": 31.4238
+        }
+      ],
+      "pronostico": [
+        {
+          "trimestre": "2026-T2",
+          "valor": 31.6408,
+          "inferior_80": 30.4123,
+          "superior_80": 32.8692
+        },
+        {
+          "trimestre": "2026-T3",
+          "valor": 31.969,
+          "inferior_80": 30.5906,
+          "superior_80": 33.3475
+        },
+        {
+          "trimestre": "2026-T4",
+          "valor": 32.2657,
+          "inferior_80": 30.7514,
+          "superior_80": 33.78
+        },
+        {
+          "trimestre": "2027-T1",
+          "valor": 32.6015,
+          "inferior_80": 30.9639,
+          "superior_80": 34.2392
+        }
+      ],
+      "validacion": {
+        "trimestres": [
+          "2025-T2",
+          "2025-T3",
+          "2025-T4",
+          "2026-T1"
+        ],
+        "SARIMA": {
+          "MAE": 0.6703107883171144,
+          "MAPE_porcentaje": 2.086671543711307
+        },
+        "naive_estacional": {
+          "MAE": 1.0035749999999997,
+          "MAPE_porcentaje": 3.118135500523614
+        },
+        "naive": {
+          "MAE": 0.5683000000000007,
+          "MAPE_porcentaje": 1.7677322448464365
+        },
+        "sarima_supera_naive_estacional": true,
+        "sarima_supera_naive": false
+      },
+      "tendencia": "Estable",
+      "cambio_porcentaje": 0.89,
+      "promedio_ultimos_4": 31.8367,
+      "promedio_pronostico_4": 32.1193
+    },
+    "pueblo libre": {
+      "distrito": "Pueblo Libre",
+      "orden": [
+        0,
+        1,
+        1
+      ],
+      "orden_estacional": [
+        0,
+        1,
+        1,
+        4
+      ],
+      "aic_entrenamiento": 157.14077632893287,
+      "historia": [
+        {
+          "trimestre": "2013-T3",
+          "valor": 22.0787
+        },
+        {
+          "trimestre": "2013-T4",
+          "valor": 21.1379
+        },
+        {
+          "trimestre": "2014-T1",
+          "valor": 20.8598
+        },
+        {
+          "trimestre": "2014-T2",
+          "valor": 21.2699
+        },
+        {
+          "trimestre": "2014-T3",
+          "valor": 21.377
+        },
+        {
+          "trimestre": "2014-T4",
+          "valor": 20.2332
+        },
+        {
+          "trimestre": "2015-T1",
+          "valor": 25.5424
+        },
+        {
+          "trimestre": "2015-T2",
+          "valor": 20.8796
+        },
+        {
+          "trimestre": "2015-T3",
+          "valor": 24.785
+        },
+        {
+          "trimestre": "2015-T4",
+          "valor": 23.3934
+        },
+        {
+          "trimestre": "2016-T1",
+          "valor": 23.6436
+        },
+        {
+          "trimestre": "2016-T2",
+          "valor": 24.2582
+        },
+        {
+          "trimestre": "2016-T3",
+          "valor": 28.6643
+        },
+        {
+          "trimestre": "2016-T4",
+          "valor": 24.359
+        },
+        {
+          "trimestre": "2017-T1",
+          "valor": 24.4777
+        },
+        {
+          "trimestre": "2017-T2",
+          "valor": 26.1296
+        },
+        {
+          "trimestre": "2017-T3",
+          "valor": 24.4668
+        },
+        {
+          "trimestre": "2017-T4",
+          "valor": 24.4531
+        },
+        {
+          "trimestre": "2018-T1",
+          "valor": 27.3433
+        },
+        {
+          "trimestre": "2018-T2",
+          "valor": 27.5471
+        },
+        {
+          "trimestre": "2018-T3",
+          "valor": 28.8908
+        },
+        {
+          "trimestre": "2018-T4",
+          "valor": 25.9112
+        },
+        {
+          "trimestre": "2019-T1",
+          "valor": 29.2782
+        },
+        {
+          "trimestre": "2019-T2",
+          "valor": 29.0026
+        },
+        {
+          "trimestre": "2019-T3",
+          "valor": 30.9773
+        },
+        {
+          "trimestre": "2019-T4",
+          "valor": 26.0886
+        },
+        {
+          "trimestre": "2020-T1",
+          "valor": 32.0873
+        },
+        {
+          "trimestre": "2020-T2",
+          "valor": 30.9543
+        },
+        {
+          "trimestre": "2020-T3",
+          "valor": 31.7476
+        },
+        {
+          "trimestre": "2020-T4",
+          "valor": 26.0305
+        },
+        {
+          "trimestre": "2021-T1",
+          "valor": 27.0938
+        },
+        {
+          "trimestre": "2021-T2",
+          "valor": 28.096
+        },
+        {
+          "trimestre": "2021-T3",
+          "valor": 27.7825
+        },
+        {
+          "trimestre": "2021-T4",
+          "valor": 25.2304
+        },
+        {
+          "trimestre": "2022-T1",
+          "valor": 28.4527
+        },
+        {
+          "trimestre": "2022-T2",
+          "valor": 28.6721
+        },
+        {
+          "trimestre": "2022-T3",
+          "valor": 29.9348
+        },
+        {
+          "trimestre": "2022-T4",
+          "valor": 30.7191
+        },
+        {
+          "trimestre": "2023-T1",
+          "valor": 33.3891
+        },
+        {
+          "trimestre": "2023-T2",
+          "valor": 30.2618
+        },
+        {
+          "trimestre": "2023-T3",
+          "valor": 29.3456
+        },
+        {
+          "trimestre": "2023-T4",
+          "valor": 31.2601
+        },
+        {
+          "trimestre": "2024-T1",
+          "valor": 30.9689
+        },
+        {
+          "trimestre": "2024-T2",
+          "valor": 32.7875
+        },
+        {
+          "trimestre": "2024-T3",
+          "valor": 34.6097
+        },
+        {
+          "trimestre": "2024-T4",
+          "valor": 30.4937
+        },
+        {
+          "trimestre": "2025-T1",
+          "valor": 32.808
+        },
+        {
+          "trimestre": "2025-T2",
+          "valor": 31.2935
+        },
+        {
+          "trimestre": "2025-T3",
+          "valor": 28.7674
+        },
+        {
+          "trimestre": "2025-T4",
+          "valor": 37.3713
+        },
+        {
+          "trimestre": "2026-T1",
+          "valor": 31.6037
+        }
+      ],
+      "pronostico": [
+        {
+          "trimestre": "2026-T2",
+          "valor": 33.2298,
+          "inferior_80": 30.2539,
+          "superior_80": 36.2057
+        },
+        {
+          "trimestre": "2026-T3",
+          "valor": 33.7536,
+          "inferior_80": 30.7203,
+          "superior_80": 36.7869
+        },
+        {
+          "trimestre": "2026-T4",
+          "valor": 33.2049,
+          "inferior_80": 30.114,
+          "superior_80": 36.2958
+        },
+        {
+          "trimestre": "2027-T1",
+          "valor": 34.2802,
+          "inferior_80": 31.1341,
+          "superior_80": 37.4263
+        }
+      ],
+      "validacion": {
+        "trimestres": [
+          "2025-T2",
+          "2025-T3",
+          "2025-T4",
+          "2026-T1"
+        ],
+        "SARIMA": {
+          "MAE": 3.705897739565562,
+          "MAPE_porcentaje": 11.483017107394687
+        },
+        "naive_estacional": {
+          "MAE": 3.854549999999999,
+          "MAPE_porcentaje": 11.824240910562331
+        },
+        "naive": {
+          "MAE": 2.8306749999999994,
+          "MAPE_porcentaje": 8.726690058765643
+        },
+        "sarima_supera_naive_estacional": true,
+        "sarima_supera_naive": false
+      },
+      "tendencia": "Al alza",
+      "cambio_porcentaje": 4.21,
+      "promedio_ultimos_4": 32.259,
+      "promedio_pronostico_4": 33.6171
+    },
+    "san borja": {
+      "distrito": "San Borja",
+      "orden": [
+        1,
+        1,
+        1
+      ],
+      "orden_estacional": [
+        0,
+        1,
+        1,
+        4
+      ],
+      "aic_entrenamiento": 145.36952022792303,
+      "historia": [
+        {
+          "trimestre": "2013-T3",
+          "valor": 19.8014
+        },
+        {
+          "trimestre": "2013-T4",
+          "valor": 19.7644
+        },
+        {
+          "trimestre": "2014-T1",
+          "valor": 21.1128
+        },
+        {
+          "trimestre": "2014-T2",
+          "valor": 19.461
+        },
+        {
+          "trimestre": "2014-T3",
+          "valor": 19.6382
+        },
+        {
+          "trimestre": "2014-T4",
+          "valor": 19.2633
+        },
+        {
+          "trimestre": "2015-T1",
+          "valor": 20.9133
+        },
+        {
+          "trimestre": "2015-T2",
+          "valor": 20.5662
+        },
+        {
+          "trimestre": "2015-T3",
+          "valor": 21.9911
+        },
+        {
+          "trimestre": "2015-T4",
+          "valor": 20.5075
+        },
+        {
+          "trimestre": "2016-T1",
+          "valor": 22.8817
+        },
+        {
+          "trimestre": "2016-T2",
+          "valor": 20.732
+        },
+        {
+          "trimestre": "2016-T3",
+          "valor": 21.5416
+        },
+        {
+          "trimestre": "2016-T4",
+          "valor": 22.7911
+        },
+        {
+          "trimestre": "2017-T1",
+          "valor": 20.4457
+        },
+        {
+          "trimestre": "2017-T2",
+          "valor": 20.468
+        },
+        {
+          "trimestre": "2017-T3",
+          "valor": 21.2397
+        },
+        {
+          "trimestre": "2017-T4",
+          "valor": 22.4439
+        },
+        {
+          "trimestre": "2018-T1",
+          "valor": 23.3862
+        },
+        {
+          "trimestre": "2018-T2",
+          "valor": 22.5336
+        },
+        {
+          "trimestre": "2018-T3",
+          "valor": 23.6786
+        },
+        {
+          "trimestre": "2018-T4",
+          "valor": 24.3247
+        },
+        {
+          "trimestre": "2019-T1",
+          "valor": 23.0216
+        },
+        {
+          "trimestre": "2019-T2",
+          "valor": 23.2808
+        },
+        {
+          "trimestre": "2019-T3",
+          "valor": 22.8436
+        },
+        {
+          "trimestre": "2019-T4",
+          "valor": 25.0041
+        },
+        {
+          "trimestre": "2020-T1",
+          "valor": 24.2613
+        },
+        {
+          "trimestre": "2020-T2",
+          "valor": 25.6978
+        },
+        {
+          "trimestre": "2020-T3",
+          "valor": 24.7623
+        },
+        {
+          "trimestre": "2020-T4",
+          "valor": 21.3484
+        },
+        {
+          "trimestre": "2021-T1",
+          "valor": 24.6258
+        },
+        {
+          "trimestre": "2021-T2",
+          "valor": 23.1727
+        },
+        {
+          "trimestre": "2021-T3",
+          "valor": 23.996
+        },
+        {
+          "trimestre": "2021-T4",
+          "valor": 21.7553
+        },
+        {
+          "trimestre": "2022-T1",
+          "valor": 25.4557
+        },
+        {
+          "trimestre": "2022-T2",
+          "valor": 26.4697
+        },
+        {
+          "trimestre": "2022-T3",
+          "valor": 25.7522
+        },
+        {
+          "trimestre": "2022-T4",
+          "valor": 23.8923
+        },
+        {
+          "trimestre": "2023-T1",
+          "valor": 25.9945
+        },
+        {
+          "trimestre": "2023-T2",
+          "valor": 25.4322
+        },
+        {
+          "trimestre": "2023-T3",
+          "valor": 25.9718
+        },
+        {
+          "trimestre": "2023-T4",
+          "valor": 25.937
+        },
+        {
+          "trimestre": "2024-T1",
+          "valor": 28.0834
+        },
+        {
+          "trimestre": "2024-T2",
+          "valor": 29.955
+        },
+        {
+          "trimestre": "2024-T3",
+          "valor": 31.661
+        },
+        {
+          "trimestre": "2024-T4",
+          "valor": 26.8294
+        },
+        {
+          "trimestre": "2025-T1",
+          "valor": 25.6756
+        },
+        {
+          "trimestre": "2025-T2",
+          "valor": 28.1881
+        },
+        {
+          "trimestre": "2025-T3",
+          "valor": 29.8651
+        },
+        {
+          "trimestre": "2025-T4",
+          "valor": 29.2412
+        },
+        {
+          "trimestre": "2026-T1",
+          "valor": 31.8923
+        }
+      ],
+      "pronostico": [
+        {
+          "trimestre": "2026-T2",
+          "valor": 30.904,
+          "inferior_80": 28.8708,
+          "superior_80": 32.9373
+        },
+        {
+          "trimestre": "2026-T3",
+          "valor": 31.1588,
+          "inferior_80": 28.9418,
+          "superior_80": 33.3758
+        },
+        {
+          "trimestre": "2026-T4",
+          "valor": 29.5701,
+          "inferior_80": 27.291,
+          "superior_80": 31.8493
+        },
+        {
+          "trimestre": "2027-T1",
+          "valor": 30.934,
+          "inferior_80": 28.6172,
+          "superior_80": 33.2509
+        }
+      ],
+      "validacion": {
+        "trimestres": [
+          "2025-T2",
+          "2025-T3",
+          "2025-T4",
+          "2026-T1"
+        ],
+        "SARIMA": {
+          "MAE": 2.0007899036132955,
+          "MAPE_porcentaje": 6.562374920164723
+        },
+        "naive_estacional": {
+          "MAE": 3.0478249999999996,
+          "MAPE_porcentaje": 10.005591467409053
+        },
+        "naive": {
+          "MAE": 4.121075,
+          "MAPE_porcentaje": 13.656990579196716
+        },
+        "sarima_supera_naive_estacional": true,
+        "sarima_supera_naive": true
+      },
+      "tendencia": "Al alza",
+      "cambio_porcentaje": 2.84,
+      "promedio_ultimos_4": 29.7967,
+      "promedio_pronostico_4": 30.6418
+    },
+    "san isidro": {
+      "distrito": "San Isidro",
+      "orden": [
+        1,
+        1,
+        1
+      ],
+      "orden_estacional": [
+        0,
+        1,
+        1,
+        4
+      ],
+      "aic_entrenamiento": 159.77037675835666,
+      "historia": [
+        {
+          "trimestre": "2013-T3",
+          "valor": 17.5064
+        },
+        {
+          "trimestre": "2013-T4",
+          "valor": 18.4565
+        },
+        {
+          "trimestre": "2014-T1",
+          "valor": 18.5179
+        },
+        {
+          "trimestre": "2014-T2",
+          "valor": 18.325
+        },
+        {
+          "trimestre": "2014-T3",
+          "valor": 19.0283
+        },
+        {
+          "trimestre": "2014-T4",
+          "valor": 19.9832
+        },
+        {
+          "trimestre": "2015-T1",
+          "valor": 20.285
+        },
+        {
+          "trimestre": "2015-T2",
+          "valor": 19.4601
+        },
+        {
+          "trimestre": "2015-T3",
+          "valor": 18.6372
+        },
+        {
+          "trimestre": "2015-T4",
+          "valor": 20.4056
+        },
+        {
+          "trimestre": "2016-T1",
+          "valor": 22.853
+        },
+        {
+          "trimestre": "2016-T2",
+          "valor": 21.6126
+        },
+        {
+          "trimestre": "2016-T3",
+          "valor": 18.6952
+        },
+        {
+          "trimestre": "2016-T4",
+          "valor": 21.4229
+        },
+        {
+          "trimestre": "2017-T1",
+          "valor": 20.0477
+        },
+        {
+          "trimestre": "2017-T2",
+          "valor": 21.0871
+        },
+        {
+          "trimestre": "2017-T3",
+          "valor": 20.297
+        },
+        {
+          "trimestre": "2017-T4",
+          "valor": 19.2799
+        },
+        {
+          "trimestre": "2018-T1",
+          "valor": 21.1552
+        },
+        {
+          "trimestre": "2018-T2",
+          "valor": 21.591
+        },
+        {
+          "trimestre": "2018-T3",
+          "valor": 22.5034
+        },
+        {
+          "trimestre": "2018-T4",
+          "valor": 21.7736
+        },
+        {
+          "trimestre": "2019-T1",
+          "valor": 22.5149
+        },
+        {
+          "trimestre": "2019-T2",
+          "valor": 21.1492
+        },
+        {
+          "trimestre": "2019-T3",
+          "valor": 21.4324
+        },
+        {
+          "trimestre": "2019-T4",
+          "valor": 21.5834
+        },
+        {
+          "trimestre": "2020-T1",
+          "valor": 24.1434
+        },
+        {
+          "trimestre": "2020-T2",
+          "valor": 22.4783
+        },
+        {
+          "trimestre": "2020-T3",
+          "valor": 21.0459
+        },
+        {
+          "trimestre": "2020-T4",
+          "valor": 23.7918
+        },
+        {
+          "trimestre": "2021-T1",
+          "valor": 24.7205
+        },
+        {
+          "trimestre": "2021-T2",
+          "valor": 20.9912
+        },
+        {
+          "trimestre": "2021-T3",
+          "valor": 23.2825
+        },
+        {
+          "trimestre": "2021-T4",
+          "valor": 25.0014
+        },
+        {
+          "trimestre": "2022-T1",
+          "valor": 33.1623
+        },
+        {
+          "trimestre": "2022-T2",
+          "valor": 29.4658
+        },
+        {
+          "trimestre": "2022-T3",
+          "valor": 27.2251
+        },
+        {
+          "trimestre": "2022-T4",
+          "valor": 27.271
+        },
+        {
+          "trimestre": "2023-T1",
+          "valor": 26.0599
+        },
+        {
+          "trimestre": "2023-T2",
+          "valor": 26.8024
+        },
+        {
+          "trimestre": "2023-T3",
+          "valor": 29.2186
+        },
+        {
+          "trimestre": "2023-T4",
+          "valor": 28.4188
+        },
+        {
+          "trimestre": "2024-T1",
+          "valor": 28.4958
+        },
+        {
+          "trimestre": "2024-T2",
+          "valor": 29.2799
+        },
+        {
+          "trimestre": "2024-T3",
+          "valor": 30.3167
+        },
+        {
+          "trimestre": "2024-T4",
+          "valor": 32.003
+        },
+        {
+          "trimestre": "2025-T1",
+          "valor": 31.696
+        },
+        {
+          "trimestre": "2025-T2",
+          "valor": 31.1693
+        },
+        {
+          "trimestre": "2025-T3",
+          "valor": 30.0338
+        },
+        {
+          "trimestre": "2025-T4",
+          "valor": 30.3603
+        },
+        {
+          "trimestre": "2026-T1",
+          "valor": 31.6935
+        }
+      ],
+      "pronostico": [
+        {
+          "trimestre": "2026-T2",
+          "valor": 31.1287,
+          "inferior_80": 28.842,
+          "superior_80": 33.4153
+        },
+        {
+          "trimestre": "2026-T3",
+          "valor": 31.1006,
+          "inferior_80": 28.4881,
+          "superior_80": 33.7131
+        },
+        {
+          "trimestre": "2026-T4",
+          "valor": 31.9748,
+          "inferior_80": 29.2205,
+          "superior_80": 34.7292
+        },
+        {
+          "trimestre": "2027-T1",
+          "valor": 33.1996,
+          "inferior_80": 30.3551,
+          "superior_80": 36.0441
+        }
+      ],
+      "validacion": {
+        "trimestres": [
+          "2025-T2",
+          "2025-T3",
+          "2025-T4",
+          "2026-T1"
+        ],
+        "SARIMA": {
+          "MAE": 0.7274800132468018,
+          "MAPE_porcentaje": 2.3591340464833586
+        },
+        "naive_estacional": {
+          "MAE": 0.9543750000000006,
+          "MAPE_porcentaje": 3.1055612427091415
+        },
+        "naive": {
+          "MAE": 0.881775000000002,
+          "MAPE_porcentaje": 2.90790460077975
+        },
+        "sarima_supera_naive_estacional": true,
+        "sarima_supera_naive": true
+      },
+      "tendencia": "Al alza",
+      "cambio_porcentaje": 3.36,
+      "promedio_ultimos_4": 30.8142,
+      "promedio_pronostico_4": 31.8509
+    },
+    "san miguel": {
+      "distrito": "San Miguel",
+      "orden": [
+        0,
+        1,
+        1
+      ],
+      "orden_estacional": [
+        0,
+        1,
+        1,
+        4
+      ],
+      "aic_entrenamiento": 129.22560228931894,
+      "historia": [
+        {
+          "trimestre": "2013-T3",
+          "valor": 20.024
+        },
+        {
+          "trimestre": "2013-T4",
+          "valor": 19.3116
+        },
+        {
+          "trimestre": "2014-T1",
+          "valor": 20.0666
+        },
+        {
+          "trimestre": "2014-T2",
+          "valor": 20.1014
+        },
+        {
+          "trimestre": "2014-T3",
+          "valor": 19.3923
+        },
+        {
+          "trimestre": "2014-T4",
+          "valor": 20.223
+        },
+        {
+          "trimestre": "2015-T1",
+          "valor": 20.3905
+        },
+        {
+          "trimestre": "2015-T2",
+          "valor": 20.9592
+        },
+        {
+          "trimestre": "2015-T3",
+          "valor": 22.4823
+        },
+        {
+          "trimestre": "2015-T4",
+          "valor": 21.7549
+        },
+        {
+          "trimestre": "2016-T1",
+          "valor": 20.3594
+        },
+        {
+          "trimestre": "2016-T2",
+          "valor": 20.2141
+        },
+        {
+          "trimestre": "2016-T3",
+          "valor": 21.1106
+        },
+        {
+          "trimestre": "2016-T4",
+          "valor": 20.9968
+        },
+        {
+          "trimestre": "2017-T1",
+          "valor": 23.9759
+        },
+        {
+          "trimestre": "2017-T2",
+          "valor": 22.8479
+        },
+        {
+          "trimestre": "2017-T3",
+          "valor": 20.5387
+        },
+        {
+          "trimestre": "2017-T4",
+          "valor": 22.9948
+        },
+        {
+          "trimestre": "2018-T1",
+          "valor": 23.7704
+        },
+        {
+          "trimestre": "2018-T2",
+          "valor": 24.2381
+        },
+        {
+          "trimestre": "2018-T3",
+          "valor": 23.2466
+        },
+        {
+          "trimestre": "2018-T4",
+          "valor": 23.9057
+        },
+        {
+          "trimestre": "2019-T1",
+          "valor": 25.1531
+        },
+        {
+          "trimestre": "2019-T2",
+          "valor": 23.2443
+        },
+        {
+          "trimestre": "2019-T3",
+          "valor": 24.4202
+        },
+        {
+          "trimestre": "2019-T4",
+          "valor": 22.815
+        },
+        {
+          "trimestre": "2020-T1",
+          "valor": 24.8988
+        },
+        {
+          "trimestre": "2020-T2",
+          "valor": 24.0072
+        },
+        {
+          "trimestre": "2020-T3",
+          "valor": 23.1974
+        },
+        {
+          "trimestre": "2020-T4",
+          "valor": 22.8431
+        },
+        {
+          "trimestre": "2021-T1",
+          "valor": 22.0687
+        },
+        {
+          "trimestre": "2021-T2",
+          "valor": 24.7293
+        },
+        {
+          "trimestre": "2021-T3",
+          "valor": 23.5761
+        },
+        {
+          "trimestre": "2021-T4",
+          "valor": 24.1432
+        },
+        {
+          "trimestre": "2022-T1",
+          "valor": 23.93
+        },
+        {
+          "trimestre": "2022-T2",
+          "valor": 26.1843
+        },
+        {
+          "trimestre": "2022-T3",
+          "valor": 25.1125
+        },
+        {
+          "trimestre": "2022-T4",
+          "valor": 23.916
+        },
+        {
+          "trimestre": "2023-T1",
+          "valor": 26.4229
+        },
+        {
+          "trimestre": "2023-T2",
+          "valor": 25.7008
+        },
+        {
+          "trimestre": "2023-T3",
+          "valor": 26.1984
+        },
+        {
+          "trimestre": "2023-T4",
+          "valor": 25.7685
+        },
+        {
+          "trimestre": "2024-T1",
+          "valor": 26.4757
+        },
+        {
+          "trimestre": "2024-T2",
+          "valor": 25.9803
+        },
+        {
+          "trimestre": "2024-T3",
+          "valor": 30.1335
+        },
+        {
+          "trimestre": "2024-T4",
+          "valor": 28.8994
+        },
+        {
+          "trimestre": "2025-T1",
+          "valor": 29.1353
+        },
+        {
+          "trimestre": "2025-T2",
+          "valor": 27.8383
+        },
+        {
+          "trimestre": "2025-T3",
+          "valor": 29.5951
+        },
+        {
+          "trimestre": "2025-T4",
+          "valor": 28.3394
+        },
+        {
+          "trimestre": "2026-T1",
+          "valor": 26.4852
+        }
+      ],
+      "pronostico": [
+        {
+          "trimestre": "2026-T2",
+          "valor": 28.4812,
+          "inferior_80": 26.7871,
+          "superior_80": 30.1752
+        },
+        {
+          "trimestre": "2026-T3",
+          "valor": 28.8503,
+          "inferior_80": 27.0803,
+          "superior_80": 30.6202
+        },
+        {
+          "trimestre": "2026-T4",
+          "valor": 28.5595,
+          "inferior_80": 26.7159,
+          "superior_80": 30.403
+        },
+        {
+          "trimestre": "2027-T1",
+          "valor": 29.0464,
+          "inferior_80": 27.1331,
+          "superior_80": 30.9596
+        }
+      ],
+      "validacion": {
+        "trimestres": [
+          "2025-T2",
+          "2025-T3",
+          "2025-T4",
+          "2026-T1"
+        ],
+        "SARIMA": {
+          "MAE": 1.4052108616123435,
+          "MAPE_porcentaje": 5.162530206539392
+        },
+        "naive_estacional": {
+          "MAE": 1.401625000000001,
+          "MAPE_porcentaje": 5.118872819366378
+        },
+        "naive": {
+          "MAE": 1.3007,
+          "MAPE_porcentaje": 4.7567768778714274
+        },
+        "sarima_supera_naive_estacional": false,
+        "sarima_supera_naive": false
+      },
+      "tendencia": "Al alza",
+      "cambio_porcentaje": 2.39,
+      "promedio_ultimos_4": 28.0645,
+      "promedio_pronostico_4": 28.7343
+    },
+    "surco": {
+      "distrito": "Surco",
+      "orden": [
+        0,
+        1,
+        1
+      ],
+      "orden_estacional": [
+        0,
+        1,
+        1,
+        4
+      ],
+      "aic_entrenamiento": 133.48658035213765,
+      "historia": [
+        {
+          "trimestre": "2013-T3",
+          "valor": 24.9814
+        },
+        {
+          "trimestre": "2013-T4",
+          "valor": 24.57
+        },
+        {
+          "trimestre": "2014-T1",
+          "valor": 25.6045
+        },
+        {
+          "trimestre": "2014-T2",
+          "valor": 25.8105
+        },
+        {
+          "trimestre": "2014-T3",
+          "valor": 23.2304
+        },
+        {
+          "trimestre": "2014-T4",
+          "valor": 25.7353
+        },
+        {
+          "trimestre": "2015-T1",
+          "valor": 26.1465
+        },
+        {
+          "trimestre": "2015-T2",
+          "valor": 26.4792
+        },
+        {
+          "trimestre": "2015-T3",
+          "valor": 26.988
+        },
+        {
+          "trimestre": "2015-T4",
+          "valor": 26.1798
+        },
+        {
+          "trimestre": "2016-T1",
+          "valor": 28.4532
+        },
+        {
+          "trimestre": "2016-T2",
+          "valor": 25.096
+        },
+        {
+          "trimestre": "2016-T3",
+          "valor": 26.4153
+        },
+        {
+          "trimestre": "2016-T4",
+          "valor": 27.0759
+        },
+        {
+          "trimestre": "2017-T1",
+          "valor": 26.1621
+        },
+        {
+          "trimestre": "2017-T2",
+          "valor": 23.9271
+        },
+        {
+          "trimestre": "2017-T3",
+          "valor": 24.5836
+        },
+        {
+          "trimestre": "2017-T4",
+          "valor": 26.4673
+        },
+        {
+          "trimestre": "2018-T1",
+          "valor": 25.4475
+        },
+        {
+          "trimestre": "2018-T2",
+          "valor": 26.9586
+        },
+        {
+          "trimestre": "2018-T3",
+          "valor": 27.9578
+        },
+        {
+          "trimestre": "2018-T4",
+          "valor": 26.0549
+        },
+        {
+          "trimestre": "2019-T1",
+          "valor": 26.5425
+        },
+        {
+          "trimestre": "2019-T2",
+          "valor": 27.8235
+        },
+        {
+          "trimestre": "2019-T3",
+          "valor": 27.2454
+        },
+        {
+          "trimestre": "2019-T4",
+          "valor": 26.8953
+        },
+        {
+          "trimestre": "2020-T1",
+          "valor": 28.8539
+        },
+        {
+          "trimestre": "2020-T2",
+          "valor": 28.0159
+        },
+        {
+          "trimestre": "2020-T3",
+          "valor": 25.5346
+        },
+        {
+          "trimestre": "2020-T4",
+          "valor": 26.2772
+        },
+        {
+          "trimestre": "2021-T1",
+          "valor": 27.1909
+        },
+        {
+          "trimestre": "2021-T2",
+          "valor": 26.1049
+        },
+        {
+          "trimestre": "2021-T3",
+          "valor": 26.5546
+        },
+        {
+          "trimestre": "2021-T4",
+          "valor": 25.77
+        },
+        {
+          "trimestre": "2022-T1",
+          "valor": 29.0159
+        },
+        {
+          "trimestre": "2022-T2",
+          "valor": 27.4643
+        },
+        {
+          "trimestre": "2022-T3",
+          "valor": 29.3803
+        },
+        {
+          "trimestre": "2022-T4",
+          "valor": 30.1621
+        },
+        {
+          "trimestre": "2023-T1",
+          "valor": 29.0382
+        },
+        {
+          "trimestre": "2023-T2",
+          "valor": 28.4771
+        },
+        {
+          "trimestre": "2023-T3",
+          "valor": 29.3612
+        },
+        {
+          "trimestre": "2023-T4",
+          "valor": 29.7019
+        },
+        {
+          "trimestre": "2024-T1",
+          "valor": 30.138
+        },
+        {
+          "trimestre": "2024-T2",
+          "valor": 29.268
+        },
+        {
+          "trimestre": "2024-T3",
+          "valor": 31.6592
+        },
+        {
+          "trimestre": "2024-T4",
+          "valor": 32.7577
+        },
+        {
+          "trimestre": "2025-T1",
+          "valor": 30.5427
+        },
+        {
+          "trimestre": "2025-T2",
+          "valor": 33.9523
+        },
+        {
+          "trimestre": "2025-T3",
+          "valor": 31.5732
+        },
+        {
+          "trimestre": "2025-T4",
+          "valor": 28.5899
+        },
+        {
+          "trimestre": "2026-T1",
+          "valor": 31.753
+        }
+      ],
+      "pronostico": [
+        {
+          "trimestre": "2026-T2",
+          "valor": 31.3256,
+          "inferior_80": 29.4094,
+          "superior_80": 33.2417
+        },
+        {
+          "trimestre": "2026-T3",
+          "valor": 31.4177,
+          "inferior_80": 29.4114,
+          "superior_80": 33.4241
+        },
+        {
+          "trimestre": "2026-T4",
+          "valor": 31.5009,
+          "inferior_80": 29.407,
+          "superior_80": 33.5948
+        },
+        {
+          "trimestre": "2027-T1",
+          "valor": 32.1664,
+          "inferior_80": 29.9901,
+          "superior_80": 34.3427
+        }
+      ],
+      "validacion": {
+        "trimestres": [
+          "2025-T2",
+          "2025-T3",
+          "2025-T4",
+          "2026-T1"
+        ],
+        "SARIMA": {
+          "MAE": 1.664297140255214,
+          "MAPE_porcentaje": 5.344617969261574
+        },
+        "naive_estacional": {
+          "MAE": 2.5370999999999997,
+          "MAPE_porcentaje": 8.114643893687484
+        },
+        "naive": {
+          "MAE": 1.9008000000000003,
+          "MAPE_porcentaje": 5.987040153075929
+        },
+        "sarima_supera_naive_estacional": true,
+        "sarima_supera_naive": true
+      },
+      "tendencia": "Estable",
+      "cambio_porcentaje": 0.43,
+      "promedio_ultimos_4": 31.4671,
+      "promedio_pronostico_4": 31.6026
+    },
+    "surquillo": {
+      "distrito": "Surquillo",
+      "orden": [
+        1,
+        1,
+        1
+      ],
+      "orden_estacional": [
+        0,
+        1,
+        1,
+        4
+      ],
+      "aic_entrenamiento": 222.57203747593908,
+      "historia": [
+        {
+          "trimestre": "2013-T3",
+          "valor": 30.0112
+        },
+        {
+          "trimestre": "2013-T4",
+          "valor": 30.3795
+        },
+        {
+          "trimestre": "2014-T1",
+          "valor": 33.2861
+        },
+        {
+          "trimestre": "2014-T2",
+          "valor": 33.3664
+        },
+        {
+          "trimestre": "2014-T3",
+          "valor": 26.3368
+        },
+        {
+          "trimestre": "2014-T4",
+          "valor": 27.446
+        },
+        {
+          "trimestre": "2015-T1",
+          "valor": 39.598
+        },
+        {
+          "trimestre": "2015-T2",
+          "valor": 35.1066
+        },
+        {
+          "trimestre": "2015-T3",
+          "valor": 31.0337
+        },
+        {
+          "trimestre": "2015-T4",
+          "valor": 32.9466
+        },
+        {
+          "trimestre": "2016-T1",
+          "valor": 36.4459
+        },
+        {
+          "trimestre": "2016-T2",
+          "valor": 30.5669
+        },
+        {
+          "trimestre": "2016-T3",
+          "valor": 35.9272
+        },
+        {
+          "trimestre": "2016-T4",
+          "valor": 42.5172
+        },
+        {
+          "trimestre": "2017-T1",
+          "valor": 41.1855
+        },
+        {
+          "trimestre": "2017-T2",
+          "valor": 37.8053
+        },
+        {
+          "trimestre": "2017-T3",
+          "valor": 39.0619
+        },
+        {
+          "trimestre": "2017-T4",
+          "valor": 34.748
+        },
+        {
+          "trimestre": "2018-T1",
+          "valor": 33.0853
+        },
+        {
+          "trimestre": "2018-T2",
+          "valor": 33.2173
+        },
+        {
+          "trimestre": "2018-T3",
+          "valor": 38.0902
+        },
+        {
+          "trimestre": "2018-T4",
+          "valor": 43.3074
+        },
+        {
+          "trimestre": "2019-T1",
+          "valor": 39.1159
+        },
+        {
+          "trimestre": "2019-T2",
+          "valor": 46.922
+        },
+        {
+          "trimestre": "2019-T3",
+          "valor": 38.9717
+        },
+        {
+          "trimestre": "2019-T4",
+          "valor": 44.2797
+        },
+        {
+          "trimestre": "2020-T1",
+          "valor": 45.9308
+        },
+        {
+          "trimestre": "2020-T2",
+          "valor": 52.2203
+        },
+        {
+          "trimestre": "2020-T3",
+          "valor": 40.8409
+        },
+        {
+          "trimestre": "2020-T4",
+          "valor": 40.5456
+        },
+        {
+          "trimestre": "2021-T1",
+          "valor": 36.1159
+        },
+        {
+          "trimestre": "2021-T2",
+          "valor": 38.6725
+        },
+        {
+          "trimestre": "2021-T3",
+          "valor": 35.4362
+        },
+        {
+          "trimestre": "2021-T4",
+          "valor": 34.3833
+        },
+        {
+          "trimestre": "2022-T1",
+          "valor": 42.7282
+        },
+        {
+          "trimestre": "2022-T2",
+          "valor": 40.1433
+        },
+        {
+          "trimestre": "2022-T3",
+          "valor": 43.1831
+        },
+        {
+          "trimestre": "2022-T4",
+          "valor": 43.4915
+        },
+        {
+          "trimestre": "2023-T1",
+          "valor": 40.0652
+        },
+        {
+          "trimestre": "2023-T2",
+          "valor": 42.5107
+        },
+        {
+          "trimestre": "2023-T3",
+          "valor": 44.6278
+        },
+        {
+          "trimestre": "2023-T4",
+          "valor": 43.979
+        },
+        {
+          "trimestre": "2024-T1",
+          "valor": 39.8658
+        },
+        {
+          "trimestre": "2024-T2",
+          "valor": 42.1345
+        },
+        {
+          "trimestre": "2024-T3",
+          "valor": 46.1716
+        },
+        {
+          "trimestre": "2024-T4",
+          "valor": 42.1827
+        },
+        {
+          "trimestre": "2025-T1",
+          "valor": 43.4059
+        },
+        {
+          "trimestre": "2025-T2",
+          "valor": 50.3498
+        },
+        {
+          "trimestre": "2025-T3",
+          "valor": 45.3271
+        },
+        {
+          "trimestre": "2025-T4",
+          "valor": 48.1953
+        },
+        {
+          "trimestre": "2026-T1",
+          "valor": 48.1795
+        }
+      ],
+      "pronostico": [
+        {
+          "trimestre": "2026-T2",
+          "valor": 48.78,
+          "inferior_80": 43.2017,
+          "superior_80": 54.3582
+        },
+        {
+          "trimestre": "2026-T3",
+          "valor": 47.0115,
+          "inferior_80": 40.9753,
+          "superior_80": 53.0478
+        },
+        {
+          "trimestre": "2026-T4",
+          "valor": 47.4569,
+          "inferior_80": 41.3177,
+          "superior_80": 53.5961
+        },
+        {
+          "trimestre": "2027-T1",
+          "valor": 47.6238,
+          "inferior_80": 41.4547,
+          "superior_80": 53.793
+        }
+      ],
+      "validacion": {
+        "trimestres": [
+          "2025-T2",
+          "2025-T3",
+          "2025-T4",
+          "2026-T1"
+        ],
+        "SARIMA": {
+          "MAE": 3.089052478213178,
+          "MAPE_porcentaje": 6.295430851051231
+        },
+        "naive_estacional": {
+          "MAE": 4.961499999999999,
+          "MAPE_porcentaje": 10.140753172878856
+        },
+        "naive": {
+          "MAE": 4.607024999999998,
+          "MAPE_porcentaje": 9.468817964737092
+        },
+        "sarima_supera_naive_estacional": true,
+        "sarima_supera_naive": true
+      },
+      "tendencia": "Estable",
+      "cambio_porcentaje": -0.61,
+      "promedio_ultimos_4": 48.0129,
+      "promedio_pronostico_4": 47.7181
+    }
+  }
+}
