@@ -22,6 +22,9 @@ export async function vistaInicio(main) {
         </h1>
         <p class="home-lead">DepaRent estima el alquiler de tu departamento en Lima con ${anuncios} anuncios reales y te dice a qué precio publicarlo.</p>
         <p class="home-fact">Error medio medido en 629 anuncios de prueba: <b>S/ 553 al mes</b>.</p>
+        <div class="hero-stage">
+        <img class="hero-foto" src="assets/balcon-en-calle-jiron-ancash-lima-peru.jpg" width="1280" height="1983" fetchpriority="high"
+          alt="Balcón de madera sobre un muro rojo en el Jirón Áncash, centro de Lima">
         <form class="cartel" data-ui aria-label="Estimador de alquiler" novalidate>
           <p class="cartel-kind">Departamento en</p>
           <label class="cartel-district"><span class="sr-only">Distrito</span>
@@ -38,6 +41,7 @@ export async function vistaInicio(main) {
           <a class="cartel-link" href="#/probar">Ver el análisis completo</a>
           <p class="cartel-foot">Informes: modelo DepaRent, anuncios de septiembre de 2026</p>
         </form>
+        </div>
       </section>
 
       <section class="home-prices" aria-labelledby="titulo-precios">
@@ -76,6 +80,8 @@ export async function vistaInicio(main) {
       <section class="home-proof" aria-labelledby="titulo-medimos">
         <div class="proof-card" data-reveal>
           <h2 id="titulo-medimos">Lo que medimos</h2>
+          <img class="proof-foto" src="assets/buildings-in-miraflores-district-lima-peru.jpg" width="1920" height="1440" loading="lazy" decoding="async"
+            alt="Edificios de departamentos sobre el acantilado de Miraflores, bajo el cielo gris de Lima">
           <p>${anuncios} anuncios&nbsp;·&nbsp;22 distritos&nbsp;·&nbsp;3,233 paraderos de la ATU&nbsp;·&nbsp;13 series del BCRP</p>
           <p>Error medio de S/ 553&nbsp;·&nbsp;el rango cubrió 92 de cada 100 precios de prueba&nbsp;·&nbsp;8 comparables por departamento</p>
           <h3>Y lo que no</h3>
@@ -84,6 +90,8 @@ export async function vistaInicio(main) {
       </section>
 
       <section class="home-carta" aria-labelledby="titulo-carta">
+        <img class="carta-fondo" src="assets/lima-peru-apartments.jpg" width="1630" height="1225" loading="lazy" decoding="async"
+          alt="Edificios de departamentos con balcones en Lima">
         <div class="carta" data-reveal>
           <h2 id="titulo-carta">La carta de alquileres</h2>
           <p class="carta-note">Para quien busca: los dos dormitorios más económicos por distrito, comparados con el precio del modelo.</p>
@@ -105,6 +113,8 @@ export async function vistaInicio(main) {
       </section>
 
       <section class="home-reply" aria-labelledby="titulo-respuesta">
+        <img class="reply-fondo" src="assets/malecon-de-miraflores-lima.jpg" width="1920" height="1440" loading="lazy" decoding="async"
+          alt="El malecón de Miraflores y el mar bajo el cielo nublado">
         <p class="reply-aside" data-reveal>¿Buscas dónde vivir? No necesitas cuenta: filtra por distrito y presupuesto, y mira si cada precio está por debajo o por encima de lo que estima el modelo. <a href="#/buscar">Buscar departamentos</a></p>
         <div class="reply-card" data-reveal style="--i:1">
           <h2 id="titulo-respuesta">Publica a tu precio</h2>
@@ -121,6 +131,12 @@ export async function vistaInicio(main) {
           <div><h3>Datos</h3><p>Anuncios de Adondevivir y Urbania, septiembre de 2026</p><p>Paraderos ATU, mayo de 2021</p><p>Series BCRP, 2013 a 2026</p></div>
           <div><h3>Curso</h3><p>DS3022 Desarrollo de Producto de Datos</p><p>UTEC, Lima · 2026-2</p></div>
         </nav>
+        <p class="credits">Fotos de Wikimedia Commons:
+          <a href="https://commons.wikimedia.org/wiki/File:Balc%C3%B3n_en_calle_Jir%C3%B3n_Ancash,_Lima,_Per%C3%BA,_2015-07-28,_DD_82.JPG">«Balcón en calle Jirón Ancash»</a> de Diego Delso, <a href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a>;
+          <a href="https://commons.wikimedia.org/wiki/File:Buildings_in_Miraflores_district,_Lima,_Peru.jpg">«Buildings in Miraflores district»</a> de Ianyou78, <a href="https://creativecommons.org/licenses/by-sa/3.0">CC BY-SA 3.0</a>;
+          <a href="https://commons.wikimedia.org/wiki/File:Lima,_Peru_Apartments.jpg">«Lima, Peru Apartments»</a> de Quado678, <a href="https://creativecommons.org/licenses/by-sa/3.0">CC BY-SA 3.0</a>;
+          <a href="https://commons.wikimedia.org/wiki/File:Malec%C3%B3n_de_Miraflores_-_Lima.jpg">«Malecón de Miraflores»</a> de Angela Vanessa Ortiz, <a href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a>.
+          Muestran Lima, no los departamentos de los anuncios.</p>
         <div class="footer-last"><p>Prototipo académico. Precios pedidos en anuncios, no contratos ni tasaciones.</p><a class="footer-top" href="#/">Volver arriba</a></div>
       </footer>
     </div>`;

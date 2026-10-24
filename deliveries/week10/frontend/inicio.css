@@ -30,8 +30,14 @@ body[data-vista="inicio"] > .footer { display: none; }
 .home-lead { left: var(--gutter); }
 .home-fact { right: var(--gutter); text-align: right; }
 
+/* El cartel sigue al centro, bajo el titular; la ventana de Lima asoma detrás, a su izquierda. */
+.hero-stage { position: relative; z-index: 1; width: max(27vw, 380px); margin-top: -1.2vw; }
+.hero-foto {
+  position: absolute; z-index: 0; top: 7%; left: -42%; width: 60%; height: auto; aspect-ratio: 3 / 4;
+  object-fit: cover; object-position: 50% 52%; rotate: -3deg;
+}
 .cartel {
-  position: relative; z-index: 1; width: max(27vw, 360px); margin-top: -1.2vw;
+  position: relative; z-index: 1; width: 100%;
   background: var(--paper); color: var(--ink); padding: 28px 28px 24px;
   display: grid; gap: 12px; text-align: center;
 }
@@ -96,17 +102,21 @@ body[data-vista="inicio"] > .footer { display: none; }
 .step-clause { margin: auto 0 0; font-size: var(--step-lead); line-height: 1.2; font-weight: 500; max-width: 18ch; }
 
 /* ---------- Lo que medimos ---------- */
-.home-proof { background: var(--ink); height: 78svh; min-height: 560px; overflow: hidden; display: grid; justify-items: center; padding-top: 96px; }
+/* La tarjeta queda cortada por el borde inferior de la sección, pero todo su texto se ve. */
+.home-proof { background: var(--ink); overflow: hidden; display: grid; justify-items: center; padding-top: 96px; }
 .proof-card {
-  width: min(56vw, 760px); aspect-ratio: 5 / 7; background: var(--paper); color: var(--ink);
-  padding: 56px; rotate: 1.5deg; text-align: center;
+  width: min(56vw, 760px); background: var(--paper); color: var(--ink);
+  padding: 56px 56px 152px; margin-bottom: -96px; rotate: 1.5deg; text-align: center;
 }
 .proof-card h2 { margin: 0 0 28px; font-size: var(--step-lead); }
+.proof-foto { width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; margin: 0 0 28px; }
 .proof-card h3 { margin: 40px 0 20px; font-size: var(--step-lead); }
 .proof-card p { margin: 0 0 12px; font-size: var(--step-lead); line-height: 1.6; font-weight: 400; }
 
 /* ---------- La carta de alquileres ---------- */
-.home-carta { background: var(--bg); padding: 160px var(--gutter); display: grid; justify-items: center; }
+.home-carta { position: relative; background: var(--ink); padding: 160px var(--gutter); display: grid; justify-items: center; overflow: hidden; }
+.carta-fondo { position: absolute; z-index: 0; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.carta { position: relative; z-index: 1; }
 .carta {
   width: min(640px, 100%); background: var(--paper); padding: 72px 64px; text-align: center;
   /* Bordes festoneados arriba y abajo, como una carta impresa. */
@@ -141,6 +151,10 @@ body[data-vista="inicio"] > .footer { display: none; }
 .about-link { background: var(--ink); color: var(--bg) !important; font-weight: 900; padding: 0 0.1em; text-decoration: none; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
 
 /* ---------- Tarjeta de respuesta ---------- */
+.reply-fondo { position: absolute; z-index: 0; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+/* Velo neutro y plano sobre la foto, para que el texto blanco se lea (el único uso permitido). */
+.home-reply::before { content: ""; position: absolute; z-index: 1; inset: 0; background: rgb(5 15 22 / 0.74); }
+.reply-aside, .reply-card { position: relative; z-index: 2; }
 .home-reply {
   position: relative; background: var(--ink); color: var(--paper); min-height: 80svh; overflow: hidden;
   display: grid; grid-template-columns: repeat(12, 1fr); column-gap: 24px; padding: 120px var(--gutter) 0;
@@ -175,6 +189,8 @@ body[data-vista="inicio"] > .footer { display: none; }
 .footer-cols a, .footer-cols p { display: block; margin: 0 0 8px; text-decoration: none; }
 /* La última columna se apoya en el margen derecho: el marco cierra igual a ambos lados. */
 .footer-cols > div:last-child { text-align: right; }
+.credits { margin: 56px 0 0; max-width: 70ch; font-size: var(--step-small); line-height: 1.6; }
+.credits a { text-decoration: underline; text-underline-offset: 0.2em; }
 .footer-last { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-top: 56px; font-size: var(--step-small); }
 .footer-last p { margin: 0; }
 .footer-top { background: var(--ink); color: var(--bg) !important; padding: 10px 16px; font-weight: 900; text-decoration: none; }
@@ -185,7 +201,7 @@ body[data-vista="inicio"] > .footer { display: none; }
 @media (prefers-reduced-motion: no-preference) {
   .js .home-title [data-line] { transform: translateY(105%); animation: line-up 900ms var(--ease-expo) forwards; animation-delay: calc(var(--i) * 110ms + 150ms); }
   .js .home :is(.home-lead, .home-fact) { opacity: 0; animation: fade-up 700ms var(--ease-out) 520ms forwards; }
-  .js .cartel { opacity: 0; transform: translateY(48px); animation: rise 1000ms var(--ease-expo) 380ms forwards; }
+  .js .hero-stage { opacity: 0; transform: translateY(48px); animation: rise 1000ms var(--ease-expo) 380ms forwards; }
   .js .home [data-reveal] {
     opacity: 0; transform: translateY(24px);
     transition: opacity 700ms var(--ease-out), transform 900ms var(--ease-expo);
@@ -210,7 +226,9 @@ body[data-vista="inicio"] > .footer { display: none; }
 @media (max-width: 900px) {
   .home-hero { padding-top: 6svh; min-height: 0; }
   .home-title { font-size: var(--step-display-phone); text-align: left; justify-self: stretch; }
-  .cartel { width: min(100%, 420px); margin-top: 24px; }
+  .hero-stage { width: min(100%, 420px); margin-top: 24px; }
+  .hero-foto { position: relative; top: 0; left: 0; width: 100%; aspect-ratio: 16 / 9; rotate: 0deg; object-position: 50% 50%; display: block; }
+  .cartel { margin-top: -24px; }
   .home-lead, .home-fact { position: static; translate: none; max-width: 36ch; margin: 32px 0 0; justify-self: stretch; text-align: left; order: 2; }
   .home-fact { margin: 12px 0 64px; }
   .home-prices { padding: 96px var(--gutter); }
