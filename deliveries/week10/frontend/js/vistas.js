@@ -1,51 +1,46 @@
 import { llamar, obtenerOpciones, guardarSesion, sesion } from "./api.js";
 import { mostrarAnalisis } from "./analisis.js";
 import { formularioVivienda } from "./formulario.js";
-import { $, esc, num, pct, soles, titulo, conBoton, mensaje, ETIQUETAS_AMENIDAD } from "./util.js";
+import { $, $$, esc, num, pct, soles, titulo, conBoton, mensaje, ETIQUETAS_AMENIDAD } from "./util.js";
 
 const irA = (ruta) => { location.hash = ruta; };
+const banos = (n) => `${num(n)} ${n === 1 ? "baño" : "baños"}`;
+const dorms = (n) => `${num(n)} dorm.`;
+const filaTitulo = (h1, sub, acciones = "") =>
+  `<div class="title-row"><div><h1>${h1}</h1>${sub ? `<p class="sub">${sub}</p>` : ""}</div>${acciones ? `<div class="title-actions">${acciones}</div>` : ""}</div>`;
 
 /* ---------- Ingreso y registro ---------- */
 
-export function vistaIngresar(main, params) {
+export function vistaIngresar(lienzo, params) {
   if (sesion()) return irA("#/mis-departamentos");
-  const modo = params.get("modo") === "registro" ? "registro" : "ingreso";
-  main.innerHTML = `
-    <section class="container auth">
-      <div class="auth-side">
-        <p class="eyebrow light">Para propietarios</p>
-        <h1>Tu cartera de departamentos, con precio respaldado por datos</h1>
-        <ul class="checks">
-          <li>Guarda tus departamentos y vuelve a su análisis cuando quieras.</li>
-          <li>Compara con anuncios parecidos y revisa la tendencia de tu distrito.</li>
-          <li>Publica con un precio competitivo, equilibrado o de renta superior.</li>
-        </ul>
-      </div>
-      <div class="card auth-card">
-        <nav class="tabs">
-          <a class="tab ${modo === "ingreso" ? "active" : ""}" href="#/ingresar">Ingresar</a>
-          <a class="tab ${modo === "registro" ? "active" : ""}" href="#/ingresar?modo=registro">Crear cuenta</a>
-        </nav>
-        <form class="auth-form" novalidate>
-          ${modo === "registro" ? '<label class="field"><span>Nombre</span><input name="nombre" autocomplete="name" required></label>' : ""}
-          <label class="field"><span>Correo</span><input name="email" type="email" autocomplete="email" required></label>
-          <label class="field"><span>Contraseña</span><input name="password" type="password" minlength="8"
-            autocomplete="${modo === "registro" ? "new-password" : "current-password"}" required></label>
-          ${modo === "registro" ? '<p class="hint">Mínimo 8 caracteres. Es un prototipo académico: no reutilices una contraseña importante.</p>' : ""}
-          <button class="btn primary block" type="submit">${modo === "registro" ? "Crear cuenta" : "Ingresar"}</button>
-          <div class="form-msg"></div>
-        </form>
-      </div>
+  const registro = params.get("modo") === "registro";
+  const siguiente = params.get("siguiente");
+  const enlace = (modo) => `#/ingresar${modo ? "?modo=registro" : ""}${siguiente ? `${modo ? "&" : "?"}siguiente=${encodeURIComponent(siguiente)}` : ""}`;
+  lienzo.innerHTML = `
+    ${filaTitulo(registro ? "Crear cuenta" : "Ingresar", "Guarda tus departamentos, revisa su análisis y publícalos con el precio que elijas.")}
+    <section class="panel auth-panel">
+      <nav class="tabs" aria-label="Ingreso o registro">
+        <a href="${enlace(false)}" aria-selected="${!registro}">Ingresar</a>
+        <a href="${enlace(true)}" aria-selected="${registro}">Crear cuenta</a>
+      </nav>
+      <form class="auth-form" novalidate>
+        ${registro ? '<div class="field"><label for="a-nombre">Nombre</label><input class="input" id="a-nombre" name="nombre" autocomplete="name" required></div>' : ""}
+        <div class="field"><label for="a-email">Correo</label><input class="input" id="a-email" name="email" type="email" autocomplete="email" required></div>
+        <div class="field"><label for="a-pass">Contraseña</label><input class="input" id="a-pass" name="password" type="password" minlength="8"
+          autocomplete="${registro ? "new-password" : "current-password"}" required>
+          ${registro ? '<p class="hint">Mínimo 8 caracteres. Es un prototipo académico: no reutilices una contraseña importante.</p>' : ""}</div>
+        <button class="btn primary block" type="submit">${registro ? "Crear cuenta" : "Ingresar"}</button>
+        <div class="form-msg" role="alert"></div>
+      </form>
     </section>`;
-  const form = $(".auth-form", main);
+  const form = $(".auth-form", lienzo);
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const datos = Object.fromEntries(new FormData(form));
     try {
       const r = await conBoton($("button", form), "Un momento…", () =>
-        llamar(modo === "registro" ? "/api/cuentas/registro" : "/api/cuentas/ingreso", { cuerpo: datos }));
+        llamar(registro ? "/api/cuentas/registro" : "/api/cuentas/ingreso", { cuerpo: Object.fromEntries(new FormData(form)) }));
       guardarSesion({ token: r.token, usuario: r.usuario });
-      irA(params.get("siguiente") || "#/mis-departamentos");
+      irA(siguiente || "#/mis-departamentos");
     } catch (err) {
       mensaje($(".form-msg", form), err.message);
     }
@@ -58,59 +53,60 @@ export async function cerrarSesion() {
   irA("#/");
 }
 
-/* ---------- Propietario ---------- */
+/* ---------- Mis departamentos: ¿cuáles están publicados y a qué precio? ---------- */
 
-function encabezado(tituloTexto, subtitulo, acciones = "") {
-  return `<div class="page-head"><div><h1>${tituloTexto}</h1>${subtitulo ? `<p class="muted">${subtitulo}</p>` : ""}</div>${acciones}</div>`;
-}
-
-export async function vistaMisDepartamentos(main) {
-  const usuario = sesion().usuario;
-  main.innerHTML = `<section class="container page">${encabezado(`Hola, ${esc(usuario.nombre.split(" ")[0])}`, "Tus departamentos registrados en DepaRent",
-    '<a class="btn primary" href="#/mis-departamentos/nuevo">+ Agregar departamento</a>')}<div class="lista-deptos"><p class="muted">Cargando…</p></div></section>`;
-  const lista = $(".lista-deptos", main);
+export async function vistaMisDepartamentos(lienzo) {
+  const accion = '<a class="btn primary" href="#/mis-departamentos/nuevo">Agregar departamento</a>';
+  lienzo.innerHTML = filaTitulo("Mis departamentos", '<span class="skeleton">Cargando tus departamentos</span>', accion) + '<div data-lista></div>';
   const deptos = await llamar("/api/departamentos");
-  if (!deptos.length) {
-    lista.innerHTML = `<div class="card empty-state">
-      <div class="empty-icon" aria-hidden="true">🏠</div>
-      <h2>Todavía no registras departamentos</h2>
-      <p>Agrega el primero: con sus características calculamos el precio esperado, sus comparables y tres precios de publicación.</p>
-      <a class="btn primary" href="#/mis-departamentos/nuevo">Agregar mi primer departamento</a></div>`;
-    return;
+  const publicados = deptos.filter((d) => d.publicacion);
+  const sub = deptos.length
+    ? `${deptos.length} departamento${deptos.length > 1 ? "s" : ""} · ${publicados.length ? `${publicados.length} publicado${publicados.length > 1 ? "s" : ""} por ${soles(publicados.reduce((t, d) => t + d.publicacion.precio_soles, 0))} al mes en total` : "ninguno publicado todavía"}`
+    : "Agrega el primero para ver su precio esperado y a cuánto publicarlo.";
+  $(".title-row .sub", lienzo).textContent = sub;
+  const grupos = { todos: deptos, publicados, borradores: deptos.filter((d) => !d.publicacion) };
+  let filtro = "todos";
+  const destino = $("[data-lista]", lienzo);
+  function dibujar() {
+    const filas = grupos[filtro];
+    destino.innerHTML = `
+      <div class="counts" role="group" aria-label="Filtrar por estado">
+        ${[["todos", "Todos"], ["publicados", "Publicados"], ["borradores", "Borradores"]].map(([k, t]) =>
+          `<button class="count" type="button" data-filtro="${k}" aria-pressed="${k === filtro}"><span>${t}</span><b>${grupos[k].length}</b></button>`).join("")}
+      </div>
+      <section class="panel" aria-label="Lista de departamentos">
+        ${filas.length ? `<div class="table-wrap"><table class="list-table">
+          <thead><tr><th>Departamento</th><th class="n">Precio esperado</th><th class="n">Sugerido</th><th>Estado</th><th class="n">Publicado a</th></tr></thead>
+          <tbody>${filas.map(filaDepartamento).join("")}</tbody></table></div>`
+          : `<div class="empty">${deptos.length ? `<p>${filtro === "publicados" ? "Ningún departamento publicado todavía. Ábrelo y elige un precio de publicación." : "No hay borradores: todos están publicados."}</p>`
+            : '<p>Todavía no registras departamentos.</p><a class="btn primary" href="#/mis-departamentos/nuevo">Agregar mi primer departamento</a>'}</div>`}
+      </section>`;
+    $$("[data-filtro]", destino).forEach((b) => b.addEventListener("click", () => { filtro = b.dataset.filtro; dibujar(); }));
+    $$("tr[data-href]", destino).forEach((tr) => tr.addEventListener("click", (e) => { if (!e.target.closest("a")) irA(tr.dataset.href); }));
   }
-  const publicados = deptos.filter((d) => d.publicacion).length;
-  lista.innerHTML = `<div class="summary-bar"><span><b>${deptos.length}</b> departamento${deptos.length > 1 ? "s" : ""}</span>
-      <span><b>${publicados}</b> publicado${publicados === 1 ? "" : "s"}</span></div>
-    <div class="cards-grid">${deptos.map(tarjetaDepartamento).join("")}</div>`;
+  dibujar();
 }
 
-function tarjetaDepartamento(d) {
+function filaDepartamento(d) {
   const v = d.vivienda, r = d.resumen || {};
-  return `<a class="card depto-card" href="#/mis-departamentos/${d.id}">
-    <div class="row-between"><h3>${esc(d.nombre)}</h3>
-      <span class="status ${d.publicacion ? "on" : ""}">${d.publicacion ? "Publicado" : "Borrador"}</span></div>
-    <p class="muted">${esc(titulo(v.distrito_norm))} · ${num(v.area_total)} m² · ${v.dormitorios} dorm. · ${v.banos} baños</p>
-    <div class="kpis two">
-      <div class="kpi"><span>Precio esperado</span><b>${soles(r.precio_estimado_soles)}</b></div>
-      <div class="kpi"><span>${d.publicacion ? "Publicado a" : "Sugerido (" + esc(r.escenario_sugerido || "—") + ")"}</span>
-        <b>${soles(d.publicacion ? d.publicacion.precio_soles : r.precio_sugerido_soles)}</b></div>
-    </div>
-    <p class="hint">${esc(r.perfil || "")} · accesibilidad ${esc((r.accesibilidad || "").toLowerCase())} · tendencia ${esc((r.tendencia || "").toLowerCase())}</p>
-  </a>`;
+  return `<tr data-href="#/mis-departamentos/${d.id}">
+    <td><a class="id" href="#/mis-departamentos/${d.id}">${esc(d.nombre)}</a>
+      <span class="sub">${esc(titulo(v.distrito_norm))} · ${num(v.area_total)} m² · ${dorms(v.dormitorios)} · ${banos(v.banos)}</span></td>
+    <td class="n more" data-label="Esperado">${soles(r.precio_estimado_soles)}</td>
+    <td class="n more" data-label="Sugerido">${soles(r.precio_sugerido_soles)}<span class="sub">${esc(r.escenario_sugerido || "")}</span></td>
+    <td class="more hide-phone"><span class="pill ${d.publicacion ? "pos" : ""}">${d.publicacion ? "Publicado" : "Borrador"}</span></td>
+    <td class="n key">${d.publicacion ? `<b>${soles(d.publicacion.precio_soles)}</b>` : '<span class="dash">Sin publicar</span>'}</td>
+  </tr>`;
 }
 
-export async function vistaNuevoDepartamento(main) {
+/* ---------- Agregar departamento ---------- */
+
+export async function vistaNuevoDepartamento(lienzo) {
   const op = await obtenerOpciones();
-  main.innerHTML = `<section class="container page">${encabezado("Agregar departamento", "Completa sus características; puedes empezar desde un ejemplo y editarlo.")}
-    <div class="work-grid"><aside class="card form-card"></aside>
-      <div class="card info-card"><h2>Qué vas a obtener</h2><ol class="steps">
-        <li><b>Precio esperado</b> con un rango de incertidumbre.</li>
-        <li><b>Tres precios de publicación</b> y uno sugerido.</li>
-        <li><b>8 anuncios comparables</b> y tu perfil competitivo.</li>
-        <li><b>Accesibilidad</b> a paraderos y <b>tendencia</b> del distrito.</li>
-        <li><b>Simulador</b> de mejoras.</li></ol>
-        <p class="hint">Guardamos el departamento en tu cuenta. Solo se muestra a inquilinos si decides publicarlo.</p></div></div></section>`;
-  const f = formularioVivienda($(".form-card", main), op, { conNombre: true, conDemos: true, textoBoton: "Guardar y analizar" });
+  lienzo.innerHTML = filaTitulo("Agregar departamento", "Con sus características calculamos el precio esperado, sus comparables y tres precios de publicación. Solo lo ven los inquilinos si lo publicas.")
+    + '<section class="panel" data-form></section>';
+  const f = formularioVivienda($("[data-form]", lienzo), op, { conNombre: true, conDemos: true, textoBoton: "Guardar y analizar",
+    secundario: '<a class="btn" href="#/mis-departamentos">Cancelar</a>' });
   f.form.addEventListener("submit", async (e) => {
     e.preventDefault();
     try {
@@ -123,176 +119,211 @@ export async function vistaNuevoDepartamento(main) {
   });
 }
 
-export async function vistaDetalleDepartamento(main, params, id) {
+/* ---------- Detalle: ¿a cuánto lo publico? ---------- */
+
+function cabeceraObjeto(nombre, v, acciones, extra = "") {
+  return `<section class="panel object-head">
+    <div class="cover" aria-hidden="true">${num(v.area_total)}<br>m²</div>
+    <div><h1>${esc(nombre)}</h1><p class="meta">${esc(titulo(v.distrito_norm))} · ${num(v.area_total)} m² · ${dorms(v.dormitorios)} · ${banos(v.banos)}${extra}</p></div>
+    ${acciones ? `<div class="title-actions">${acciones}</div>` : ""}
+  </section>`;
+}
+
+export async function vistaDetalleDepartamento(lienzo, params, id) {
   const op = await obtenerOpciones();
-  main.innerHTML = `<section class="container page"><p class="muted">Cargando análisis…</p></section>`;
-  const { departamento: d, analisis } = await llamar(`/api/departamentos/${id}`);
-  main.innerHTML = `<section class="container page">
-    <a class="back" href="#/mis-departamentos">← Mis departamentos</a>
-    ${encabezado(esc(d.nombre), `${esc(titulo(d.vivienda.distrito_norm))} · ${num(d.vivienda.area_total)} m² · ${d.publicacion ? "publicado" : "borrador, no visible para inquilinos"}`)}
-    <div class="work-grid">
-      <aside class="card form-card">
-        <h2>Características</h2><div class="form-slot"></div>
-        <div class="danger-zone"><button class="btn small ghost danger" data-borrar>Eliminar departamento</button><div class="confirm" hidden>
-          <p>¿Eliminar «${esc(d.nombre)}»? No se puede deshacer.</p>
-          <button class="btn small danger-solid" data-confirmar>Sí, eliminar</button> <button class="btn small ghost" data-cancelar>Cancelar</button></div></div>
-      </aside>
-      <div class="analysis-slot"></div>
-    </div></section>`;
-  const f = formularioVivienda($(".form-slot", main), op, { conNombre: true, textoBoton: "Guardar y recalcular" });
-  f.cargar(d.vivienda, d.ubicacion, d.nombre);
-  if (d.publicacion) f.mensaje.innerHTML = '<p class="hint">Si cambias las características, la publicación se retira porque su precio ya no aplica.</p>';
-  const recargar = () => vistaDetalleDepartamento(main, params, id);
-  mostrarAnalisis($(".analysis-slot", main), analisis, op, {
+  lienzo.innerHTML = `<section class="panel object-head"><div class="cover" aria-hidden="true"></div><div><h1><span class="skeleton">Cargando departamento</span></h1></div></section>`;
+  const { departamento: d, analisis: a } = await llamar(`/api/departamentos/${id}`);
+  const sugerido = a.publicacion.escenarios.find((s) => s.sugerido);
+  const acciones = d.publicacion
+    ? `<span class="pill pos">Publicado a ${soles(d.publicacion.precio_soles)}</span><button class="btn" type="button" data-retirar>Retirar publicación</button>`
+    : `<button class="btn primary" type="button" data-publicar-sugerido>Publicar a ${soles(sugerido.precio_soles)}</button>`;
+  lienzo.innerHTML = `<p style="margin-bottom:12px"><a class="card-link" href="#/mis-departamentos">Mis departamentos</a></p>`
+    + cabeceraObjeto(d.nombre, d.vivienda, acciones, d.publicacion ? ` · ${esc(d.publicacion.escenario)}` : " · borrador, no visible para inquilinos")
+    + '<div class="pub-msg"></div><div data-analisis></div>';
+  const recargar = () => vistaDetalleDepartamento(lienzo, params, id);
+  const publicar = async (s) => {
+    await llamar(`/api/departamentos/${id}/publicacion`, { cuerpo: { precio_soles: s.precio_soles, escenario: s.escenario } });
+    await recargar();
+  };
+  let formulario = null;
+  mostrarAnalisis($("[data-analisis]", lienzo), a, op, {
     publicacion: d.publicacion,
-    alMoverUbicacion: (lat, lon) => f.fijarUbicacion(lat, lon),
-    alPublicar: async (s) => { await llamar(`/api/departamentos/${id}/publicacion`, { cuerpo: { precio_soles: s.precio_soles, escenario: s.escenario } }); await recargar(); },
-    alRetirar: async () => { await llamar(`/api/departamentos/${id}/publicacion`, { metodo: "DELETE" }); await recargar(); },
+    alPublicar: publicar,
+    alMoverUbicacion: (lat, lon) => formulario?.fijarUbicacion(lat, lon),
+    extra: ["caracteristicas", "Características", (panel) => {
+      panel.innerHTML = `<section class="panel" data-form></section>
+        <div class="danger-zone"><p class="hint">Eliminar borra el departamento y su publicación.</p>
+          <div class="confirm"><button class="btn danger" type="button" data-borrar>Eliminar departamento</button></div></div>`;
+      formulario = formularioVivienda($("[data-form]", panel), op, { conNombre: true, textoBoton: "Guardar y recalcular" });
+      formulario.cargar(d.vivienda, d.ubicacion, d.nombre);
+      if (d.publicacion) formulario.mensaje.innerHTML = '<p class="hint">Si cambias las características, la publicación se retira porque su precio ya no aplica.</p>';
+      formulario.form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        try {
+          const { nombre, vivienda, ubicacion } = formulario.leer();
+          await conBoton(formulario.boton, "Recalculando…", () => llamar(`/api/departamentos/${id}`, { metodo: "PUT", cuerpo: { nombre, vivienda, ubicacion } }));
+          await recargar();
+        } catch (err) {
+          mensaje(formulario.mensaje, err.message);
+        }
+      });
+      const zona = $(".confirm", panel);
+      $("[data-borrar]", panel).addEventListener("click", () => {
+        zona.innerHTML = `<span>¿Eliminar «${esc(d.nombre)}»? No se puede deshacer.</span>
+          <button class="btn danger" type="button" data-confirmar>Sí, eliminar</button><button class="btn ghost" type="button" data-cancelar>Cancelar</button>`;
+        $("[data-cancelar]", zona).addEventListener("click", () => recargar());
+        $("[data-confirmar]", zona).addEventListener("click", async (e) => {
+          await conBoton(e.currentTarget, "Eliminando…", () => llamar(`/api/departamentos/${id}`, { metodo: "DELETE" }));
+          irA("#/mis-departamentos");
+        });
+      });
+    }],
   });
-  f.form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    try {
-      const { nombre, vivienda, ubicacion } = f.leer();
-      await conBoton(f.boton, "Recalculando…", () => llamar(`/api/departamentos/${id}`, { metodo: "PUT", cuerpo: { nombre, vivienda, ubicacion } }));
-      await recargar();
-    } catch (err) {
-      mensaje(f.mensaje, err.message);
-    }
-  });
-  const confirmar = $(".confirm", main);
-  $("[data-borrar]", main).addEventListener("click", () => { confirmar.hidden = false; });
-  $("[data-cancelar]", main).addEventListener("click", () => { confirmar.hidden = true; });
-  $("[data-confirmar]", main).addEventListener("click", async (e) => {
-    await conBoton(e.currentTarget, "Eliminando…", () => llamar(`/api/departamentos/${id}`, { metodo: "DELETE" }));
-    irA("#/mis-departamentos");
-  });
+  $("[data-publicar-sugerido]", lienzo)?.addEventListener("click", (e) =>
+    conBoton(e.currentTarget, "Publicando…", () => publicar(sugerido)).catch((err) => mensaje($(".pub-msg", lienzo), err.message)));
+  $("[data-retirar]", lienzo)?.addEventListener("click", (e) =>
+    conBoton(e.currentTarget, "Retirando…", async () => { await llamar(`/api/departamentos/${id}/publicacion`, { metodo: "DELETE" }); await recargar(); })
+      .catch((err) => mensaje($(".pub-msg", lienzo), err.message)));
 }
 
 /* ---------- Probar sin cuenta ---------- */
 
-export async function vistaProbar(main) {
+export async function vistaProbar(lienzo) {
   const op = await obtenerOpciones();
-  main.innerHTML = `<section class="container page">${encabezado("Prueba el análisis", "Sin cuenta: los resultados no se guardan.",
-    sesion() ? "" : '<a class="btn" href="#/ingresar?modo=registro">Crear cuenta para guardar</a>')}
-    <div class="work-grid"><aside class="card form-card"></aside>
-      <div class="analysis-slot"><div class="card empty-state small"><h2>Elige un caso o describe un departamento</h2>
-        <p>Pulsa «Analizar» para ver el precio esperado, los precios de publicación, comparables, accesibilidad y tendencia.</p></div></div></div></section>`;
-  const f = formularioVivienda($(".form-card", main), op, { conDemos: true, textoBoton: "Analizar" });
-  const destino = $(".analysis-slot", main);
+  lienzo.innerHTML = filaTitulo("Probar el análisis", "Sin cuenta: elige un ejemplo o describe un departamento. Los resultados no se guardan.",
+    sesion() ? "" : '<a class="btn" href="#/ingresar?modo=registro">Crear cuenta para guardar</a>')
+    + '<section class="panel" data-form></section><div data-resultado style="margin-top:24px"></div>';
+  const f = formularioVivienda($("[data-form]", lienzo), op, { conDemos: true, textoBoton: "Analizar" });
+  const destino = $("[data-resultado]", lienzo);
   f.form.addEventListener("submit", async (e) => {
     e.preventDefault();
     try {
       const { vivienda, ubicacion } = f.leer();
       const a = await conBoton(f.boton, "Analizando…", () => llamar("/api/analizar", { cuerpo: { vivienda, ubicacion } }));
-      mostrarAnalisis(destino, a, op, { alMoverUbicacion: (lat, lon) => f.fijarUbicacion(lat, lon) });
+      destino.innerHTML = cabeceraObjeto("Departamento de prueba", a.vivienda, "") + "<div data-analisis></div>";
+      mostrarAnalisis($("[data-analisis]", destino), a, op, { alMoverUbicacion: (lat, lon) => f.fijarUbicacion(lat, lon) });
+      destino.scrollIntoView({ block: "start" });
     } catch (err) {
       mensaje(f.mensaje, err.message);
     }
   });
 }
 
-/* ---------- Búsqueda para inquilinos ---------- */
+/* ---------- Búsqueda para inquilinos: ¿cuáles valen lo que piden? ---------- */
 
-export async function vistaBuscar(main) {
+export async function vistaBuscar(lienzo) {
   const op = await obtenerOpciones();
-  const opcionesMin = (etiqueta) => `<option value="">${etiqueta}</option>` + [1, 2, 3, 4].map((n) => `<option value="${n}">${n} o más</option>`).join("");
-  main.innerHTML = `<section class="container page">
-    ${encabezado("Busca tu próximo departamento", "Filtra por lo que necesitas y compara cada precio con lo que estima nuestro modelo.")}
-    <div class="work-grid">
-      <aside class="card form-card">
-        <form class="filtros" novalidate>
-          <fieldset><legend>Distritos</legend><div class="chips-scroll">
-            ${op.distritos.filter((d) => d !== "otros").map((d) => `<label class="chip"><input type="checkbox" name="distritos" value="${esc(d)}"><span>${esc(titulo(d))}</span></label>`).join("")}
-          </div><p class="hint">Sin selección se busca en todos.</p></fieldset>
-          <div class="grid-2">
-            <label class="field"><span>Presupuesto mínimo (S/)</span><input name="precio_min" type="number" min="0" step="50"></label>
-            <label class="field"><span>Presupuesto máximo (S/)</span><input name="precio_max" type="number" min="0" step="50" placeholder="Ej.: 3000"></label>
-            <label class="field"><span>Dormitorios</span><select name="dormitorios_min">${opcionesMin("Cualquiera")}</select></label>
-            <label class="field"><span>Baños</span><select name="banos_min">${opcionesMin("Cualquiera")}</select></label>
-            <label class="field"><span>Área mínima (m²)</span><input name="area_min" type="number" min="0" step="5"></label>
-            <label class="field"><span>Área máxima (m²)</span><input name="area_max" type="number" min="0" step="5"></label>
-          </div>
-          <label class="field"><span>Paradero de transporte</span><select name="paradero_max_m">
-            <option value="">Sin preferencia</option><option value="300">A 300 m o menos</option><option value="500">A 500 m o menos</option><option value="1000">A 1 km o menos</option></select></label>
-          <fieldset><legend>Debe tener</legend><div class="chips">
-            ${op.binarias.map((b) => `<label class="chip"><input type="checkbox" name="amenidades" value="${b}"><span>${esc(ETIQUETAS_AMENIDAD[b])}</span></label>`).join("")}
-          </div></fieldset>
-          <label class="field"><span>Ordenar por</span><select name="orden">
-            <option value="precio">Precio: menor a mayor</option><option value="precio_desc">Precio: mayor a menor</option>
-            <option value="oportunidad">Mejor precio frente al estimado</option><option value="area">Mayor área</option><option value="paradero">Más cerca de un paradero</option></select></label>
-          <button class="btn primary block" type="submit">Buscar</button>
-          <button class="btn ghost block" type="reset">Limpiar filtros</button>
-        </form>
-      </aside>
-      <div class="resultados-busqueda"></div>
-    </div></section>`;
-  const form = $(".filtros", main), destino = $(".resultados-busqueda", main);
-  let limite = 24;
+  const opcionesMin = Array.from({ length: 4 }, (_, i) => `<option value="${i + 1}">${i + 1} o más</option>`).join("");
+  lienzo.innerHTML = `
+    ${filaTitulo("Buscar departamentos", '<span data-hallazgo>Anuncios de septiembre de 2026 y departamentos publicados en DepaRent.</span>')}
+    <form class="filters" novalidate>
+      <div class="field"><label for="b-distrito">Distrito</label><select class="input" id="b-distrito" name="distrito"><option value="">Todos</option>
+        ${op.distritos.filter((d) => d !== "otros").map((d) => `<option value="${esc(d)}">${esc(titulo(d))}</option>`).join("")}</select></div>
+      <div class="field optional"><label for="b-max">Presupuesto máximo (S/)</label><input class="input num" id="b-max" name="precio_max" type="number" min="0" step="100" placeholder="Sin límite"></div>
+      <div class="field optional"><label for="b-dorm">Dormitorios</label><select class="input" id="b-dorm" name="dormitorios_min"><option value="">Cualquiera</option>${opcionesMin}</select></div>
+      <div class="field optional"><label for="b-orden">Ordenar</label><select class="input" id="b-orden" name="orden">
+        <option value="precio">Precio: menor primero</option><option value="precio_desc">Precio: mayor primero</option>
+        <option value="oportunidad">Más barato que el estimado</option><option value="area">Mayor área</option><option value="paradero">Más cerca de un paradero</option></select></div>
+      <button class="btn" type="button" data-mas-filtros aria-expanded="false" aria-controls="mas-filtros">Más filtros</button>
+      <span class="spacer"></span>
+      <button class="btn primary" type="submit">Buscar</button>
+    </form>
+    <section class="panel" id="mas-filtros" hidden style="margin-bottom:16px">
+      <div class="fields">
+        <div class="field"><label for="b-min">Presupuesto mínimo (S/)</label><input class="input num" id="b-min" name="precio_min" type="number" min="0" step="100"></div>
+        <div class="field"><label for="b-banos">Baños</label><select class="input" id="b-banos" name="banos_min"><option value="">Cualquiera</option>${opcionesMin}</select></div>
+        <div class="field"><label for="b-amin">Área mínima (m²)</label><input class="input num" id="b-amin" name="area_min" type="number" min="0" step="5"></div>
+        <div class="field"><label for="b-amax">Área máxima (m²)</label><input class="input num" id="b-amax" name="area_max" type="number" min="0" step="5"></div>
+        <div class="field"><label for="b-par">Paradero de transporte</label><select class="input" id="b-par" name="paradero_max_m"><option value="">Sin preferencia</option>
+          <option value="300">A 300 m o menos</option><option value="500">A 500 m o menos</option><option value="1000">A 1 km o menos</option></select></div>
+        <fieldset class="field wide" style="border:0;padding:0;margin:0"><legend class="hint" style="margin-bottom:6px">Debe tener</legend>
+          <div style="display:flex;flex-wrap:wrap;gap:14px">${op.binarias.map((b) => `<label style="display:flex;gap:6px;align-items:center;font-weight:400"><input type="checkbox" name="amenidades" value="${b}">${esc(ETIQUETAS_AMENIDAD[b])}</label>`).join("")}</div>
+        </fieldset>
+      </div>
+    </section>
+    <div data-resultados></div>`;
+  const form = $(".filters", lienzo), extra = $("#mas-filtros", lienzo), destino = $("[data-resultados]", lienzo);
+  let limite = 24, valoracion = null;
+  $("[data-mas-filtros]", lienzo).addEventListener("click", (e) => {
+    extra.hidden = !extra.hidden;
+    form.classList.toggle("expand", !extra.hidden);
+    e.currentTarget.setAttribute("aria-expanded", String(!extra.hidden));
+  });
 
   function filtros() {
-    const datos = new FormData(form);
-    const numero = (k) => (datos.get(k) === "" || datos.get(k) == null ? null : Number(datos.get(k)));
-    return { distritos: datos.getAll("distritos"), amenidades: datos.getAll("amenidades"), orden: datos.get("orden"), limite,
-      ...Object.fromEntries(["precio_min", "precio_max", "area_min", "area_max", "dormitorios_min", "banos_min", "paradero_max_m"].map((k) => [k, numero(k)])) };
+    const valor = (sel) => $(sel, lienzo).value;
+    const numero = (sel) => (valor(sel) === "" ? null : Number(valor(sel)));
+    return {
+      distritos: valor("#b-distrito") ? [valor("#b-distrito")] : [], orden: valor("#b-orden"), limite, valoracion,
+      precio_max: numero("#b-max"), precio_min: numero("#b-min"), dormitorios_min: numero("#b-dorm"), banos_min: numero("#b-banos"),
+      area_min: numero("#b-amin"), area_max: numero("#b-amax"), paradero_max_m: numero("#b-par"),
+      amenidades: $$('#mas-filtros input[name="amenidades"]:checked', lienzo).map((c) => c.value),
+    };
   }
 
   async function ejecutar() {
-    destino.innerHTML = '<p class="muted">Buscando…</p>';
+    destino.setAttribute("aria-busy", "true");
     try {
       const r = await llamar("/api/buscar", { cuerpo: filtros() });
-      destino.innerHTML = resultadosBusqueda(r);
+      destino.innerHTML = resultadosBusqueda(r, valoracion);
+      const total = Object.values(r.conteos).reduce((a, b) => a + b, 0);
+      $("[data-hallazgo]", lienzo).textContent = total
+        ? `${num(total)} departamentos con estos filtros · ${num(r.conteos.por_debajo)} piden menos de lo que estima el modelo.`
+        : "Ningún departamento con estos filtros.";
+      $$("[data-valoracion]", destino).forEach((b) => b.addEventListener("click", () => {
+        valoracion = b.dataset.valoracion || null; limite = 24; ejecutar();
+      }));
       $("[data-mas]", destino)?.addEventListener("click", () => { limite = Math.min(60, limite + 24); ejecutar(); });
     } catch (err) {
-      mensaje(destino, err.message);
+      destino.innerHTML = `<section class="panel"><div class="empty"><p>No pudimos cargar la búsqueda. ${esc(err.message)}</p><button class="btn" type="button" data-reintentar>Reintentar</button></div></section>`;
+      $("[data-reintentar]", destino).addEventListener("click", ejecutar);
+    } finally {
+      destino.removeAttribute("aria-busy");
     }
   }
   form.addEventListener("submit", (e) => { e.preventDefault(); limite = 24; ejecutar(); });
-  form.addEventListener("reset", () => setTimeout(() => { limite = 24; ejecutar(); }, 0));
+  extra.addEventListener("change", () => { limite = 24; ejecutar(); });
   ejecutar();
 }
 
-function resultadosBusqueda(r) {
-  if (!r.total) {
-    return `<div class="card empty-state small"><h2>No encontramos departamentos con esos filtros</h2><p>Prueba ampliar el presupuesto, quitar amenidades o sumar distritos.</p></div>`;
-  }
-  const s = r.resumen;
-  return `<div class="summary-bar">
-      <span><b>${num(r.total)}</b> departamentos</span>
-      <span>Precio mediano <b>${soles(s.precio_mediana_soles)}</b></span>
-      <span>La mitad central entre <b>${soles(s.precio_p25_soles)}</b> y <b>${soles(s.precio_p75_soles)}</b></span>
-      <span><b>${num(s.por_debajo_del_estimado)}</b> por debajo del estimado</span>
+function resultadosBusqueda(r, valoracion) {
+  const total = Object.values(r.conteos).reduce((a, b) => a + b, 0);
+  const tarjetas = [["", "Todos", total], ["por_debajo", "Por debajo del estimado", r.conteos.por_debajo],
+    ["en_linea", "En línea con el estimado", r.conteos.en_linea], ["por_encima", "Por encima del estimado", r.conteos.por_encima]];
+  const pill = (x) => (x.valoracion.startsWith("Por debajo") ? "pos" : x.valoracion.startsWith("Por encima") ? "warn" : "");
+  return `
+    <div class="counts" role="group" aria-label="Filtrar por precio frente al estimado">
+      ${tarjetas.map(([k, t, n]) => `<button class="count" type="button" data-valoracion="${k}" aria-pressed="${(valoracion || "") === k}"><span>${t}</span><b>${num(n)}</b></button>`).join("")}
     </div>
-    <div class="cards-grid results-grid">${r.resultados.map(tarjetaResultado).join("")}</div>
-    ${r.resultados.length < Math.min(r.total, 60) ? `<button class="btn block" data-mas>Ver más resultados</button>` : ""}
-    <p class="note">${esc(r.aviso)}</p>`;
+    <section class="panel" aria-label="Resultados">
+      ${r.total ? `<div class="table-wrap"><table class="list-table">
+        <thead><tr><th>Departamento</th><th class="n">Área</th><th class="n">Paradero</th><th class="n">Estimado</th><th class="n">Frente al estimado</th><th class="n">Precio</th></tr></thead>
+        <tbody>${r.resultados.map((x) => `<tr>
+          <td><span class="id">${x.nombre ? esc(x.nombre) : `${dorms(x.dormitorios)} · ${banos(x.banos)}`}</span>
+            <span class="sub">${esc(titulo(x.distrito))} · ${esc(x.perfil)}${x.origen === "Publicado en DepaRent" ? " · publicado en DepaRent" : ""}${x.amenidades.length ? " · " + x.amenidades.map((a) => ETIQUETAS_AMENIDAD[a].toLowerCase()).join(", ") : ""}</span></td>
+          <td class="n more" data-label="Área">${num(x.area_total)} m²</td>
+          <td class="n more" data-label="Paradero a">${num(x.dist_paradero_min_m)} m</td>
+          <td class="n more" data-label="Estimado">${soles(x.precio_estimado_soles)}</td>
+          <td class="n more" data-label="Frente al estimado"><span class="pill ${pill(x)}">${pct(x.diferencia_estimado_porcentaje)}</span></td>
+          <td class="n key"><b>${soles(x.precio_soles)}</b></td></tr>`).join("")}</tbody>
+      </table></div>
+      <div class="list-foot"><span>1 a ${r.resultados.length} de ${num(r.total)}</span>
+        ${r.resultados.length < Math.min(r.total, 60) ? `<button class="btn" type="button" data-mas>Mostrar ${Math.min(24, Math.min(r.total, 60) - r.resultados.length)} más</button>` : ""}</div>`
+      : '<div class="empty"><p>Ningún departamento con estos filtros. Prueba ampliar el presupuesto, quitar amenidades o cambiar el distrito.</p></div>'}
+      <p class="panel-note">${esc(r.aviso)} El porcentaje compara el precio pedido con el que estima el modelo para esas características.</p>
+    </section>`;
 }
 
-function tarjetaResultado(x) {
-  const clase = x.valoracion.startsWith("Por debajo") ? "good" : x.valoracion.startsWith("Por encima") ? "high" : "fair";
-  const propio = x.origen === "Publicado en DepaRent";
-  return `<article class="card result-card ${propio ? "own" : ""}">
-    <div class="row-between"><span class="origin ${propio ? "own" : ""}">${esc(x.origen)}</span><span class="valor ${clase}">${esc(x.valoracion)}</span></div>
-    <h3>${x.nombre ? esc(x.nombre) : `${num(x.dormitorios)} dorm. · ${num(x.area_total)} m²`}</h3>
-    <p class="muted">${esc(titulo(x.distrito))} · ${esc(x.perfil)}</p>
-    <p class="price">${soles(x.precio_soles)}<small> /mes</small></p>
-    <p class="hint">Estimado por el modelo: ${soles(x.precio_estimado_soles)} (${pct(x.diferencia_estimado_porcentaje)})</p>
-    <ul class="facts">
-      <li>${num(x.area_total)} m²</li><li>${num(x.dormitorios)} dorm.</li><li>${num(x.banos)} baños</li>
-      ${x.antiguedad != null ? `<li>${num(x.antiguedad)} años</li>` : ""}
-      ${x.mantenimiento != null ? `<li>Mant. ${soles(x.mantenimiento)}</li>` : ""}
-      <li>Paradero a ${num(x.dist_paradero_min_m)} m</li>
-    </ul>
-    <div class="chips small">${x.amenidades.map((a) => `<span class="chip static">${esc(ETIQUETAS_AMENIDAD[a])}</span>`).join("")}</div>
-  </article>`;
+/* ---------- Errores ---------- */
+
+export function vistaNoEncontrada(lienzo) {
+  lienzo.innerHTML = filaTitulo("Página no encontrada", "La dirección no corresponde a ninguna pantalla de DepaRent.")
+    + '<section class="panel"><div class="empty"><a class="btn primary" href="#/">Volver al inicio</a></div></section>';
 }
 
-export function vistaNoEncontrada(main) {
-  main.innerHTML = `<section class="container page"><div class="card empty-state"><h2>No encontramos esta página</h2><a class="btn primary" href="#/">Volver al inicio</a></div></section>`;
+export function vistaError(lienzo, error) {
+  lienzo.innerHTML = filaTitulo("No pudimos cargar esta pantalla", esc(error.message))
+    + `<section class="panel"><div class="empty"><p>Si trabajas en local, inicia la API con <code>python -m uvicorn api:app --port 8000</code> desde <code>deliveries/week10/code</code>.</p>
+      <button class="btn" type="button" data-recargar>Reintentar</button></div></section>`;
+  $("[data-recargar]", lienzo).addEventListener("click", () => location.reload());
 }
-
-export function vistaError(main, error) {
-  main.innerHTML = `<section class="container page"><div class="card empty-state"><h2>Algo salió mal</h2><p class="error">${esc(error.message)}</p>
-    <p class="hint">Si trabajas en local, inicia la API con <code>python -m uvicorn api:app --port 8000</code> desde <code>deliveries/week10/code</code>.</p>
-    <a class="btn" href="#/">Volver al inicio</a></div></section>`;
-}
-

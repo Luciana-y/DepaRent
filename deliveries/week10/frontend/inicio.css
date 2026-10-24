@@ -5,7 +5,9 @@ body[data-vista="inicio"] { background: var(--bg); }
 body[data-vista="inicio"] .topbar { background: var(--bg); }
 body[data-vista="inicio"] > .footer { display: none; }
 
-.home { --gutter: clamp(16px, 2vw, 24px); color: var(--ink); overflow-x: clip; }
+.home { --gutter: clamp(16px, 2vw, 24px); color: var(--ink); font-size: var(--step-body); line-height: 1.5; overflow-x: clip; }
+.home :is(.carta-close, .reply-aside, .about-text) a { text-decoration: underline; text-underline-offset: 0.2em; }
+.home .about-link { text-decoration: none; }
 .home h2, .home h3 { font-weight: 900; letter-spacing: -0.03em; }
 .home a { color: inherit; }
 
@@ -80,7 +82,7 @@ body[data-vista="inicio"] > .footer { display: none; }
 .step-describes { background: var(--bg); color: var(--ink); }
 .step-comparamos { background: var(--paper); color: var(--ink); }
 .step-ubicamos { background: var(--ink); color: var(--paper); }
-.step-publicas { background: var(--muted); color: var(--paper); }
+.step-publicas { background: var(--brown); color: var(--paper); }
 .step-title { position: absolute; top: 28px; left: 28px; margin: 0; font-size: var(--step-lead); }
 .ficha {
   position: absolute; top: 38%; left: 50%; translate: -50% -38%; width: min(300px, 100% - 40px); min-height: 200px; align-content: start;
@@ -165,7 +167,7 @@ body[data-vista="inicio"] > .footer { display: none; }
   font-size: clamp(3rem, 11vw, 10rem); font-weight: 900; line-height: 0.8; color: var(--bg);
 }
 .block-0 { background: var(--ink); }
-.block-1 { background: var(--muted); }
+.block-1 { background: var(--brown); }
 .block-2 { background: var(--paper); color: var(--ink); }
 .block-3 { background: var(--surface-2); color: var(--ink); }
 .footer-cols { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-top: 56px; font-size: var(--step-small); }

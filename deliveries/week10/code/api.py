@@ -122,6 +122,7 @@ class Filtros(BaseModel):
     banos_min: Optional[int] = None
     paradero_max_m: Optional[float] = None
     amenidades: List[str] = []
+    valoracion: Optional[str] = None
     orden: str = "precio"
     limite: int = Field(24, ge=1, le=60)
 

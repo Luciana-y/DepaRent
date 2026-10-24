@@ -1,35 +1,41 @@
 import { $, esc, titulo } from "./util.js";
 
+const GRUPOS = [
+  ["Tamaño", "Lo que más pesa en el precio.", ["area_total", "dormitorios", "banos", "estacionamientos"]],
+  ["Edificio", "Si no lo sabes, déjalo vacío: el modelo usa la mediana de los anuncios.", ["antiguedad", "mantenimiento"]],
+];
+
 /**
- * Formulario de características del departamento.
- * opciones: datos de /api/opciones · conNombre: pide un nombre (propietario) · conDemos: muestra casos de ejemplo.
- * Devuelve { leer, cargar } para leer los valores o rellenarlos.
+ * Formulario de características del departamento, con la forma de una pantalla de ajustes.
+ * opciones: datos de /api/opciones · conNombre: pide un nombre (propietario) · conDemos: casos de ejemplo
+ * compacto: etiquetas sobre los campos (para paneles angostos). Devuelve { leer, cargar, ... }.
  */
-export function formularioVivienda(contenedor, opciones, { conNombre = false, conDemos = false, textoBoton = "Analizar" } = {}) {
-  const numericos = Object.entries(opciones.limites).map(([campo, [min, max]]) => `
-    <label class="field"><span>${esc(opciones.etiquetas[campo])}</span>
-      <input name="${campo}" type="number" min="${min}" max="${max}" step="1" ${["area_total", "dormitorios", "banos"].includes(campo) ? "required" : ""}></label>`).join("");
-  const amenidades = opciones.binarias.map((campo) => `
-    <label class="field"><span>${esc(opciones.etiquetas[campo])}</span>
-      <select name="${campo}"><option value="0">No</option><option value="1">Sí</option><option value="">No sé</option></select></label>`).join("");
+export function formularioVivienda(contenedor, opciones, { conNombre = false, conDemos = false, compacto = false, textoBoton = "Analizar", secundario = "" } = {}) {
+  const numerico = (campo) => {
+    const [min, max] = opciones.limites[campo];
+    const obligatorio = ["area_total", "dormitorios", "banos"].includes(campo);
+    return `<div class="field"><label for="f-${campo}">${esc(opciones.etiquetas[campo])}</label>
+      <input class="input num" id="f-${campo}" name="${campo}" type="number" inputmode="numeric" min="${min}" max="${max}" step="1" ${obligatorio ? "required" : 'placeholder="No sé"'}></div>`;
+  };
+  const amenidad = (campo) => `<div class="field"><label for="f-${campo}">${esc(opciones.etiquetas[campo])}</label>
+    <select class="input" id="f-${campo}" name="${campo}"><option value="0">No</option><option value="1">Sí</option><option value="">No sé</option></select></div>`;
+  const grupo = (nombre, ayuda, cuerpo) => `<section class="form-group"><div><h2>${nombre}</h2>${ayuda ? `<p class="hint">${ayuda}</p>` : ""}</div><div class="fields">${cuerpo}</div></section>`;
   contenedor.innerHTML = `
-    <form class="vivienda-form" novalidate>
-      ${conNombre ? '<label class="field"><span>Nombre del departamento</span><input name="nombre" maxlength="80" placeholder="Ej.: Depa de Lince, piso 5" required></label>' : ""}
-      ${conDemos ? `<label class="field"><span>Caso de ejemplo</span><select name="demo">${opciones.demos.map((d, i) => `<option value="${i}">${esc(d.nombre)}</option>`).join("")}</select></label>` : ""}
-      <label class="field"><span>Distrito</span><select name="distrito_norm" required>
-        ${opciones.distritos.map((d) => `<option value="${esc(d)}">${esc(titulo(d))}</option>`).join("")}</select></label>
-      <div class="grid-2">${numericos}</div>
-      <fieldset><legend>Amenidades</legend><div class="grid-2">${amenidades}</div></fieldset>
-      <details class="ubicacion">
-        <summary>Ubicación exacta (opcional)</summary>
-        <p class="hint">Sin coordenadas usamos el centro aproximado del distrito. También puedes hacer clic en el mapa de accesibilidad.</p>
-        <div class="grid-2">
-          <label class="field"><span>Latitud</span><input name="latitud" type="number" step="0.000001" placeholder="-12.088"></label>
-          <label class="field"><span>Longitud</span><input name="longitud" type="number" step="0.000001" placeholder="-77.034"></label>
-        </div>
-      </details>
-      <button type="submit" class="btn primary block">${esc(textoBoton)}</button>
-      <div class="form-msg"></div>
+    <form class="vivienda-form ${compacto ? "compact" : ""}" novalidate>
+      <div class="form-groups">
+        ${grupo("Departamento", conDemos ? "Empieza desde un ejemplo y cámbialo." : "", `
+          ${conDemos ? `<div class="field wide"><label for="f-demo">Caso de ejemplo</label><select class="input" id="f-demo" name="demo">${opciones.demos.map((d, i) => `<option value="${i}">${esc(d.nombre)}</option>`).join("")}</select></div>` : ""}
+          ${conNombre ? '<div class="field wide"><label for="f-nombre">Nombre</label><input class="input" id="f-nombre" name="nombre" maxlength="80" placeholder="Depa de Lince, piso 5" required></div>' : ""}
+          <div class="field wide"><label for="f-distrito">Distrito</label><select class="input" id="f-distrito" name="distrito_norm" required>
+            ${opciones.distritos.map((d) => `<option value="${esc(d)}">${esc(titulo(d))}</option>`).join("")}</select></div>`)}
+        ${GRUPOS.map(([nombre, ayuda, campos]) => grupo(nombre, ayuda, campos.map(numerico).join(""))).join("")}
+        ${grupo("Amenidades", "Las que el anuncio diría.", opciones.binarias.map(amenidad).join(""))}
+        ${grupo("Ubicación", "Opcional. Sin coordenadas usamos el centro del distrito; también puedes hacer clic en el mapa.", `
+          <div class="field"><label for="f-latitud">Latitud</label><input class="input num" id="f-latitud" name="latitud" type="number" step="0.000001" placeholder="-12.088"></div>
+          <div class="field"><label for="f-longitud">Longitud</label><input class="input num" id="f-longitud" name="longitud" type="number" step="0.000001" placeholder="-77.034"></div>`)}
+      </div>
+      <div class="form-actions">${secundario}<button type="submit" class="btn primary">${esc(textoBoton)}</button></div>
+      <div class="form-msg" role="alert"></div>
     </form>`;
   const form = $("form", contenedor);
   const campo = (nombre) => form.elements.namedItem(nombre);

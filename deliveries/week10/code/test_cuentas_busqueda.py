@@ -132,6 +132,15 @@ class BusquedaTest(unittest.TestCase):
         self.assertEqual(valoracion(1.0), "En línea con el estimado")
         self.assertEqual(valoracion(1.2), "Por encima del estimado")
 
+    def test_conteos_por_valoracion_filtran_y_suman(self):
+        todos = self.cliente.post("/api/buscar", json={"distritos": ["lince"], "limite": 60}).json()
+        self.assertEqual(sum(todos["conteos"].values()), todos["total"])
+        debajo = self.cliente.post("/api/buscar", json={"distritos": ["lince"], "valoracion": "por_debajo", "limite": 60}).json()
+        self.assertEqual(debajo["total"], todos["conteos"]["por_debajo"])
+        self.assertTrue(all(x["valoracion"] == "Por debajo del estimado" for x in debajo["resultados"]))
+        self.assertEqual(debajo["conteos"], todos["conteos"])
+        self.assertEqual(self.cliente.post("/api/buscar", json={"valoracion": "barato"}).status_code, 422)
+
     def test_mercado_sin_duplicados(self):
         self.assertEqual(len(MERCADO), 3013)
         self.assertTrue(MERCADO["id"].is_unique)

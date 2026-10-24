@@ -11,6 +11,8 @@ from modelo import BINARY, SOURCE, normalizar, preparar
 ORDENES = {"precio": ("precio_soles", True), "precio_desc": ("precio_soles", False), "area": ("area_total", False),
            "paradero": ("dist_paradero_min_m", True), "oportunidad": ("relacion_estimado", True)}
 UMBRAL_VALORACION = 0.10
+VALORACIONES = {"por_debajo": "Por debajo del estimado", "en_linea": "En línea con el estimado",
+                "por_encima": "Por encima del estimado"}
 AVISO = ("Anuncios de septiembre de 2026 sin dirección ni contacto: es una muestra del mercado, no una lista de ofertas vigentes. "
          "La comparación con el precio estimado es orientativa: muchos de estos anuncios se usaron para entrenar el modelo.")
 
@@ -68,6 +70,14 @@ def buscar(mercado, propios, filtros, limite=24):
     tabla = pd.concat([propios, mercado], ignore_index=True) if len(propios) else mercado
     tabla = tabla.assign(relacion_estimado=tabla["precio_soles"] / tabla["precio_estimado"])
     encontrados = filtrar(tabla, filtros)
+    grupos = encontrados["relacion_estimado"].map(valoracion)
+    # Conteos de la vista filtrada, antes de elegir un grupo: alimentan las tarjetas que filtran.
+    conteos = {clave: int((grupos == etiqueta).sum()) for clave, etiqueta in VALORACIONES.items()}
+    elegido = filtros.get("valoracion")
+    if elegido:
+        if elegido not in VALORACIONES:
+            raise ValueError("Valoración no válida.")
+        encontrados = encontrados[grupos == VALORACIONES[elegido]]
     columna, ascendente = ORDENES[orden]
     # Los publicados en DepaRent van primero; dentro de cada grupo se respeta el orden elegido.
     encontrados = encontrados.assign(_propio=encontrados["origen"] != "Publicado en DepaRent").sort_values(
@@ -90,4 +100,4 @@ def buscar(mercado, propios, filtros, limite=24):
                                     "dist_paradero_min_m", "paraderos_500m", "perfil")},
             "amenidades": [a for a in BINARY if fila[a] == 1],
         })
-    return {"total": int(len(encontrados)), "resumen": resumen, "resultados": resultados, "aviso": AVISO}
+    return {"total": int(len(encontrados)), "conteos": conteos, "resumen": resumen, "resultados": resultados, "aviso": AVISO}
