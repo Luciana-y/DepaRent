@@ -7,10 +7,11 @@ const PESTANAS = [["resumen", "Resumen"], ["comparables", "Comparables"], ["acce
  * Dibuja el análisis de un departamento (respuesta de /api/analizar) en pestañas.
  * acciones.alPublicar(escenario) y acciones.alRetirar(): publicación (solo propietario)
  * acciones.publicacion: publicación vigente · acciones.alMoverUbicacion(lat, lon): clic en el mapa
- * acciones.extra: [id, etiqueta, dibujar(panel)] para una pestaña propia de la vista (Características).
+ * acciones.extras: [[id, etiqueta, dibujar(panel)], ...] pestañas propias de la vista (Características, Interesados).
  */
 export function mostrarAnalisis(contenedor, a, opciones, acciones = {}) {
-  const pestanas = acciones.extra ? [...PESTANAS, acciones.extra.slice(0, 2)] : PESTANAS;
+  const extras = acciones.extras || [];
+  const pestanas = [...PESTANAS, ...extras.map((e) => e.slice(0, 2))];
   contenedor.innerHTML = `
     <nav class="tabs" role="tablist" aria-label="Secciones del análisis">
       ${pestanas.map(([id, texto], i) => `<button type="button" role="tab" id="tab-${id}" aria-controls="panel-${id}" aria-selected="${i === 0}" data-tab="${id}">${texto}</button>`).join("")}
@@ -20,8 +21,8 @@ export function mostrarAnalisis(contenedor, a, opciones, acciones = {}) {
     <div role="tabpanel" id="panel-acceso" aria-labelledby="tab-acceso" data-panel="acceso" hidden>${panelAcceso(a.accesibilidad)}</div>
     <div role="tabpanel" id="panel-tendencia" aria-labelledby="tab-tendencia" data-panel="tendencia" hidden>${panelTendencia(a.tendencia, true)}</div>
     <div role="tabpanel" id="panel-simulador" aria-labelledby="tab-simulador" data-panel="simulador" hidden>${panelSimulador(a.vivienda)}</div>
-    ${acciones.extra ? `<div role="tabpanel" id="panel-${acciones.extra[0]}" aria-labelledby="tab-${acciones.extra[0]}" data-panel="${acciones.extra[0]}" hidden></div>` : ""}`;
-  if (acciones.extra) acciones.extra[2]($(`[data-panel="${acciones.extra[0]}"]`, contenedor));
+    ${extras.map(([id]) => `<div role="tabpanel" id="panel-${id}" aria-labelledby="tab-${id}" data-panel="${id}" hidden></div>`).join("")}`;
+  extras.forEach(([id, , dibujar]) => dibujar($(`[data-panel="${id}"]`, contenedor)));
 
   let mapa = null;
   const abrir = (id) => {
@@ -114,11 +115,11 @@ function panelResumen(a, acciones) {
     </div>`;
 }
 
-function escala(min, max, x0, x1) {
+export function escala(min, max, x0, x1) {
   return (v) => x0 + ((v - min) / (max - min)) * (x1 - x0);
 }
 
-function ticks(min, max, n = 4) {
+export function ticks(min, max, n = 4) {
   // El paso "redondo" más grande que deja al menos tres marcas dentro del rango.
   const base = Math.pow(10, Math.floor(Math.log10(max - min)));
   for (const paso of [base, base / 2, base / 4, base / 5, base / 10, base / 20]) {
@@ -165,7 +166,7 @@ function reglaPrecios(a) {
 
 /* ---------- Comparables ---------- */
 
-function panelComparables(c) {
+export function panelComparables(c) {
   return `<section class="panel" aria-labelledby="t-comp">
     <header><h2 id="t-comp">Los 8 anuncios más parecidos</h2><span class="meta">Perfil ${esc(c.perfil.perfil)} · ${c.en_mismo_distrito} del mismo distrito</span></header>
     <div class="table-wrap"><table class="list-table">

@@ -89,8 +89,9 @@ def _espacio(artifact, X):
     return pipe.named_steps["escala"].transform(pipe.named_steps["preparacion"].transform(X))
 
 
-def comparables(values, artifact, k=8):
-    """k anuncios más parecidos: mismo perfil y distrito primero; un anuncio por posible inmueble."""
+def comparables(values, artifact, k=8, excluir=None):
+    """k anuncios más parecidos: mismo perfil y distrito primero; un anuncio por posible inmueble.
+    excluir: fila de la referencia que no debe compararse consigo misma (la ficha de un anuncio)."""
     perfil = asignar_perfil(values, artifact)
     ref = artifact["referencia"]
     if "_Z" not in artifact:
@@ -103,6 +104,8 @@ def comparables(values, artifact, k=8):
     # Orden: mismo distrito y perfil, luego mismo distrito, luego mismo perfil en otros distritos.
     candidatos["prioridad"] = np.select([candidatos.mismo_distrito & candidatos.mismo_perfil, candidatos.mismo_distrito,
                                          candidatos.mismo_perfil], [0, 1, 2], 3)
+    if excluir is not None:
+        candidatos = candidatos[candidatos["grupo"] != ref.loc[excluir, "grupo"]]
     elegidos = (candidatos.sort_values(["prioridad", "distancia"]).drop_duplicates("grupo").head(k))
     tabla = [{"Distrito": r.distrito_norm.title(), "Perfil": artifact["nombres"][int(r.cluster)],
               "Área (m²)": r.area_total, "Dormitorios": r.dormitorios, "Baños": r.banos,

@@ -7,7 +7,7 @@ uno a su medida. El prototipo web tiene tres recorridos:
 |---|---|---|
 | Inicio | `#/` | Página informativa: problema, qué buscamos, cómo funciona, equipo y límites |
 | Propietario | `#/ingresar` → `#/mis-departamentos` | Registro e inicio de sesión; lista de sus departamentos (o invitación a agregar el primero); análisis de cada uno con los 6 componentes; publicación con el precio elegido |
-| Inquilino | `#/buscar` | Búsqueda por distrito, presupuesto, dormitorios, baños, área, amenidades y cercanía a paraderos, sobre 3,013 anuncios de mercado y los departamentos publicados en DepaRent; cada resultado indica si su precio está por debajo, en línea o por encima del estimado |
+| Inquilino | `#/buscar` | Búsqueda por distrito, presupuesto, dormitorios, baños, área, amenidades y cercanía a paraderos, sobre 3,013 anuncios de mercado y los departamentos publicados en DepaRent; cada resultado indica si su precio está por debajo, en línea o por encima del estimado y abre su ficha (`#/anuncio/:id`): precio frente al estimado, anuncios parecidos, transporte y, si está publicado en DepaRent, un formulario «Me interesa» que llega al propietario |
 | Prueba rápida | `#/probar` | El análisis completo sin crear cuenta |
 
 Los seis componentes analíticos:
@@ -64,7 +64,7 @@ con Python, como Render (ver `deployed_url.txt`). `code/app.py` (Streamlit) se c
 | `escenarios.py`, `laboratorio_area.py` | Modelo 6 y exploración del área (del profesor) |
 | `evidencia_distrital.py`, `ayuda_interfaz.py` | Error por distrito y textos (del profesor) |
 | `app.py` | Versión Streamlit del profesor, como respaldo |
-| `test_*.py` | Pruebas (39) |
+| `test_*.py` | Pruebas (42) |
 
 ## Requisitos
 - Python 3.12 o 3.13 y conexión a internet la primera vez (para instalar dependencias; el mapa usa teselas de OpenStreetMap).
@@ -81,7 +81,8 @@ Abrir **http://127.0.0.1:8000**. En Linux/macOS usar `python3 -m venv .venv` y `
 
 Endpoints principales: `GET /api/opciones`, `POST /api/analizar`, `POST /api/accesibilidad`, `POST /api/comparar`,
 `POST /api/area`, `POST /api/cuentas/registro|ingreso|salida`, `GET|POST /api/departamentos`,
-`GET|PUT|DELETE /api/departamentos/{id}`, `POST|DELETE /api/departamentos/{id}/publicacion` y `POST /api/buscar`.
+`GET|PUT|DELETE /api/departamentos/{id}`, `POST|DELETE /api/departamentos/{id}/publicacion`, `POST /api/buscar`,
+`GET /api/anuncios/{id}` y `POST /api/anuncios/{id}/interes`.
 Documentación interactiva en http://127.0.0.1:8000/docs.
 
 Versión Streamlit del profesor (opcional): `..\..\..\.venv\Scripts\python.exe -m streamlit run app.py`.

@@ -150,7 +150,7 @@ export async function vistaDetalleDepartamento(lienzo, params, id) {
     publicacion: d.publicacion,
     alPublicar: publicar,
     alMoverUbicacion: (lat, lon) => formulario?.fijarUbicacion(lat, lon),
-    extra: ["caracteristicas", "Características", (panel) => {
+    extras: [["caracteristicas", "Características", (panel) => {
       panel.innerHTML = `<section class="panel" data-form></section>
         <div class="danger-zone"><p class="hint">Eliminar borra el departamento y su publicación.</p>
           <div class="confirm"><button class="btn danger" type="button" data-borrar>Eliminar departamento</button></div></div>`;
@@ -177,7 +177,15 @@ export async function vistaDetalleDepartamento(lienzo, params, id) {
           irA("#/mis-departamentos");
         });
       });
-    }],
+    }], ["interesados", `Interesados (${d.interesados.length})`, (panel) => {
+      panel.innerHTML = `<section class="panel" aria-labelledby="t-int"><header><h2 id="t-int">Personas interesadas</h2>
+        <span class="meta">${d.publicacion ? `Escriben desde la ficha pública: <a class="card-link" href="#/anuncio/d${d.id}">ver cómo la ven</a>` : "Publica el departamento para recibir mensajes"}</span></header>
+        ${d.interesados.length ? `<div class="rows">${d.interesados.map((i) => `<div class="row" style="align-items:flex-start">
+            <span>${esc(i.nombre)} · <a href="mailto:${esc(i.email)}">${esc(i.email)}</a><span class="sub">${esc(i.mensaje)}</span></span>
+            <span class="hint num">${new Date(i.creado * 1000).toLocaleDateString("es-PE")}</span></div>`).join("")}</div>`
+          : `<div class="empty"><p>${d.publicacion ? "Todavía nadie escribió. Los inquilinos te encuentran en la búsqueda." : "Aún no está publicado: nadie puede verlo ni escribirte."}</p></div>`}
+      </section>`;
+    }]],
   });
   $("[data-publicar-sugerido]", lienzo)?.addEventListener("click", (e) =>
     conBoton(e.currentTarget, "Publicando…", () => publicar(sugerido)).catch((err) => mensaje($(".pub-msg", lienzo), err.message)));
@@ -274,6 +282,7 @@ export async function vistaBuscar(lienzo) {
         valoracion = b.dataset.valoracion || null; limite = 24; ejecutar();
       }));
       $("[data-mas]", destino)?.addEventListener("click", () => { limite = Math.min(60, limite + 24); ejecutar(); });
+      $$("tr[data-href]", destino).forEach((tr) => tr.addEventListener("click", (e) => { if (!e.target.closest("a")) irA(tr.dataset.href); }));
     } catch (err) {
       destino.innerHTML = `<section class="panel"><div class="empty"><p>No pudimos cargar la búsqueda. ${esc(err.message)}</p><button class="btn" type="button" data-reintentar>Reintentar</button></div></section>`;
       $("[data-reintentar]", destino).addEventListener("click", ejecutar);
@@ -298,8 +307,8 @@ function resultadosBusqueda(r, valoracion) {
     <section class="panel" aria-label="Resultados">
       ${r.total ? `<div class="table-wrap"><table class="list-table">
         <thead><tr><th>Departamento</th><th class="n">Área</th><th class="n">Paradero</th><th class="n">Estimado</th><th class="n">Frente al estimado</th><th class="n">Precio</th></tr></thead>
-        <tbody>${r.resultados.map((x) => `<tr>
-          <td><span class="id">${x.nombre ? esc(x.nombre) : `${dorms(x.dormitorios)} · ${banos(x.banos)}`}</span>
+        <tbody>${r.resultados.map((x) => `<tr data-href="#/anuncio/${x.id}">
+          <td><a class="id" href="#/anuncio/${x.id}">${x.nombre ? esc(x.nombre) : `${dorms(x.dormitorios)} · ${banos(x.banos)}`}</a>
             <span class="sub">${esc(titulo(x.distrito))} · ${esc(x.perfil)}${x.origen === "Publicado en DepaRent" ? " · publicado en DepaRent" : ""}${x.amenidades.length ? " · " + x.amenidades.map((a) => ETIQUETAS_AMENIDAD[a].toLowerCase()).join(", ") : ""}</span></td>
           <td class="n more" data-label="Área">${num(x.area_total)} m²</td>
           <td class="n more" data-label="Paradero a">${num(x.dist_paradero_min_m)} m</td>

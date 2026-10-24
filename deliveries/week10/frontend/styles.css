@@ -137,6 +137,10 @@ body:not([data-vista="inicio"]) .topbar { display: none; }
 
 /* ---------- paneles y cuadrícula ---------- */
 .grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: var(--gap); align-items: start; }
+/* Una fila cuyos paneles comparten altura: la nota de cada panel baja a su pie. */
+.grid.stretch { align-items: stretch; }
+.grid.stretch > .panel { display: flex; flex-direction: column; }
+.grid.stretch > .panel > .panel-note:last-child { margin-top: auto; padding-top: 12px; }
 .span-2 { grid-column: span 2; } .span-3 { grid-column: span 3; } .span-4 { grid-column: span 4; } .span-6 { grid-column: 1 / -1; }
 .panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-card); padding: var(--card-pad); min-width: 0; }
 .panel > header { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
@@ -151,6 +155,8 @@ body:not([data-vista="inicio"]) .topbar { display: none; }
 .rows { display: grid; }
 .row { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 44px; padding: 10px 0; }
 .row + .row { border-top: 1px solid var(--rule); }
+/* Pares clave–valor dentro de una tarjeta: pitch corto (guía de app: 21–32 px más su regla). */
+.rows.kv .row { min-height: 0; padding: 7px 0; }
 .row .sub { display: block; color: var(--muted); font-size: var(--fs-small); }
 
 /* KPIs como una sola tira dividida: etiqueta sobre cifra, sin íconos */
@@ -305,6 +311,7 @@ tr[data-href] { cursor: pointer; }
   .filters.expand .field.optional { display: grid; }
   .filters .field:first-child { flex: 1 1 100%; }
   .fields { grid-template-columns: 1fr 1fr; }
+  .panel > header { flex-direction: column; align-items: flex-start; gap: 4px; }
   .kpis { grid-template-columns: minmax(0, 1fr); }
   .kpi:nth-child(n) { border-left: 0; }
   .kpi + .kpi { border-top: 1px solid var(--border); }

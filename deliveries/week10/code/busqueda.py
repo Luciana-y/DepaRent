@@ -88,16 +88,39 @@ def buscar(mercado, propios, filtros, limite=24):
         resumen = {"precio_p25_soles": float(np.percentile(precios, 25)), "precio_mediana_soles": float(np.median(precios)),
                    "precio_p75_soles": float(np.percentile(precios, 75)),
                    "por_debajo_del_estimado": int((encontrados["relacion_estimado"] < 1 - UMBRAL_VALORACION).sum())}
-    resultados = []
-    for fila in encontrados.head(limite).to_dict("records"):
-        resultados.append({
-            "id": fila["id"], "origen": fila["origen"], "nombre": fila["nombre"],
-            "distrito": fila["distrito_norm"], "precio_soles": round(float(fila["precio_soles"]), 2),
-            "precio_estimado_soles": round(float(fila["precio_estimado"]), 2),
-            "valoracion": valoracion(fila["relacion_estimado"]),
-            "diferencia_estimado_porcentaje": round(100 * (fila["relacion_estimado"] - 1), 1),
-            **{c: fila[c] for c in ("area_total", "dormitorios", "banos", "estacionamientos", "antiguedad", "mantenimiento",
-                                    "dist_paradero_min_m", "paraderos_500m", "perfil")},
-            "amenidades": [a for a in BINARY if fila[a] == 1],
-        })
+    resultados = [formatear(fila) for fila in encontrados.head(limite).to_dict("records")]
     return {"total": int(len(encontrados)), "conteos": conteos, "resumen": resumen, "resultados": resultados, "aviso": AVISO}
+
+
+CAMPOS_VIVIENDA = ["distrito_norm", "area_total", "dormitorios", "banos", "estacionamientos", "antiguedad", "mantenimiento", *BINARY]
+
+
+def formatear(fila):
+    """Un anuncio como lo ve el inquilino: sin dirección, coordenadas, URL ni texto del anuncio original."""
+    relacion = fila["precio_soles"] / fila["precio_estimado"]
+    return {
+        "id": fila["id"], "origen": fila["origen"], "nombre": fila["nombre"],
+        "distrito": fila["distrito_norm"], "precio_soles": round(float(fila["precio_soles"]), 2),
+        "precio_estimado_soles": round(float(fila["precio_estimado"]), 2),
+        "valoracion": valoracion(relacion),
+        "diferencia_estimado_porcentaje": round(100 * (relacion - 1), 1),
+        **{c: fila[c] for c in ("area_total", "dormitorios", "banos", "estacionamientos", "antiguedad", "mantenimiento",
+                                "dist_paradero_min_m", "paraderos_500m", "perfil")},
+        "amenidades": [a for a in BINARY if fila[a] == 1],
+    }
+
+
+def ubicar(mercado, propios, anuncio_id):
+    """Fila del anuncio por su id ("m123" de mercado o "d4" publicado en DepaRent), o None."""
+    for tabla in (propios, mercado):
+        if len(tabla):
+            encontrada = tabla[tabla["id"] == anuncio_id]
+            if len(encontrada):
+                return encontrada.iloc[0].to_dict()
+    return None
+
+
+def vivienda_de(fila):
+    """Las entradas del modelo a partir de una fila de la tabla de búsqueda."""
+    return {c: (None if pd.isna(fila[c]) else (int(fila[c]) if c != "distrito_norm" and float(fila[c]).is_integer() else fila[c]))
+            for c in CAMPOS_VIVIENDA}

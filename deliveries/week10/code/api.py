@@ -8,6 +8,7 @@ En despliegue, DEPARENT_ORIGENES limita qué dominios pueden llamar a la API (po
 import json
 import math
 import os
+import re
 from typing import List, Optional
 
 import joblib
@@ -20,9 +21,9 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 import cuentas
-from accesibilidad import accesibilidad, centro_distrito
+from accesibilidad import accesibilidad, cargar_red, centro_distrito, nivel_accesibilidad
 from ayuda_interfaz import ETIQUETAS, avisos_coherencia
-from busqueda import buscar, construir_mercado
+from busqueda import AVISO as AVISO_MERCADO, buscar, construir_mercado, formatear, ubicar, vivienda_de
 from escenarios import ADVERTENCIA, CAMBIABLES, comparar, verificar_modelo_congelado
 from escenarios_precio import escenarios_publicacion
 from evidencia_distrital import evidencia_distrital
@@ -110,6 +111,12 @@ class Departamento(BaseModel):
 class Publicacion(BaseModel):
     precio_soles: float
     escenario: Optional[str] = None
+
+
+class Interes(BaseModel):
+    nombre: str
+    email: str
+    mensaje: str
 
 
 class Filtros(BaseModel):
@@ -304,6 +311,7 @@ def crear_departamento(datos: Departamento, usuario=Depends(usuario_actual), con
 @app.get("/api/departamentos/{departamento_id}")
 def ver_departamento(departamento_id: int, usuario=Depends(usuario_actual), conexion=Depends(base_datos)):
     departamento = cuentas.obtener_departamento(conexion, usuario["id"], departamento_id)
+    departamento["interesados"] = cuentas.listar_interesados(conexion, usuario["id"], departamento_id)
     return limpiar({"departamento": departamento, "analisis": analisis_completo(departamento["vivienda"], departamento["ubicacion"])})
 
 
@@ -338,6 +346,45 @@ def retirar_publicacion(departamento_id: int, usuario=Depends(usuario_actual), c
 def buscar_departamentos(filtros: Filtros, conexion=Depends(base_datos)):
     datos = filtros.model_dump()
     return limpiar(buscar(MERCADO, tabla_publicados(conexion), datos, limite=datos.pop("limite")))
+
+
+# ---------- Ficha de un anuncio para inquilinos ----------
+
+@app.get("/api/anuncios/{anuncio_id}")
+def ver_anuncio(anuncio_id: str, conexion=Depends(base_datos)):
+    fila = ubicar(MERCADO, tabla_publicados(conexion), anuncio_id) if re.fullmatch(r"[md]\d+", anuncio_id) else None
+    if fila is None:
+        raise cuentas.NoEncontrado("No encontramos ese anuncio. Puede que ya no esté publicado.")
+    vivienda = vivienda_de(fila)
+    propio = anuncio_id.startswith("d")
+    # Un anuncio de mercado no se compara consigo mismo ni con sus duplicados de otros portales.
+    competencia = comparables(vivienda, MODELO_PERFIL, excluir=None if propio else int(anuncio_id[1:]))
+    red = cargar_red()
+    distancia = float(fila["dist_paradero_min_m"])
+    mas_lejos = 100 * (1 - np.searchsorted(red["ref_distancia"], distancia, side="right") / len(red["ref_distancia"]))
+    tendencia = tendencia_distrital(vivienda["distrito_norm"])
+    publicacion = None
+    if propio:
+        d = cuentas.publicado(conexion, int(anuncio_id[1:]))
+        publicacion = {"propietario": d["propietario"], "escenario": d["publicacion"]["escenario"], "desde": d["publicacion"]["desde"]}
+    return limpiar({
+        "anuncio": formatear(fila), "vivienda": vivienda, "publicacion": publicacion,
+        "precio": predecir(vivienda, MODELO_PRECIO), "perfil": competencia,
+        # Sin nombres de paraderos ni mapa: revelarían la ubicación del anuncio original.
+        "acceso": {"dist_paradero_min_m": distancia, "paraderos_500m": int(fila["paraderos_500m"]),
+                   "nivel": nivel_accesibilidad(distancia, fila["paraderos_500m"], red["ref_500m_mediana"]),
+                   "porcentaje_anuncios_mas_lejos": round(float(mas_lejos), 1)},
+        "tendencia": {k: tendencia[k] for k in ("distrito", "serie_propia", "tendencia", "cambio_porcentaje")},
+        "aviso": AVISO_MERCADO,
+    })
+
+
+@app.post("/api/anuncios/{anuncio_id}/interes")
+def registrar_interes(anuncio_id: str, datos: Interes, conexion=Depends(base_datos)):
+    if not re.fullmatch(r"d\d+", anuncio_id):
+        raise cuentas.DatosInvalidos("Este anuncio viene de un portal externo; DepaRent no tiene el contacto de su propietario.")
+    cuentas.registrar_interes(conexion, int(anuncio_id[1:]), datos.nombre, datos.email, datos.mensaje)
+    return {"estado": "ok"}
 
 
 if FRONTEND.exists():

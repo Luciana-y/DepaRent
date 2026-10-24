@@ -22,3 +22,7 @@ departamentos (Miraflores publicado; Lince y San Isidro como borradores). Escrit
 | `14_movil_inicio.png` | Página de inicio en teléfono |
 | `15_movil_buscar.png` | Búsqueda en teléfono |
 | `16_movil_detalle.png` | Detalle en teléfono |
+| `17_ficha_anuncio.png` | Ficha de un anuncio de mercado: precio pedido frente al estimado, regla de precios, características, transporte, distrito y anuncios parecidos |
+| `18_ficha_publicada.png` | Ficha de un departamento publicado en DepaRent con el formulario «Me interesa» |
+| `19_interesados.png` | El propietario ve el mensaje de la inquilina en la pestaña Interesados |
+| `20_movil_ficha.png` | Ficha en teléfono |

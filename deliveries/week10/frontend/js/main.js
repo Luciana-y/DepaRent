@@ -1,4 +1,5 @@
 import { sesion } from "./api.js";
+import { vistaAnuncio } from "./anuncio.js";
 import { vistaInicio } from "./inicio.js";
 import { activarMovimiento } from "./movimiento.js";
 import { $, esc } from "./util.js";
@@ -11,6 +12,7 @@ import {
 const RUTAS = [
   [/^\/$/, vistaInicio, false, "inicio", ""],
   [/^\/buscar$/, vistaBuscar, false, "buscar", "Buscar departamentos"],
+  [/^\/anuncio\/([md]\d+)$/, vistaAnuncio, false, "buscar", "Anuncio"],
   [/^\/probar$/, vistaProbar, false, "probar", "Probar el análisis"],
   [/^\/ingresar$/, vistaIngresar, false, "ingresar", "Ingresar"],
   [/^\/mis-departamentos$/, vistaMisDepartamentos, true, "propietario", "Mis departamentos"],

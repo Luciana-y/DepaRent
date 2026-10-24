@@ -31,6 +31,9 @@ CREATE TABLE IF NOT EXISTS departamentos (
     nombre TEXT NOT NULL, vivienda TEXT NOT NULL, latitud REAL, longitud REAL, resumen TEXT,
     precio_publicado REAL, escenario_publicado TEXT, publicado_en REAL,
     creado REAL NOT NULL, actualizado REAL NOT NULL);
+CREATE TABLE IF NOT EXISTS interesados (
+    id INTEGER PRIMARY KEY, departamento_id INTEGER NOT NULL REFERENCES departamentos(id) ON DELETE CASCADE,
+    nombre TEXT NOT NULL, email TEXT NOT NULL, mensaje TEXT NOT NULL, creado REAL NOT NULL);
 """
 
 
@@ -197,3 +200,33 @@ def publicados(conexion):
     """Departamentos publicados por cualquier propietario, sin datos de contacto del dueño."""
     filas = conexion.execute("SELECT * FROM departamentos WHERE precio_publicado IS NOT NULL ORDER BY publicado_en DESC")
     return [_departamento(f) for f in filas]
+
+
+def publicado(conexion, departamento_id):
+    """Un departamento publicado tal como lo ve un inquilino: con el nombre de pila del propietario, sin su correo."""
+    fila = conexion.execute("SELECT d.*, u.nombre AS propietario FROM departamentos d JOIN usuarios u ON u.id = d.usuario_id "
+                            "WHERE d.id = ? AND d.precio_publicado IS NOT NULL", (departamento_id,)).fetchone()
+    if fila is None:
+        raise NoEncontrado("Ese departamento no está publicado.")
+    return {**_departamento(fila), "propietario": fila["propietario"].split()[0]}
+
+
+def registrar_interes(conexion, departamento_id, nombre, email, mensaje):
+    publicado(conexion, departamento_id)
+    nombre, email, mensaje = (nombre or "").strip(), (email or "").strip().lower(), (mensaje or "").strip()
+    if not 2 <= len(nombre) <= 80:
+        raise DatosInvalidos("Escribe tu nombre (entre 2 y 80 caracteres).")
+    if not PATRON_EMAIL.match(email) or len(email) > 120:
+        raise DatosInvalidos("Escribe un correo válido para que el propietario pueda responderte.")
+    if not 5 <= len(mensaje) <= 600:
+        raise DatosInvalidos("Escribe un mensaje de entre 5 y 600 caracteres.")
+    with conexion:
+        conexion.execute("INSERT INTO interesados (departamento_id, nombre, email, mensaje, creado) VALUES (?, ?, ?, ?, ?)",
+                         (departamento_id, nombre, email, mensaje, time.time()))
+
+
+def listar_interesados(conexion, usuario_id, departamento_id):
+    obtener_departamento(conexion, usuario_id, departamento_id)
+    filas = conexion.execute("SELECT nombre, email, mensaje, creado FROM interesados WHERE departamento_id = ? ORDER BY creado DESC",
+                             (departamento_id,))
+    return [dict(f) for f in filas]

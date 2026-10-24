@@ -148,3 +148,46 @@ class BusquedaTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
+
+
+class FichaAnuncioTest(unittest.TestCase):
+    def setUp(self):
+        self.cliente = TestClient(app)
+
+    def test_ficha_de_mercado_sin_datos_privados_ni_contacto(self):
+        anuncio_id = MERCADO.iloc[100]["id"]
+        r = self.cliente.get(f"/api/anuncios/{anuncio_id}")
+        self.assertEqual(r.status_code, 200)
+        f = r.json()
+        self.assertEqual(f["anuncio"]["id"], anuncio_id)
+        self.assertIsNone(f["publicacion"])
+        self.assertEqual(f["precio"]["precio_estimado_soles"], f["anuncio"]["precio_estimado_soles"])
+        self.assertEqual(len(f["perfil"]["comparables"]), 8)
+        texto = json.dumps(f)
+        for privado in ("direccion", "latitud", "longitud", "url", "descripcion", "paradero_cercano_nombre"):
+            self.assertNotIn(privado, texto)
+        self.assertEqual(self.cliente.post(f"/api/anuncios/{anuncio_id}/interes",
+                                           json={"nombre": "Ana", "email": "ana@deparent.test", "mensaje": "Me interesa"}).status_code, 422)
+
+    def test_ids_invalidos_o_inexistentes_dan_404(self):
+        for anuncio_id in ("m99999999", "x1", "d99999", "1"):
+            self.assertEqual(self.cliente.get(f"/api/anuncios/{anuncio_id}").status_code, 404, anuncio_id)
+
+    def test_interes_llega_solo_al_propietario_y_solo_si_esta_publicado(self):
+        dueno = _registrar(self.cliente, "ficha.dueno@deparent.test")
+        otro = _registrar(self.cliente, "ficha.otro@deparent.test")
+        creado = self.cliente.post("/api/departamentos", headers=dueno, json={"nombre": "Depa Surquillo", "vivienda": {**DEMOS[0]["entrada"], "distrito_norm": "surquillo"}}).json()
+        depto_id = creado["departamento"]["id"]
+        mensaje = {"nombre": "Inquilina Prueba", "email": "inquilina@deparent.test", "mensaje": "Hola, ¿sigue disponible?"}
+        # Borrador: no tiene ficha pública ni recibe mensajes.
+        self.assertEqual(self.cliente.get(f"/api/anuncios/d{depto_id}").status_code, 404)
+        self.assertEqual(self.cliente.post(f"/api/anuncios/d{depto_id}/interes", json=mensaje).status_code, 404)
+        self.cliente.post(f"/api/departamentos/{depto_id}/publicacion", headers=dueno, json={"precio_soles": 2100, "escenario": "Equilibrado"})
+        ficha = self.cliente.get(f"/api/anuncios/d{depto_id}").json()
+        self.assertEqual(ficha["publicacion"]["propietario"], "Propietaria")
+        self.assertNotIn("ficha.dueno@deparent.test", json.dumps(ficha))
+        self.assertEqual(self.cliente.post(f"/api/anuncios/d{depto_id}/interes", json={**mensaje, "email": "sin-arroba"}).status_code, 422)
+        self.assertEqual(self.cliente.post(f"/api/anuncios/d{depto_id}/interes", json=mensaje).status_code, 200)
+        visto = self.cliente.get(f"/api/departamentos/{depto_id}", headers=dueno).json()["departamento"]["interesados"]
+        self.assertEqual([(i["nombre"], i["email"]) for i in visto], [("Inquilina Prueba", "inquilina@deparent.test")])
+        self.assertEqual(self.cliente.get(f"/api/departamentos/{depto_id}", headers=otro).status_code, 404)
