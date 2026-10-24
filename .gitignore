@@ -9,3 +9,7 @@ __pycache__/
 
 # Base local de cuentas y departamentos del prototipo (datos de usuarios)
 deliveries/week10/data/*.sqlite
+
+# Archivos de trabajo de las skills de diseño
+.taste-skill/
+.impeccable/

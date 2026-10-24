@@ -2,24 +2,23 @@
 <html lang="es">
 <head>
   <meta charset="utf-8">
+  <script>document.documentElement.classList.add("js")</script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>DepaRent · Precio de alquiler con datos</title>
   <meta name="description" content="Estima el alquiler de tu departamento en Lima, compáralo con anuncios parecidos y publícalo al precio correcto. O encuentra un departamento a tu medida.">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23176552'/%3E%3Ctext x='16' y='22' font-family='Arial' font-weight='700' font-size='18' fill='white' text-anchor='middle'%3ED%3C/text%3E%3C/svg%3E">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23ff7a1f'/%3E%3Ctext x='16' y='22' font-family='Arial' font-weight='900' font-size='20' fill='%23050f16' text-anchor='middle'%3ED%3C/text%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;500;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="inicio.css">
 </head>
 <body>
   <header class="topbar">
     <div class="container topbar-inner">
-      <a class="brand" href="#/">
-        <span class="logo" aria-hidden="true">D</span>
-        <span><strong>DepaRent</strong><span class="tagline">Precio de alquiler con datos</span></span>
-      </a>
-      <button class="menu-toggle" id="menu-toggle" aria-label="Abrir menú">☰</button>
+      <a class="brand" href="#/">DepaRent</a>
+      <button class="menu-toggle" id="menu-toggle" aria-expanded="false">Menú</button>
       <nav class="menu" id="menu"></nav>
     </div>
   </header>

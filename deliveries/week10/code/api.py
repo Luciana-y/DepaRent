@@ -233,6 +233,12 @@ def opciones():
     })
 
 
+@app.post("/api/estimar")
+def estimar(vivienda: Vivienda):
+    """Solo el precio del modelo 3: lo usa el estimador en vivo de la página de inicio."""
+    return limpiar(predecir(_vivienda(vivienda), MODELO_PRECIO))
+
+
 @app.post("/api/analizar")
 def analizar(consulta: Analisis):
     return limpiar(analisis_completo(_vivienda(consulta.vivienda), _ubicacion(consulta.ubicacion)))

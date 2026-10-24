@@ -1,0 +1,242 @@
+/* Página de inicio · dirección "cartel": el letrero SE ALQUILA de las ventanas de Lima.
+   Cinco tamaños (display, head, lead, body, small), campos de color planos, esquinas cuadradas. */
+
+body[data-vista="inicio"] { background: var(--bg); }
+body[data-vista="inicio"] .topbar { background: var(--bg); }
+body[data-vista="inicio"] > .footer { display: none; }
+
+.home { --gutter: clamp(16px, 2vw, 24px); color: var(--ink); overflow-x: clip; }
+.home h2, .home h3 { font-weight: 900; letter-spacing: -0.03em; }
+.home a { color: inherit; }
+
+/* ---------- Hero ---------- */
+.home-hero {
+  position: relative; display: grid; justify-items: center;
+  min-height: calc(100svh - var(--nav-h)); padding: 9svh var(--gutter) 0;
+}
+.home-title {
+  margin: 0; position: relative; z-index: 2; text-align: center;
+  font-size: var(--step-display); font-weight: 900; line-height: 0.88; letter-spacing: -0.04em;
+}
+.lines .line { display: block; overflow: hidden; padding-bottom: 0.08em; margin-bottom: -0.08em; }
+.lines [data-line] { display: block; }
+/* Anclados al pie del primer viewport, no del hero (el cartel sigue bajo el pliegue). */
+.home-lead, .home-fact {
+  position: absolute; top: calc(100svh - var(--nav-h) - 32px); translate: 0 -100%; margin: 0; max-width: 280px;
+  font-size: var(--step-body); line-height: 1.45;
+}
+.home-lead { left: var(--gutter); }
+.home-fact { right: var(--gutter); text-align: right; }
+
+.cartel {
+  position: relative; z-index: 1; width: max(27vw, 360px); margin-top: -1.2vw;
+  background: var(--paper); color: var(--ink); padding: 28px 28px 24px;
+  display: grid; gap: 12px; text-align: center;
+}
+.cartel-kind { margin: 0; font-size: var(--step-small); font-weight: 500; }
+.cartel select, .cartel input {
+  font: inherit; color: var(--ink); background: transparent; border: 0;
+  border-bottom: 3px solid var(--ink); border-radius: 0; padding: 2px 0; width: 100%;
+}
+.cartel-district select { font-size: var(--step-lead); font-weight: 900; text-align: center; cursor: pointer; }
+.cartel-fields { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.cartel-fields label { display: grid; gap: 2px; font-size: var(--step-small); }
+.cartel-fields input { font-size: var(--step-lead); font-weight: 900; text-align: center; }
+.cartel :is(select, input):focus-visible { outline: 3px solid var(--bg); outline-offset: 2px; }
+.cartel-price { display: block; margin-top: 8px; font-size: var(--step-head); font-weight: 900; line-height: 1; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.cartel-price .moneda { font-size: var(--step-lead); letter-spacing: 0; margin-right: 0.15em; vertical-align: 0.9em; }
+.cartel-price small { display: block; font-size: var(--step-small); font-weight: 500; letter-spacing: 0; margin-top: 6px; }
+.cartel-range { margin: 0; font-size: var(--step-small); }
+.cartel.is-error .cartel-range { color: var(--error); font-weight: 500; }
+.cartel-link {
+  display: block; padding: 14px; background: var(--ink); color: var(--bg) !important;
+  font-weight: 900; text-decoration: none; font-size: var(--step-body);
+}
+.cartel-foot { margin: 0; font-size: var(--step-small); color: var(--muted-on-paper); }
+
+/* ---------- Tres precios ---------- */
+.home-prices { position: relative; background: var(--paper); padding: 160px var(--gutter) 160px; overflow: hidden; }
+.stack { display: grid; white-space: nowrap; color: var(--muted-on-paper); }
+.stack-line { display: block; margin: 0; font-size: var(--step-display); font-weight: 900; line-height: 0.88; letter-spacing: -0.04em; }
+.stack .stack-strong { color: var(--ink); }
+/* Palabras decorativas: van en CSS para que el título real sea solo «Tres precios.» */
+.stack-deco::before { content: attr(data-palabra); }
+.prices-row { display: grid; grid-template-columns: 5fr 7fr; gap: 6vw; align-items: start; margin-top: 72px; }
+.price-object { width: 100%; margin: 0; background: var(--bg); padding: 28px 32px; rotate: -4deg; }
+.price-object figcaption { font-size: var(--step-small); font-weight: 500; margin-bottom: 12px; }
+.price-object-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.price-object-list li { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 10px 0; font-size: var(--step-body); }
+.price-object-list b { font-size: var(--step-lead); font-weight: 900; font-variant-numeric: tabular-nums; }
+.price-object-list .is-sugerido { background: var(--ink); color: var(--bg); padding: 10px 12px; margin: 0 -12px; }
+.price-facts {
+  margin: 0; display: grid; gap: 1em; max-width: 40ch;
+  font-size: var(--step-lead); line-height: 1.35;
+}
+.price-facts p { margin: 0; }
+
+/* ---------- Así funciona ---------- */
+.home-steps { display: grid; grid-template-columns: repeat(4, 1fr); }
+.step-field { position: relative; min-height: 84svh; padding: 28px; display: flex; flex-direction: column; }
+.step-describes { background: var(--bg); color: var(--ink); }
+.step-comparamos { background: var(--paper); color: var(--ink); }
+.step-ubicamos { background: var(--ink); color: var(--paper); }
+.step-publicas { background: var(--muted); color: var(--paper); }
+.step-title { position: absolute; top: 28px; left: 28px; margin: 0; font-size: var(--step-lead); }
+.ficha {
+  position: absolute; top: 38%; left: 50%; translate: -50% -38%; width: min(300px, 100% - 40px); min-height: 200px; align-content: start;
+  background: var(--paper); color: var(--ink); padding: 18px 18px 14px; display: grid; gap: 6px;
+}
+.step-comparamos .ficha { background: var(--bg); }
+.ficha p { margin: 0; }
+.ficha-name { font-weight: 900; font-size: var(--step-body); line-height: 1.15; }
+.ficha-row { font-size: var(--step-small); line-height: 1.35; }
+.ficha-strong { font-size: var(--step-lead); font-weight: 900; }
+.step-clause { margin: auto 0 0; font-size: var(--step-lead); line-height: 1.2; font-weight: 500; max-width: 18ch; }
+
+/* ---------- Lo que medimos ---------- */
+.home-proof { background: var(--ink); height: 78svh; min-height: 560px; overflow: hidden; display: grid; justify-items: center; padding-top: 96px; }
+.proof-card {
+  width: min(56vw, 760px); aspect-ratio: 5 / 7; background: var(--paper); color: var(--ink);
+  padding: 56px; rotate: 1.5deg; text-align: center;
+}
+.proof-card h2 { margin: 0 0 28px; font-size: var(--step-lead); }
+.proof-card h3 { margin: 40px 0 20px; font-size: var(--step-lead); }
+.proof-card p { margin: 0 0 12px; font-size: var(--step-lead); line-height: 1.6; font-weight: 400; }
+
+/* ---------- La carta de alquileres ---------- */
+.home-carta { background: var(--bg); padding: 160px var(--gutter); display: grid; justify-items: center; }
+.carta {
+  width: min(640px, 100%); background: var(--paper); padding: 72px 64px; text-align: center;
+  /* Bordes festoneados arriba y abajo, como una carta impresa. */
+  --festo: radial-gradient(circle at 50% 0, transparent 9px, #000 10px);
+  mask: var(--festo) top / 24px 51% repeat-x, radial-gradient(circle at 50% 100%, transparent 9px, #000 10px) bottom / 24px 51% repeat-x;
+}
+.carta h2 { margin: 0; font-size: var(--step-head); line-height: 0.95; }
+.carta-note { margin: 16px auto 0; max-width: 34ch; font-size: var(--step-body); }
+.carta-groups { display: grid; gap: 56px; margin-top: 56px; }
+.carta-group h3 { margin: 0 0 20px; font-size: var(--step-lead); }
+.carta-group ul { list-style: none; margin: 0 auto; padding: 0; width: min(100%, 440px); display: grid; gap: 16px; text-align: left; }
+.carta-group li { display: grid; grid-template-columns: 1fr auto; column-gap: 16px; }
+.carta-item { font-size: var(--step-body); font-weight: 500; }
+.carta-price { font-size: var(--step-body); font-weight: 900; font-variant-numeric: tabular-nums; text-align: right; }
+.carta-desc { grid-column: 1 / -1; font-size: var(--step-small); color: var(--muted-on-paper); }
+.carta-wait { font-size: var(--step-small); color: var(--muted-on-paper); }
+.carta-close { margin: 56px 0 0; font-size: var(--step-body); line-height: 1.6; }
+.carta-close a { font-weight: 900; }
+
+/* ---------- Quiénes somos ---------- */
+.home-about { background: var(--paper); padding: 160px var(--gutter); }
+.about-title { margin: 0 0 32px; font-size: var(--step-head); line-height: 0.95; }
+.about-text {
+  margin: 0; columns: 2; column-gap: 32px; text-align: justify; hyphens: auto;
+  font-size: var(--step-lead); line-height: 1.25; color: var(--muted-on-paper);
+}
+.about-text b { color: var(--ink); font-weight: 900; }
+.about-text mark { color: var(--ink); padding: 0 0.1em; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+.hl-a { background: var(--bg); }
+.hl-b { background: var(--ink); color: var(--paper) !important; }
+.hl-c { background: var(--surface-2); }
+.about-link { background: var(--ink); color: var(--bg) !important; font-weight: 900; padding: 0 0.1em; text-decoration: none; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+
+/* ---------- Tarjeta de respuesta ---------- */
+.home-reply {
+  position: relative; background: var(--ink); color: var(--paper); min-height: 80svh; overflow: hidden;
+  display: grid; grid-template-columns: repeat(12, 1fr); column-gap: 24px; padding: 120px var(--gutter) 0;
+}
+.reply-aside { grid-column: 1 / 5; align-self: end; margin: 0 0 64px; font-size: var(--step-lead); line-height: 1.3; }
+.reply-aside a { color: var(--bg); font-weight: 900; }
+.reply-card {
+  grid-column: 6 / 13; align-self: end; margin-bottom: -60px; aspect-ratio: 7 / 5;
+  background: var(--paper); color: var(--ink); padding: 48px; rotate: 2deg; text-align: center;
+  display: flex; flex-direction: column; justify-content: center; gap: 16px;
+}
+.reply-card h2 { margin: 0; font-size: var(--step-head); line-height: 0.95; }
+.reply-card p { margin: 0 auto; max-width: 36ch; font-size: var(--step-body); }
+.reply-action {
+  display: grid; place-items: center; height: 56px; margin-top: 8px; background: var(--ink); color: var(--bg) !important;
+  font-weight: 900; font-size: var(--step-body); text-decoration: none;
+}
+
+/* ---------- Pie: la marca en bloques ---------- */
+.home-footer { background: var(--bg); padding: 120px var(--gutter) 32px; }
+.blocks { display: flex; align-items: flex-end; gap: 4px; height: 34svh; min-height: 200px; margin: 0; }
+.block {
+  flex: 1; height: var(--h); display: grid; place-items: end center; padding-bottom: 0.05em;
+  font-size: clamp(3rem, 11vw, 10rem); font-weight: 900; line-height: 0.8; color: var(--bg);
+}
+.block-0 { background: var(--ink); }
+.block-1 { background: var(--muted); }
+.block-2 { background: var(--paper); color: var(--ink); }
+.block-3 { background: var(--surface-2); color: var(--ink); }
+.footer-cols { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-top: 56px; font-size: var(--step-small); }
+.footer-cols h3 { margin: 0 0 12px; font-size: var(--step-body); }
+.footer-cols a, .footer-cols p { display: block; margin: 0 0 8px; text-decoration: none; }
+.footer-last { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-top: 56px; font-size: var(--step-small); }
+.footer-last p { margin: 0; }
+.footer-top { background: var(--ink); color: var(--bg) !important; padding: 10px 16px; font-weight: 900; text-decoration: none; }
+
+/* ---------- Movimiento ---------- */
+.home :is(.cartel-link, .reply-action, .footer-top) { transition: transform var(--t-press) var(--ease-out); }
+.home :is(.cartel-link, .reply-action, .footer-top):active { transform: scale(0.97); }
+@media (prefers-reduced-motion: no-preference) {
+  .js .home-title [data-line] { transform: translateY(105%); animation: line-up 900ms var(--ease-expo) forwards; animation-delay: calc(var(--i) * 110ms + 150ms); }
+  .js .home :is(.home-lead, .home-fact) { opacity: 0; animation: fade-up 700ms var(--ease-out) 520ms forwards; }
+  .js .cartel { opacity: 0; transform: translateY(48px); animation: rise 1000ms var(--ease-expo) 380ms forwards; }
+  .js .home [data-reveal] {
+    opacity: 0; transform: translateY(24px);
+    transition: opacity 700ms var(--ease-out), transform 900ms var(--ease-expo);
+    transition-delay: calc(var(--i, 0) * var(--stagger-item));
+  }
+  .js .home [data-reveal].is-in { opacity: 1; transform: none; }
+  .js .home .ficha[data-reveal] { transform: translateY(24px); }
+  @media (hover: hover) and (pointer: fine) {
+    .ficha { transition: translate 150ms var(--ease-out); }
+    .step-field:hover .ficha { translate: -50% calc(-38% - 6px); }
+  }
+  @supports (animation-timeline: view()) {
+    .price-object.is-in { animation: drift linear both; animation-timeline: view(); animation-range: entry 0% exit 100%; }
+  }
+}
+@keyframes line-up { to { transform: none; } }
+@keyframes fade-up { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+@keyframes rise { to { opacity: 1; transform: none; } }
+@keyframes drift { from { transform: translateY(40px); } to { transform: translateY(-40px); } }
+
+/* ---------- Teléfono y tableta ---------- */
+@media (max-width: 900px) {
+  .home-hero { padding-top: 6svh; min-height: 0; }
+  .home-title { font-size: var(--step-display-phone); text-align: left; justify-self: stretch; }
+  .cartel { width: min(100%, 420px); margin-top: 24px; }
+  .home-lead, .home-fact { position: static; translate: none; max-width: 36ch; margin: 32px 0 0; justify-self: stretch; text-align: left; order: 2; }
+  .home-fact { margin: 12px 0 64px; }
+  .home-prices { padding: 96px var(--gutter); }
+  .stack { white-space: normal; }
+  .stack-line { font-size: var(--step-head); }
+  .prices-row { grid-template-columns: 1fr 1fr; gap: 32px; margin-top: 48px; }
+  .price-object { rotate: -2deg; }
+  .price-facts { font-size: var(--step-body); }
+  .home-steps { grid-template-columns: 1fr 1fr; }
+  .step-field { min-height: 0; padding: 32px var(--gutter); gap: 24px; }
+  .step-title { position: static; }
+  .ficha { position: static; translate: none; width: min(300px, 100%); }
+  .step-clause { margin: 0; max-width: 28ch; }
+  @media (hover: hover) and (pointer: fine) { .step-field:hover .ficha { translate: 0 -6px; } }
+  .home-proof { height: auto; min-height: 0; padding: 72px var(--gutter) 0; }
+  .proof-card { width: 100%; aspect-ratio: auto; padding: 32px 24px 56px; rotate: 1deg; margin-bottom: -24px; }
+  .proof-card p { font-size: var(--step-body); }
+  .home-carta { padding: 96px 10px; }
+  .carta { padding: 56px 24px; }
+  .home-about { padding: 96px var(--gutter); }
+  .about-text { columns: 1; text-align: left; font-size: var(--step-body); }
+  .home-reply { grid-template-columns: 1fr; padding-top: 96px; min-height: 0; }
+  .reply-aside { grid-column: 1; margin: 0 0 40px; font-size: var(--step-body); }
+  .reply-card { grid-column: 1; aspect-ratio: auto; padding: 40px 24px 72px; rotate: 1deg; margin-bottom: -32px; }
+  .home-footer { padding-top: 80px; }
+  .blocks { height: 22svh; min-height: 140px; }
+  .block { font-size: 12vw; }
+  .footer-cols { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 600px) {
+  .home-steps { grid-template-columns: 1fr; }
+  .prices-row { grid-template-columns: 1fr; }
+}

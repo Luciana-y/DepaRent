@@ -1,31 +1,56 @@
 :root {
-  --bg: #f4f6f5;
+  /* Dirección "cartel" (Taste: naranja y negro). */
+  --bg: #ff7a1f;
+  --surface-2: #ffc59a;
+  --paper: #ffffff;
+  --ink: #050f16;
+  --muted: #5a2306;
+  --muted-on-paper: #5a2306;
+  --error: #a3160c;
+
+  /* Cinco pasos tipográficos, Epilogue. */
+  --font: "Epilogue", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --step-display: clamp(5.5rem, 11.4vw, 11rem);
+  --step-display-phone: 15.5vw;
+  --step-head: clamp(2.5rem, 1.2rem + 5vw, 5.5rem);
+  --step-lead: clamp(1.25rem, 1.1rem + 0.7vw, 1.625rem);
+  --step-body: clamp(1.0625rem, 1rem + 0.25vw, 1.1875rem);
+  --step-small: clamp(0.8125rem, 0.79rem + 0.1vw, 0.875rem);
+
+  /* Movimiento (Taste references/motion.md y Emil Kowalski). */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.76, 0, 0.24, 1);
+  --t-press: 140ms;
+  --t-hover: 180ms;
+  --t-ui: 240ms;
+  --stagger-item: 70ms;
+  --nav-h: 64px;
+
+  /* Pantallas de la aplicación: se rediseñan en su propia fase. */
+  --app-bg: #f3f1ee;
   --surface: #ffffff;
-  --ink: #15302d;
-  --muted: #5d716d;
-  --line: #dde5e2;
-  --brand: #176552;
-  --brand-dark: #0f4f40;
-  --brand-deep: #0d3b31;
-  --brand-soft: #e3f1ec;
-  --accent: #d9822b;
-  --accent-soft: #fbeedf;
-  --warn-bg: #fff6e0;
-  --warn-ink: #7a5300;
-  --error: #b42318;
-  --radius: 14px;
-  --shadow: 0 1px 2px rgba(21, 48, 45, .06), 0 6px 20px rgba(21, 48, 45, .06);
+  --line: #e2dcd6;
+  --brand: #050f16;
+  --brand-dark: #000000;
+  --brand-deep: #050f16;
+  --brand-soft: #ffe1c9;
+  --accent: #ff7a1f;
+  --accent-soft: #ffe1c9;
+  --warn-bg: #fff1dc;
+  --warn-ink: #6b3a00;
+  --radius: 0px;
+  --shadow: none;
   --container: 1200px;
   --aside: 360px;
 }
 
 * { box-sizing: border-box; }
 /* El espacio de la barra de desplazamiento queda reservado: el ancho no cambia al cargar contenido. */
-html { scrollbar-gutter: stable; }
 body {
   margin: 0; min-height: 100vh; display: flex; flex-direction: column;
-  background: var(--bg); color: var(--ink);
-  font: 15px/1.55 "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  background: var(--app-bg); color: var(--ink);
+  font: 400 var(--step-body)/1.5 var(--font);
 }
 main { flex: 1; }
 h1 { font-size: clamp(1.6rem, 3vw, 2.1rem); line-height: 1.2; margin: 0 0 .4rem; letter-spacing: -.02em; }
@@ -41,18 +66,22 @@ pre { white-space: pre-wrap; font: .85rem/1.5 ui-monospace, Consolas, monospace;
 .section { padding-top: 56px; }
 .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; box-shadow: var(--shadow); min-width: 0; }
 
-/* ---------- Barra superior ---------- */
-.topbar { background: var(--surface); border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 1000; }
-.topbar-inner { display: flex; align-items: center; justify-content: space-between; gap: 1rem; height: 64px; }
-.brand { display: flex; align-items: center; gap: .7rem; color: var(--ink); text-decoration: none; }
-.brand strong { display: block; font-size: 1.1rem; line-height: 1.1; }
-.logo { width: 36px; height: 36px; border-radius: 10px; background: var(--brand); color: #fff; display: grid; place-items: center; font-weight: 800; }
-.tagline { display: block; color: var(--muted); font-size: .78rem; }
-.menu { display: flex; align-items: center; gap: .3rem; }
-.menu a:not(.btn) { color: var(--muted); text-decoration: none; font-weight: 500; padding: .45rem .7rem; border-radius: 8px; }
-.menu a:not(.btn):hover { color: var(--ink); background: var(--bg); }
-.menu a.active:not(.btn) { color: var(--brand); background: var(--brand-soft); }
-.menu-toggle { display: none; border: 1px solid var(--line); background: #fff; border-radius: 8px; font-size: 1.2rem; padding: .25rem .6rem; cursor: pointer; }
+/* ---------- Barra superior: marca, tres enlaces, una acción ---------- */
+.topbar { background: var(--app-bg); position: sticky; top: 0; z-index: 1000; }
+.topbar-inner { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 1rem; height: var(--nav-h); max-width: none; padding: 0 clamp(16px, 2vw, 24px); }
+.brand { color: var(--ink); text-decoration: none; font-weight: 900; font-size: var(--step-lead); letter-spacing: -0.03em; }
+.menu { display: flex; align-items: center; gap: 1rem; }
+.menu-links { position: absolute; left: 50%; translate: -50% 0; display: flex; gap: clamp(16px, 2.4vw, 32px); }
+.menu-links a { color: var(--ink); text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 0.25em; text-decoration-thickness: 0.08em; font-weight: 500; transition: text-decoration-color var(--t-hover) ease; }
+.menu-links a.active { text-decoration-color: currentColor; }
+@media (hover: hover) and (pointer: fine) { .menu-links a:hover { text-decoration-color: currentColor; } }
+.menu-action {
+  border: 0; background: var(--ink); color: var(--bg); font: inherit; font-weight: 900; font-size: var(--step-small);
+  padding: 10px 16px; text-decoration: none; cursor: pointer; transition: transform var(--t-press) var(--ease-out);
+}
+.menu-action:active { transform: scale(0.97); }
+.menu-toggle { display: none; border: 0; background: var(--ink); color: var(--bg); font: inherit; font-weight: 900; font-size: var(--step-small); padding: 8px 14px; cursor: pointer; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
 /* ---------- Botones y formularios ---------- */
 .btn {
@@ -232,7 +261,7 @@ th { color: var(--muted); font-weight: 600; font-size: .74rem; text-transform: u
 .legend i.band { height: 10px; background: var(--accent-soft); }
 
 /* ---------- Pie ---------- */
-.footer { background: var(--surface); border-top: 1px solid var(--line); color: var(--muted); font-size: .8rem; margin-top: 24px; }
+.footer { background: var(--app-bg); color: var(--muted); font-size: var(--step-small); margin-top: 24px; }
 .footer-inner { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .5rem 1.5rem; padding-top: 18px; padding-bottom: 18px; }
 
 /* ---------- Pantallas pequeñas ---------- */
@@ -246,10 +275,12 @@ th { color: var(--muted); font-weight: 600; font-size: .74rem; text-transform: u
 }
 @media (max-width: 760px) {
   .menu-toggle { display: block; }
-  .menu { display: none; position: absolute; top: 64px; left: 0; right: 0; background: var(--surface); border-bottom: 1px solid var(--line);
-          flex-direction: column; align-items: stretch; padding: .6rem 16px 1rem; }
+  .menu { display: none; position: absolute; top: var(--nav-h); left: 0; right: 0; background: var(--ink);
+          flex-direction: column; align-items: stretch; gap: 0; padding: 8px 16px 20px; }
   .menu.open { display: flex; }
-  .tagline { display: none; }
+  .menu-links { position: static; translate: none; flex-direction: column; gap: 0; }
+  .menu-links a { color: var(--paper); font-size: var(--step-lead); font-weight: 900; padding: 10px 0; }
+  .menu-action { margin-top: 12px; background: var(--bg); color: var(--ink); font-size: var(--step-body); padding: 14px; text-align: center; }
   .stats-band, .scenarios, .kpis.three { grid-template-columns: 1fr 1fr; }
   .grid-4 { grid-template-columns: 1fr 1fr; }
 }
