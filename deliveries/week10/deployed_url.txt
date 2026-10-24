@@ -1,3 +1,11 @@
 URL del prototipo desplegado: (pendiente)
 
-Si no es posible desplegarlo, explicar aquí el motivo y enlazar el video de demostración.
+Plan de despliegue (requiere acceso a la cuenta de GitHub del repositorio):
+1. API (deliveries/week10/code) en Render como Web Service:
+   - Build: pip install -r deliveries/week10/code/requirements.txt
+   - Start: cd deliveries/week10/code && uvicorn api:app --host 0.0.0.0 --port $PORT
+   - Variable DEPARENT_ORIGENES = URL del sitio de Netlify
+   - El plan gratuito se suspende sin uso: la primera consulta puede tardar ~1 minuto.
+2. Frontend (deliveries/week10/frontend) en Netlify con netlify.toml; en config.js poner la URL de la API de Render.
+
+Mientras tanto el prototipo se ejecuta localmente (ver README.md).
