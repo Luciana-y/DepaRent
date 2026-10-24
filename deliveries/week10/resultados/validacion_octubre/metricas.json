@@ -1,0 +1,81 @@
+{
+  "captura": "2026-10-23",
+  "modelo": "modelo_docente.joblib, congelado (hashes verificados), entrenado con la captura del 14-sep-2026",
+  "flujo": {
+    "anuncios_en_captura": 6166,
+    "validos_tras_preprocesar": 5335,
+    "ya_estaban_en_septiembre_por_id": 1077,
+    "posibles_duplicados_de_septiembre": 1332,
+    "duplicados_dentro_de_octubre": 1176,
+    "evaluados": 1750
+  },
+  "metricas_octubre": {
+    "HistGradientBoosting": {
+      "MAE_soles": 510.92768229582435,
+      "RMSE_soles": 964.6150878863123,
+      "MAPE_porcentaje": 16.561092485823234,
+      "R2": 0.7851746228515882
+    },
+    "mediana_distrital": {
+      "MAE_soles": 936.2457142857143,
+      "RMSE_soles": 1927.0871072313112,
+      "MAPE_porcentaje": 27.153663224344456,
+      "R2": 0.14260652625177372
+    },
+    "mediana_global": {
+      "MAE_soles": 1113.325142857143,
+      "RMSE_soles": 2111.63346833001,
+      "MAPE_porcentaje": 35.76958958345549,
+      "R2": -0.02947203839827295
+    }
+  },
+  "metricas_septiembre_prueba": {
+    "mediana_global": {
+      "MAE_soles": 1215.818759936407,
+      "RMSE_soles": 2253.106832938893,
+      "MAPE_porcentaje": 37.83652183224807,
+      "R2": -0.04351289806633085
+    },
+    "mediana_distrital": {
+      "MAE_soles": 993.2257551669317,
+      "RMSE_soles": 2053.4477568187854,
+      "MAPE_porcentaje": 26.63607610219313,
+      "R2": 0.13323459637610913
+    },
+    "HistGradientBoosting": {
+      "MAE_soles": 553.1782113189673,
+      "RMSE_soles": 1075.5624146343587,
+      "MAPE_porcentaje": 18.845348549313595,
+      "R2": 0.7622034841946597
+    }
+  },
+  "MAE_octubre_IC95": [
+    473.0032128100708,
+    549.3303918399713
+  ],
+  "sensibilidad_excluyendo_solo_por_id": {
+    "evaluados": 2846,
+    "MAE_soles": 536.5243278386953,
+    "RMSE_soles": 1093.887569678813,
+    "MAPE_porcentaje": 16.13252359665746,
+    "R2": 0.7827557121861156,
+    "cobertura": 0.9300773014757554
+  },
+  "cambio_MAE_porcentaje": -7.637778957779839,
+  "intervalo": {
+    "radio_soles": 1356.9473108166749,
+    "nivel_nominal": 0.9,
+    "cobertura_octubre": 0.9365714285714286,
+    "cobertura_septiembre_prueba": 0.9220985691573926
+  },
+  "sesgo": {
+    "mediana_real_menos_estimado_soles": -71.85460977157277,
+    "porcentaje_por_encima_del_estimado": 44.114285714285714
+  },
+  "limites": [
+    "Precios pedidos, no de contrato.",
+    "Una captura de octubre (5-6 semanas después del entrenamiento): mide un desfase corto, no estacionalidad.",
+    "La heurística de duplicados puede omitir republicaciones con otro texto o unir viviendas distintas.",
+    "La captura puede tener páginas faltantes por bloqueos del portal (error 403)."
+  ]
+}
