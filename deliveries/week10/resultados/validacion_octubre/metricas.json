@@ -5,28 +5,28 @@
     "anuncios_en_captura": 6166,
     "validos_tras_preprocesar": 5335,
     "ya_estaban_en_septiembre_por_id": 1077,
-    "posibles_duplicados_de_septiembre": 1332,
-    "duplicados_dentro_de_octubre": 1176,
-    "evaluados": 1750
+    "posibles_duplicados_de_septiembre": 1387,
+    "duplicados_dentro_de_octubre": 1159,
+    "evaluados": 1712
   },
   "metricas_octubre": {
     "HistGradientBoosting": {
-      "MAE_soles": 510.92768229582435,
-      "RMSE_soles": 964.6150878863123,
-      "MAPE_porcentaje": 16.561092485823234,
-      "R2": 0.7851746228515882
+      "MAE_soles": 512.2903509530125,
+      "RMSE_soles": 971.7270756183017,
+      "MAPE_porcentaje": 16.4254020407019,
+      "R2": 0.7852252141955041
     },
     "mediana_distrital": {
-      "MAE_soles": 936.2457142857143,
-      "RMSE_soles": 1927.0871072313112,
-      "MAPE_porcentaje": 27.153663224344456,
-      "R2": 0.14260652625177372
+      "MAE_soles": 948.0683411214953,
+      "RMSE_soles": 1947.0627076445176,
+      "MAPE_porcentaje": 27.30249566805492,
+      "R2": 0.13770758791376414
     },
     "mediana_global": {
-      "MAE_soles": 1113.325142857143,
-      "RMSE_soles": 2111.63346833001,
-      "MAPE_porcentaje": 35.76958958345549,
-      "R2": -0.02947203839827295
+      "MAE_soles": 1121.0911214953271,
+      "RMSE_soles": 2131.220764318348,
+      "MAPE_porcentaje": 35.57172123248418,
+      "R2": -0.03312189238009
     }
   },
   "metricas_septiembre_prueba": {
@@ -50,27 +50,27 @@
     }
   },
   "MAE_octubre_IC95": [
-    473.0032128100708,
-    549.3303918399713
+    476.0598277636743,
+    551.4314092170139
   ],
   "sensibilidad_excluyendo_solo_por_id": {
-    "evaluados": 2846,
-    "MAE_soles": 536.5243278386953,
-    "RMSE_soles": 1093.887569678813,
-    "MAPE_porcentaje": 16.13252359665746,
-    "R2": 0.7827557121861156,
-    "cobertura": 0.9300773014757554
+    "evaluados": 2845,
+    "MAE_soles": 533.9563292198338,
+    "RMSE_soles": 1092.9993734386348,
+    "MAPE_porcentaje": 15.999374914232417,
+    "R2": 0.7831473552800083,
+    "cobertura": 0.9300527240773286
   },
-  "cambio_MAE_porcentaje": -7.637778957779839,
+  "cambio_MAE_porcentaje": -7.391444480154785,
   "intervalo": {
     "radio_soles": 1356.9473108166749,
     "nivel_nominal": 0.9,
-    "cobertura_octubre": 0.9365714285714286,
+    "cobertura_octubre": 0.9351635514018691,
     "cobertura_septiembre_prueba": 0.9220985691573926
   },
   "sesgo": {
-    "mediana_real_menos_estimado_soles": -71.85460977157277,
-    "porcentaje_por_encima_del_estimado": 44.114285714285714
+    "mediana_real_menos_estimado_soles": -64.68070445256899,
+    "porcentaje_por_encima_del_estimado": 44.45093457943925
   },
   "limites": [
     "Precios pedidos, no de contrato.",

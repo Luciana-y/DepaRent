@@ -8,6 +8,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
+import pandas as pd
+
 _TEMPORAL = tempfile.TemporaryDirectory()
 os.environ["DEPARENT_DB"] = str(Path(_TEMPORAL.name) / "prueba.sqlite")
 
@@ -141,9 +143,14 @@ class BusquedaTest(unittest.TestCase):
         self.assertEqual(debajo["conteos"], todos["conteos"])
         self.assertEqual(self.cliente.post("/api/buscar", json={"valoracion": "barato"}).status_code, 422)
 
-    def test_mercado_sin_duplicados(self):
-        self.assertEqual(len(MERCADO), 3013)
+    def test_mercado_actual_coherente_y_sin_columnas_privadas(self):
+        info = json.loads((ROOT / "data/mercado.json").read_text(encoding="utf-8"))
+        self.assertEqual(len(MERCADO), info["unicos"])
         self.assertTrue(MERCADO["id"].is_unique)
+        self.assertTrue(MERCADO["id"].str.fullmatch(r"m\d+").all())
+        self.assertTrue(MERCADO["perfil"].notna().all())
+        columnas = set(pd.read_csv(ROOT / "data/mercado.csv", nrows=1).columns)
+        self.assertFalse({"direccion", "latitud", "longitud", "descripcion", "titulo", "texto_amenidades_crudo"} & columnas)
 
 
 if __name__ == "__main__":

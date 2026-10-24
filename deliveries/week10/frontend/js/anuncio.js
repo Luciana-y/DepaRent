@@ -14,7 +14,7 @@ export async function vistaAnuncio(lienzo, params, id) {
   const nombre = x.nombre || `${num(v.dormitorios)} dorm. · ${banos(v.banos)} en ${titulo(x.distrito)}`;
   const origen = f.publicacion
     ? `publicado en DepaRent por ${esc(f.publicacion.propietario)} el ${fecha(f.publicacion.desde)}`
-    : "anuncio de un portal, captura del 14 de septiembre de 2026";
+    : `anuncio de ${f.original ? esc(f.original.portal) : "un portal"}${f.original ? `, captura del ${fecha(Date.parse(f.original.capturado + "T12:00:00") / 1000)}` : ""}`;
   const clasePill = x.valoracion.startsWith("Por debajo") ? "pos" : x.valoracion.startsWith("Por encima") ? "warn" : "";
   lienzo.innerHTML = `
     <p style="margin-bottom:12px"><a class="card-link" href="#/buscar">Buscar departamentos</a></p>

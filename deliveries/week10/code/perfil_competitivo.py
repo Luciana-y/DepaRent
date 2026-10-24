@@ -53,6 +53,8 @@ def preparar_referencia(frame):
     ref["precio_soles"] = pd.to_numeric(frame["precio_soles"], errors="coerce").to_numpy()
     ref["precio_m2"] = pd.to_numeric(frame["precio_m2_real"], errors="coerce").to_numpy()
     ref["grupo"] = grupos_inmueble(frame)
+    # Id de la ficha del anuncio (el id del portal): sirve para enlazar cada comparable.
+    ref["anuncio_id"] = ("m" + frame["id_anuncio"].astype(str)).to_numpy()
     return ref.reset_index(drop=True)
 
 
@@ -91,7 +93,7 @@ def _espacio(artifact, X):
 
 def comparables(values, artifact, k=8, excluir=None):
     """k anuncios más parecidos: mismo perfil y distrito primero; un anuncio por posible inmueble.
-    excluir: fila de la referencia que no debe compararse consigo misma (la ficha de un anuncio)."""
+    excluir: id de ficha ("m...") del anuncio que no debe compararse consigo mismo ni con sus duplicados."""
     perfil = asignar_perfil(values, artifact)
     ref = artifact["referencia"]
     if "_Z" not in artifact:
@@ -105,12 +107,10 @@ def comparables(values, artifact, k=8, excluir=None):
     candidatos["prioridad"] = np.select([candidatos.mismo_distrito & candidatos.mismo_perfil, candidatos.mismo_distrito,
                                          candidatos.mismo_perfil], [0, 1, 2], 3)
     if excluir is not None:
-        candidatos = candidatos[candidatos["grupo"] != ref.loc[excluir, "grupo"]]
+        propios = ref.loc[ref["anuncio_id"] == excluir, "grupo"]
+        candidatos = candidatos[~candidatos["grupo"].isin(propios)]
     elegidos = (candidatos.sort_values(["prioridad", "distancia"]).drop_duplicates("grupo").head(k))
-    # La búsqueda guarda cada posible inmueble con el id de su primer anuncio ("m" + fila); el comparable apunta a esa ficha.
-    if "_primero" not in artifact:
-        artifact["_primero"] = ref.reset_index().groupby("grupo")["index"].min()
-    tabla = [{"anuncio_id": f"m{int(artifact['_primero'][r.grupo])}",
+    tabla = [{"anuncio_id": r.anuncio_id,
               "Distrito": r.distrito_norm.title(), "Perfil": artifact["nombres"][int(r.cluster)],
               "Área (m²)": r.area_total, "Dormitorios": r.dormitorios, "Baños": r.banos,
               "Antigüedad": r.antiguedad, "Mantenimiento (S/)": r.mantenimiento,

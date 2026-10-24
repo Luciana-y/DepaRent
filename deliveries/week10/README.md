@@ -65,8 +65,9 @@ con Python, como Render (ver `deployed_url.txt`). `code/app.py` (Streamlit) se c
 | `evidencia_distrital.py`, `ayuda_interfaz.py` | Error por distrito y textos (del profesor) |
 | `app.py` | Versión Streamlit del profesor, como respaldo |
 | `preprocesar.py` | Preprocesamiento de la Semana 7 como módulo (reproduce exactamente los datos procesados) |
+| `preparar_mercado.py` | Convierte la captura diaria más reciente en el mercado de la app (`data/mercado.csv`) |
 | `validar_octubre.py` | Validación temporal del modelo congelado con la descarga diaria de octubre (`resultados/validacion_octubre/`) |
-| `test_*.py` | Pruebas (46) |
+| `test_*.py` | Pruebas (47) |
 
 ## Requisitos
 - Python 3.12 o 3.13 y conexión a internet la primera vez (para instalar dependencias; el mapa usa teselas de OpenStreetMap).

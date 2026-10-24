@@ -29,7 +29,7 @@ from escenarios import ADVERTENCIA, CAMBIABLES, comparar, verificar_modelo_conge
 from escenarios_precio import escenarios_publicacion
 from evidencia_distrital import evidencia_distrital
 from laboratorio_area import AVISO as AVISO_AREA, explorar_area
-from modelo import BINARY, LIMITS, ROOT, SOURCE, predecir, preparar
+from modelo import BINARY, LIMITS, ROOT, predecir, preparar
 from perfil_competitivo import ARCHIVO as ARCHIVO_PERFIL, asignar_perfil, comparables
 from tendencia import cargar_tendencias, tendencia_distrital
 
@@ -38,8 +38,12 @@ MODELO_PRECIO = joblib.load(ROOT / "models/modelo_docente.joblib")
 MODELO_PERFIL = joblib.load(ARCHIVO_PERFIL)
 DEMOS = json.loads((ROOT / "data/demo_casos.json").read_text(encoding="utf-8"))
 MERCADO = construir_mercado(MODELO_PRECIO, MODELO_PERFIL)
+# De qué captura diaria viene el mercado de la app (preparar_mercado.py).
+MERCADO_INFO = json.loads((ROOT / "data/mercado.json").read_text(encoding="utf-8"))
+# Validación del modelo congelado con anuncios posteriores (validar_octubre.py), si ya se corrió.
+_VALIDACION = ROOT / "resultados/validacion_octubre/metricas.json"
+VALIDACION = json.loads(_VALIDACION.read_text(encoding="utf-8")) if _VALIDACION.exists() else None
 # Enlace al anuncio original, solo para la ficha de los anuncios de mercado (decisión del equipo).
-ORIGINALES = pd.read_csv(SOURCE, usecols=["url", "fuente", "fecha_scraping"], low_memory=False)
 PORTALES = {"www.adondevivir.com": "Adondevivir", "adondevivir.com": "Adondevivir", "urbania.pe": "Urbania", "www.urbania.pe": "Urbania"}
 FRONTEND = ROOT / "frontend"
 
@@ -220,7 +224,8 @@ def tabla_publicados(conexion):
                       "precio_soles": d["publicacion"]["precio_soles"],
                       "dist_paradero_min_m": acceso["dist_paradero_min_m"], "paraderos_500m": acceso["paraderos_500m"],
                       "perfil": asignar_perfil(vivienda, MODELO_PERFIL)["perfil"],
-                      "precio_estimado": float(MODELO_PRECIO["pipeline"].predict(X)[0])})
+                      "precio_estimado": float(MODELO_PRECIO["pipeline"].predict(X)[0]),
+                      "url": None, "fuente": "deparent", "fecha_scraping": None})
     return pd.DataFrame(filas, columns=MERCADO.columns)
 
 
@@ -241,7 +246,12 @@ def opciones():
                      "particiones": MODELO_PRECIO["metricas"]["particiones"],
                      "perfil": {k: MODELO_PERFIL["metricas"][k] for k in ("k", "silhouette", "ari_medio_semillas", "filas")},
                      "tendencia": {k: tendencias[k] for k in ("metodo", "validacion", "regla_tendencia", "limites")}},
-        "mercado": {"anuncios": int(len(MERCADO)), "distritos": int(MERCADO["distrito_norm"].nunique())},
+        "mercado": {"anuncios": int(len(MERCADO)), "distritos": int(MERCADO["distrito_norm"].nunique()),
+                    "captura": MERCADO_INFO["captura"], "captura_texto": MERCADO_INFO["captura_texto"]},
+        "validacion": None if VALIDACION is None else {
+            "captura": VALIDACION["captura"], "evaluados": VALIDACION["flujo"]["evaluados"],
+            "mae_soles": VALIDACION["metricas_octubre"]["HistGradientBoosting"]["MAE_soles"],
+            "cobertura": VALIDACION["intervalo"]["cobertura_octubre"]},
     })
 
 
@@ -349,7 +359,7 @@ def retirar_publicacion(departamento_id: int, usuario=Depends(usuario_actual), c
 @app.post("/api/buscar")
 def buscar_departamentos(filtros: Filtros, conexion=Depends(base_datos)):
     datos = filtros.model_dump()
-    return limpiar(buscar(MERCADO, tabla_publicados(conexion), datos, limite=datos.pop("limite")))
+    return limpiar(buscar(MERCADO, tabla_publicados(conexion), datos, limite=datos.pop("limite"), captura=MERCADO_INFO["captura_texto"]))
 
 
 # ---------- Ficha de un anuncio para inquilinos ----------
@@ -362,18 +372,17 @@ def ver_anuncio(anuncio_id: str, conexion=Depends(base_datos)):
     vivienda = vivienda_de(fila)
     propio = anuncio_id.startswith("d")
     # Un anuncio de mercado no se compara consigo mismo ni con sus duplicados de otros portales.
-    competencia = comparables(vivienda, MODELO_PERFIL, excluir=None if propio else int(anuncio_id[1:]))
+    competencia = comparables(vivienda, MODELO_PERFIL, excluir=None if propio else anuncio_id)
     red = cargar_red()
     distancia = float(fila["dist_paradero_min_m"])
     mas_lejos = 100 * (1 - np.searchsorted(red["ref_distancia"], distancia, side="right") / len(red["ref_distancia"]))
     tendencia = tendencia_distrital(vivienda["distrito_norm"])
     publicacion, original = None, None
     if not propio:
-        fila_original = ORIGINALES.iloc[int(anuncio_id[1:])]
-        enlace = urlparse(str(fila_original["url"]))
+        enlace = urlparse(str(fila["url"]))
         # Solo enlaces https a los portales de origen; cualquier otro valor no se muestra.
         if enlace.scheme == "https" and enlace.netloc in PORTALES:
-            original = {"url": enlace.geturl(), "portal": PORTALES[enlace.netloc], "capturado": str(fila_original["fecha_scraping"])[:10]}
+            original = {"url": enlace.geturl(), "portal": PORTALES[enlace.netloc], "capturado": str(fila["fecha_scraping"])[:10]}
     if propio:
         d = cuentas.publicado(conexion, int(anuncio_id[1:]))
         publicacion = {"propietario": d["propietario"], "escenario": d["publicacion"]["escenario"], "desde": d["publicacion"]["desde"]}
@@ -385,7 +394,7 @@ def ver_anuncio(anuncio_id: str, conexion=Depends(base_datos)):
                    "nivel": nivel_accesibilidad(distancia, fila["paraderos_500m"], red["ref_500m_mediana"]),
                    "porcentaje_anuncios_mas_lejos": round(float(mas_lejos), 1)},
         "tendencia": {k: tendencia[k] for k in ("distrito", "serie_propia", "tendencia", "cambio_porcentaje")},
-        "aviso": AVISO_MERCADO,
+        "aviso": AVISO_MERCADO.format(captura=MERCADO_INFO["captura_texto"]),
     })
 
 

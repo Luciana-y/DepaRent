@@ -1,0 +1,14 @@
+{
+  "captura": "2026-10-23",
+  "captura_texto": "23 de octubre de 2026",
+  "anuncios_en_captura": 6166,
+  "validos": 5335,
+  "unicos": 3055,
+  "valores_fuera_de_limites_como_no_informados": {
+    "estacionamientos": 3,
+    "antiguedad": 1,
+    "mantenimiento": 1
+  },
+  "generado": "2026-10-24T11:37:57",
+  "nota": "Mercado de la app. El modelo de precio sigue entrenado con la captura del 14-sep-2026."
+}

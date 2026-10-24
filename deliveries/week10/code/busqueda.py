@@ -6,15 +6,15 @@ Muchos anuncios de mercado se usaron para entrenar ese modelo, así que la compa
 import numpy as np
 import pandas as pd
 
-from modelo import BINARY, SOURCE, normalizar, preparar
+from modelo import BINARY, ROOT, normalizar, preparar
 
 ORDENES = {"precio": ("precio_soles", True), "precio_desc": ("precio_soles", False), "area": ("area_total", False),
            "paradero": ("dist_paradero_min_m", True), "oportunidad": ("relacion_estimado", True)}
 UMBRAL_VALORACION = 0.10
 VALORACIONES = {"por_debajo": "Por debajo del estimado", "en_linea": "En línea con el estimado",
                 "por_encima": "Por encima del estimado"}
-AVISO = ("Anuncios de septiembre de 2026 sin dirección ni contacto: es una muestra del mercado, no una lista de ofertas vigentes. "
-         "La comparación con el precio estimado es orientativa: muchos de estos anuncios se usaron para entrenar el modelo.")
+AVISO = ("Anuncios del {captura} sin dirección ni contacto en DepaRent: es una foto del mercado ese día, no una lista de ofertas vigentes. "
+         "La comparación es orientativa: el modelo se entrenó con anuncios de septiembre y se validó con los de octubre.")
 
 
 def valoracion(relacion):
@@ -25,22 +25,23 @@ def valoracion(relacion):
     return "En línea con el estimado"
 
 
-def construir_mercado(modelo_precio, modelo_perfil):
-    """Tabla de anuncios de mercado, un registro por posible inmueble (se quitan duplicados entre portales)."""
-    frame = pd.read_csv(SOURCE, low_memory=False)
+MERCADO = ROOT / "data/mercado.csv"
+
+
+def construir_mercado(modelo_precio, modelo_perfil, archivo=MERCADO):
+    """Anuncios de mercado de la app (preparar_mercado.py): ya vienen con un registro por posible inmueble."""
+    frame = pd.read_csv(archivo, low_memory=False)
     X = preparar(frame)
-    ref = modelo_perfil["referencia"]
     tabla = X.copy()
-    tabla["id"] = ["m" + str(i) for i in range(len(frame))]
-    tabla["origen"] = "Anuncio de mercado (sep. 2026)"
+    tabla["id"] = ("m" + frame["id_anuncio"].astype(str)).to_numpy()
+    tabla["origen"] = "Anuncio de mercado"
     tabla["nombre"] = None
-    tabla["precio_soles"] = pd.to_numeric(frame["precio_soles"], errors="coerce").to_numpy()
-    tabla["dist_paradero_min_m"] = frame["dist_paradero_min_m"].to_numpy()
-    tabla["paraderos_500m"] = frame["paraderos_500m"].to_numpy()
-    tabla["perfil"] = ref["cluster"].map(modelo_perfil["nombres"]).to_numpy()
+    for col in ("precio_soles", "dist_paradero_min_m", "paraderos_500m", "url", "fuente", "fecha_scraping"):
+        tabla[col] = frame[col].to_numpy()
+    perfiles = modelo_perfil["referencia"].set_index("anuncio_id")["cluster"].map(modelo_perfil["nombres"])
+    tabla["perfil"] = tabla["id"].map(perfiles).to_numpy()
     tabla["precio_estimado"] = modelo_precio["pipeline"].predict(X)
-    tabla["grupo"] = ref["grupo"].to_numpy()
-    return tabla.drop_duplicates("grupo").drop(columns="grupo").reset_index(drop=True)
+    return tabla.reset_index(drop=True)
 
 
 def filtrar(tabla, filtros):
@@ -62,7 +63,7 @@ def filtrar(tabla, filtros):
     return tabla[mascara]
 
 
-def buscar(mercado, propios, filtros, limite=24):
+def buscar(mercado, propios, filtros, limite=24, captura=""):
     """mercado: construir_mercado(); propios: DataFrame con las mismas columnas para los publicados en DepaRent."""
     orden = filtros.get("orden") or "precio"
     if orden not in ORDENES:
@@ -89,7 +90,7 @@ def buscar(mercado, propios, filtros, limite=24):
                    "precio_p75_soles": float(np.percentile(precios, 75)),
                    "por_debajo_del_estimado": int((encontrados["relacion_estimado"] < 1 - UMBRAL_VALORACION).sum())}
     resultados = [formatear(fila) for fila in encontrados.head(limite).to_dict("records")]
-    return {"total": int(len(encontrados)), "conteos": conteos, "resumen": resumen, "resultados": resultados, "aviso": AVISO}
+    return {"total": int(len(encontrados)), "conteos": conteos, "resumen": resumen, "resultados": resultados, "aviso": AVISO.format(captura=captura)}
 
 
 CAMPOS_VIVIENDA = ["distrito_norm", "area_total", "dormitorios", "banos", "estacionamientos", "antiguedad", "mantenimiento", *BINARY]

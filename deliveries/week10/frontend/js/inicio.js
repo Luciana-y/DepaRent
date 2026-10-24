@@ -11,7 +11,12 @@ const LETRAS = ["D", "e", "p", "a", "R", "e", "n", "t"];
 
 export async function vistaInicio(main) {
   const opciones = await obtenerOpciones().catch(() => null);
-  const anuncios = opciones ? num(opciones.mercado.anuncios) : "3,013";
+  // Mercado: la captura que muestra la app. Modelo: entrenado con septiembre y validado con octubre.
+  const anuncios = opciones ? num(opciones.mercado.anuncios) : "miles de";
+  const captura = opciones?.mercado.captura_texto || "la última captura";
+  const val = opciones?.validacion;
+  const errorTexto = val ? `Error medio en ${num(val.evaluados)} anuncios nuevos de octubre: <b>${soles(val.mae_soles)} al mes</b>.`
+    : "Error medio medido en 629 anuncios de prueba: <b>S/ 553 al mes</b>.";
   const conCuenta = Boolean(sesion());
   main.innerHTML = `
     <div class="home">
@@ -20,8 +25,8 @@ export async function vistaInicio(main) {
           <span class="line"><span data-line style="--i:0">Se alquila.</span></span>
           <span class="line"><span data-line style="--i:1">¿A cuánto?</span></span>
         </h1>
-        <p class="home-lead">DepaRent estima el alquiler de tu departamento en Lima con ${anuncios} anuncios reales y te dice a qué precio publicarlo.</p>
-        <p class="home-fact">Error medio medido en 629 anuncios de prueba: <b>S/ 553 al mes</b>.</p>
+        <p class="home-lead">DepaRent estima el alquiler de tu departamento, lo compara con ${anuncios} anuncios de Lima y te dice a qué precio publicarlo.</p>
+        <p class="home-fact">${errorTexto}</p>
         <div class="hero-stage">
         <img class="hero-foto" src="assets/balcon-en-calle-jiron-ancash-lima-peru.jpg" width="1280" height="1983" fetchpriority="high"
           alt="Balcón de madera sobre un muro rojo en el Jirón Áncash, centro de Lima">
@@ -39,7 +44,7 @@ export async function vistaInicio(main) {
           <output class="cartel-price" aria-live="polite"><span data-precio><span class="moneda">S/</span>…</span><small>al mes</small></output>
           <p class="cartel-range" data-rango>Calculando con el modelo…</p>
           <a class="cartel-link" href="#/probar">Ver el análisis completo</a>
-          <p class="cartel-foot">Informes: modelo DepaRent, anuncios de septiembre de 2026</p>
+          <p class="cartel-foot">Informes: modelo DepaRent, entrenado con anuncios de septiembre y validado con los de octubre</p>
         </form>
         </div>
       </section>
@@ -82,10 +87,10 @@ export async function vistaInicio(main) {
           <h2 id="titulo-medimos">Lo que medimos</h2>
           <img class="proof-foto" src="assets/buildings-in-miraflores-district-lima-peru.jpg" width="1920" height="1440" loading="lazy" decoding="async"
             alt="Edificios de departamentos sobre el acantilado de Miraflores, bajo el cielo gris de Lima">
-          <p>${anuncios} anuncios&nbsp;·&nbsp;22 distritos&nbsp;·&nbsp;3,233 paraderos de la ATU&nbsp;·&nbsp;13 series del BCRP</p>
-          <p>Error medio de S/ 553&nbsp;·&nbsp;el rango cubrió 92 de cada 100 precios de prueba&nbsp;·&nbsp;8 comparables por departamento</p>
+          <p>Modelo entrenado con 3,128 anuncios de septiembre&nbsp;·&nbsp;${val ? `probado con ${num(val.evaluados)} anuncios nuevos de octubre&nbsp;·&nbsp;` : ""}3,233 paraderos de la ATU&nbsp;·&nbsp;13 series del BCRP</p>
+          <p>Error medio de S/ 553 en septiembre${val ? ` y de ${soles(val.mae_soles)} en octubre` : ""}&nbsp;·&nbsp;el rango cubrió ${val ? Math.round(val.cobertura * 100) : 92} de cada 100 precios${val ? " de octubre" : " de prueba"}&nbsp;·&nbsp;8 comparables por departamento</p>
           <h3>Y lo que no</h3>
-          <p>Son precios pedidos, no contratos&nbsp;·&nbsp;una sola captura, de septiembre de 2026&nbsp;·&nbsp;paraderos del inventario de 2021&nbsp;·&nbsp;no es una tasación</p>
+          <p>Son precios pedidos, no contratos&nbsp;·&nbsp;la búsqueda es una foto del mercado del ${captura}&nbsp;·&nbsp;paraderos del inventario de 2021&nbsp;·&nbsp;no es una tasación</p>
         </div>
       </section>
 
@@ -96,7 +101,7 @@ export async function vistaInicio(main) {
           <h2 id="titulo-carta">La carta de alquileres</h2>
           <p class="carta-note">Para quien busca: los dos dormitorios más económicos por distrito, comparados con el precio del modelo.</p>
           <div class="carta-groups" data-carta>${DISTRITOS_CARTA.map((d) => `<section class="carta-group"><h3>${esc(titulo(d))}</h3><p class="carta-wait">Cargando…</p></section>`).join("")}</div>
-          <p class="carta-close">Anuncios del 14 de septiembre de 2026<br><a href="#/buscar">Buscar con tus propios filtros</a></p>
+          <p class="carta-close">Anuncios del ${captura}<br><a href="#/buscar">Buscar con tus propios filtros</a></p>
         </div>
       </section>
 
@@ -107,7 +112,7 @@ export async function vistaInicio(main) {
           <mark class="hl-c">Adrian Urbina Mendoza</mark> coordina el equipo y la calidad de los datos; <mark class="hl-a">Armando Martinez Palomino</mark> integra
           las fuentes de la ATU y del BCRP; <mark class="hl-b">Breysi Salazar Medina</mark> entrena los modelos; <mark class="hl-c">Luciana Yangali Cáceres</mark>
           diseña la aplicación. Partimos de una pregunta que se hace cualquier propietario antes de pegar el cartel en la ventana: ¿a cuánto lo alquilo?
-          Reunimos ${anuncios} anuncios, miles de paraderos y trece series de precios, y construimos un modelo que estima el alquiler y dice cuánto se equivoca.
+          Reunimos miles de anuncios, paraderos y trece series de precios, y construimos un modelo que estima el alquiler y dice cuánto se equivoca.
           No reemplaza a una tasación: es una segunda opinión con datos.
           <a class="about-link" href="#/probar">Pruébalo con tu departamento.</a></p>
       </section>
@@ -128,7 +133,7 @@ export async function vistaInicio(main) {
         <nav class="footer-cols" aria-label="Pie de página">
           <div><h3>Propietarios</h3><a href="#/ingresar?modo=registro">Crear cuenta</a><a href="#/ingresar">Ingresar</a><a href="#/probar">Probar sin cuenta</a></div>
           <div><h3>Inquilinos</h3><a href="#/buscar">Buscar departamentos</a></div>
-          <div><h3>Datos</h3><p>Anuncios de Adondevivir y Urbania, septiembre de 2026</p><p>Paraderos ATU, mayo de 2021</p><p>Series BCRP, 2013 a 2026</p></div>
+          <div><h3>Datos</h3><p>Anuncios de Adondevivir y Urbania: modelo con septiembre de 2026, búsqueda con el ${captura}</p><p>Paraderos ATU, mayo de 2021</p><p>Series BCRP, 2013 a 2026</p></div>
           <div><h3>Curso</h3><p>DS3022 Desarrollo de Producto de Datos</p><p>UTEC, Lima · 2026-2</p></div>
         </nav>
         <p class="credits">Fotos de Wikimedia Commons:

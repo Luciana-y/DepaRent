@@ -24,6 +24,8 @@ Combina seis componentes con datos reales de Lima que un portal de anuncios no m
 
 - Modelo de precio: MAE S/ 553.18, MAPE 18.85%, R² 0.7622 en 629 anuncios de prueba; rango calibrado al 90% con cobertura observada de 92.2%.
 - Perfiles: k=4, silhouette 0.2075. Tendencia: SARIMA supera al naive estacional en 10 de 13 series y al naive en 7 de 13.
+- Validación con anuncios posteriores: 1,712 anuncios nuevos del 23-oct-2026, MAE S/ 512.29, cobertura del rango 93.5%.
+- La app muestra el mercado de la última captura diaria (`data/mercado.csv`); el modelo de precio sigue siendo el de septiembre.
 - No hay clientes, testimonios, logos de prensa ni cifras de negocio: no se inventan.
 
 ## Constraints

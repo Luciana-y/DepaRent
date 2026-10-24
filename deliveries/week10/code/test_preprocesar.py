@@ -37,6 +37,16 @@ class PreprocesarTest(unittest.TestCase):
         # El modo que se usa con capturas nuevas: los distritos fuera del entrenamiento van a "Otros".
         self._comparar(procesar(self.crudo, distritos_conocidos=self.artefacto["distritos"]))
 
+    def test_alias_de_portal_solo_en_capturas_nuevas(self):
+        fila = self.crudo.iloc[[0]].copy()
+        fila[["precio_soles", "area_total", "latitud", "longitud"]] = [2000, 60, -12.1, -77.0]
+        for nombre, esperado in (("Lima Cercado", "Lima"), ("Ate Vitarte", "Ate"), ("Magdalena Vieja", "Pueblo Libre")):
+            fila["distrito"] = nombre
+            nuevo = procesar(fila, distritos_conocidos=self.artefacto["distritos"], alias_portal=True)
+            self.assertEqual(nuevo.loc[0, "distrito_norm"], esperado)
+        # Sin alias (como en el entrenamiento), Magdalena Vieja no es un distrito del modelo: va a "Otros".
+        self.assertEqual(procesar(fila, distritos_conocidos=self.artefacto["distritos"]).loc[0, "distrito_norm"], "Otros")
+
     def test_un_distrito_desconocido_va_a_otros(self):
         fila = self.crudo.iloc[[0]].copy()
         fila["distrito"] = "Pachacámac"

@@ -9,7 +9,7 @@ Solo cubre lo que necesita el modelo de precio; los cruces con el BCRP y la ATU 
 import numpy as np
 import pandas as pd
 
-from modelo import normalizar
+from modelo import ROOT, normalizar
 
 AMENITY_KEYWORDS = {
     "ascensor": ["ascensor", "elevador", "ascensores"],
@@ -31,7 +31,23 @@ AMENITY_NEGATIONS = {
 }
 DISTRITO_MAP = {"Santiago de Surco": "Surco", "Magdalena del Mar": "Magdalena", "Jesús María": "Jesus Maria",
                 "Cercado de Lima": "Lima", "Barranca": "Barranco"}
+# Nombres con que los portales publican algunos distritos en capturas posteriores. Solo se aplican a capturas
+# nuevas: "Magdalena Vieja" (nombre antiguo de Pueblo Libre) ya aparecía 10 veces en septiembre y el entrenamiento
+# la dejó en "Otros"; cambiarla ahí alteraría los datos con que se entrenó el modelo congelado.
+ALIAS_PORTAL = {"Lima Cercado": "Lima", "Ate Vitarte": "Ate", "Magdalena Vieja": "Pueblo Libre"}
 UMBRAL_OTROS = 20
+CAPTURAS = ROOT.parent.parent / "data_diaria/snapshots"
+MINIMO_CAPTURA = 1000   # una captura con menos anuncios es una descarga fallida (la del 22-oct trajo 30)
+
+
+def elegir_captura(fecha=None, carpeta=CAPTURAS):
+    """La captura diaria pedida o, sin fecha, la más reciente que esté completa."""
+    if fecha:
+        return carpeta / f"{fecha}.csv.gz"
+    for archivo in sorted(carpeta.glob("*.csv.gz"), reverse=True):
+        if len(pd.read_csv(archivo, usecols=["id_anuncio"])) >= MINIMO_CAPTURA:
+            return archivo
+    raise SystemExit(f"No hay capturas completas en {carpeta}.")
 
 
 def recuperar_del_texto(df):
@@ -66,12 +82,13 @@ def extraer_amenidades(df):
     return df
 
 
-def procesar(crudo, distritos_conocidos=None):
+def procesar(crudo, distritos_conocidos=None, alias_portal=False):
     """Captura cruda → filas válidas con las columnas del modelo.
 
     distritos_conocidos: distritos con los que se entrenó el modelo (en minúsculas o con su nombre).
     Con una captura nueva se pasan siempre: los demás van a "Otros", como en el entrenamiento.
     Sin ellos se recalcula el umbral de 20 anuncios, que es lo que hizo la Semana 7 con septiembre.
+    alias_portal: corrige los nombres de ALIAS_PORTAL; se usa con capturas nuevas, nunca para reproducir septiembre.
     """
     df = recuperar_del_texto(crudo.copy())
     df = extraer_amenidades(df)
@@ -85,7 +102,8 @@ def procesar(crudo, distritos_conocidos=None):
               & df["latitud"].between(-12.35, -11.75) & df["longitud"].between(-77.20, -76.80)
               & ~doble_modalidad)
     limpio = df[valido].copy()
-    limpio["distrito_norm"] = limpio["distrito"].str.strip().map(lambda x: DISTRITO_MAP.get(x, x))
+    mapa = {**DISTRITO_MAP, **ALIAS_PORTAL} if alias_portal else DISTRITO_MAP
+    limpio["distrito_norm"] = limpio["distrito"].str.strip().map(lambda x: mapa.get(x, x))
     if distritos_conocidos is None:
         conteo = limpio["distrito_norm"].value_counts()
         raros = set(conteo[conteo < UMBRAL_OTROS].index)

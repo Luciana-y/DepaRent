@@ -223,7 +223,7 @@ export async function vistaBuscar(lienzo) {
   const op = await obtenerOpciones();
   const opcionesMin = Array.from({ length: 4 }, (_, i) => `<option value="${i + 1}">${i + 1} o más</option>`).join("");
   lienzo.innerHTML = `
-    ${filaTitulo("Buscar departamentos", '<span data-hallazgo>Anuncios de septiembre de 2026 y departamentos publicados en DepaRent.</span>')}
+    ${filaTitulo("Buscar departamentos", `<span data-hallazgo>Anuncios del ${esc(op.mercado.captura_texto)} y departamentos publicados en DepaRent.</span>`)}
     <form class="filters" novalidate>
       <div class="field"><label for="b-distrito">Distrito</label><select class="input" id="b-distrito" name="distrito"><option value="">Todos</option>
         ${op.distritos.filter((d) => d !== "otros").map((d) => `<option value="${esc(d)}">${esc(titulo(d))}</option>`).join("")}</select></div>

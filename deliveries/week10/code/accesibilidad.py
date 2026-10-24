@@ -105,3 +105,12 @@ def accesibilidad(lat, lon, red=None, cercanos=5):
                       "longitud": float(stops.iloc[i]["longitud"])} for d, i in zip(distancias, indices)],
         "aviso": AVISO,
     }
+
+
+def variables_lote(latitudes, longitudes, red=None):
+    """Distancia al paradero más cercano y paraderos a 500 m para muchas ubicaciones a la vez."""
+    red = red or cargar_red()
+    puntos = _a_metros(latitudes, longitudes)
+    distancia, _ = red["arboles"]["todos"].query(puntos, k=1)
+    a_500 = red["arboles"]["todos"].query_ball_point(puntos, r=500, return_length=True)
+    return np.round(distancia, 1), np.asarray(a_500, dtype=int)

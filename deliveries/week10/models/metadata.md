@@ -3,7 +3,7 @@
 | Archivo | Modelo | Uso en el producto | Generado por |
 |---|---|---|---|
 | `modelo_docente.joblib` | HistGradientBoosting (Pipeline con imputación y one-hot de distrito) + radio de rango calibrado | Modelo 3: precio esperado y rango; también lo usan el simulador (modelo 6) y la exploración de área | `code/entrenar.py` (copia del profesor, revisión 20-oct-2026). **No reentrenar**: la app verifica su hash |
-| `perfil_competitivo.joblib` | K-Means (k=4) con imputación + StandardScaler, tabla de referencia para comparables | Modelo 1: perfil competitivo y anuncios comparables | `code/entrenar_perfil.py` |
+| `perfil_competitivo.joblib` | K-Means (k=4) con imputación + StandardScaler, aprendido con septiembre; tabla de referencia con el mercado actual (`data/mercado.csv`, 23-oct) asignado a esos perfiles | Modelo 1: perfil competitivo y anuncios comparables | `code/entrenar_perfil.py` |
 
 Otros artefactos analíticos:
 - **Modelo 2 (accesibilidad):** sin archivo serializado; se calcula al momento con `cKDTree` sobre
@@ -66,3 +66,10 @@ propietario no lo conoce antes de publicar.
 **Modelo 4** (`resultados/tendencia_distrital.json`): SARIMA (p,1,q)(P,D,Q,4) con orden elegido por AIC y los
 últimos 4 trimestres reservados. Supera al naive estacional en 10 de 13 series y al naive (último valor) en 7 de 13:
 la ventaja sobre el baseline simple no es consistente, así que la tendencia se presenta como contexto, no como predicción precisa.
+
+**Mercado de octubre en los perfiles.** Los perfiles se aprenden con septiembre y a ellos se asignan los 3,055 anuncios
+de la captura del 23-oct: silhouette de octubre asignado 0.2063 (frente a 0.2075 en septiembre) y cada perfil conserva
+el rasgo que le da nombre. Reentrenar con octubre dio silhouette 0.148 con k=4 y un grupo de "mascotas" que ya no existía.
+
+**Modelo 3 frente a octubre** (`resultados/validacion_octubre/`): 1,712 anuncios nuevos, MAE S/ 512.29 (IC 95% 476–551),
+MAPE 16.43%, R² 0.7852, cobertura del rango 93.5%. No se degradó: no se reentrena.

@@ -1,4 +1,4 @@
-import { sesion } from "./api.js";
+import { obtenerOpciones, sesion } from "./api.js";
 import { vistaAnuncio } from "./anuncio.js";
 import { vistaInicio } from "./inicio.js";
 import { activarMovimiento } from "./movimiento.js";
@@ -42,7 +42,7 @@ function marco(main, seccion, titulo) {
       <aside class="sidebar" id="sidebar" aria-label="Navegación">
         <button class="btn ghost sidebar-close" type="button" data-cerrar-menu>Cerrar</button>
         <a class="app-brand" href="#/"><span class="app-mark" aria-hidden="true">D</span>
-          <span><b>DepaRent</b><span>Lima · anuncios de sep. 2026</span></span></a>
+          <span><b>DepaRent</b><span data-captura>Lima</span></span></a>
         <p class="group-label">Explorar</p>
         ${item("#/buscar", "buscar", "Buscar departamentos")}
         ${item("#/probar", "probar", "Probar el análisis")}
@@ -65,6 +65,7 @@ function marco(main, seccion, titulo) {
   abrir.addEventListener("click", () => { lateral.classList.add("open"); abrir.setAttribute("aria-expanded", "true"); });
   $("[data-cerrar-menu]", main).addEventListener("click", () => { lateral.classList.remove("open"); abrir.setAttribute("aria-expanded", "false"); });
   $("#salir", main)?.addEventListener("click", cerrarSesion);
+  obtenerOpciones().then((op) => { $("[data-captura]", main).textContent = `Lima · anuncios del ${op.mercado.captura_texto}`; }).catch(() => null);
   return $("#lienzo", main);
 }
 

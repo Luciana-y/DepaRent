@@ -22,12 +22,10 @@ from sklearn.metrics import mean_absolute_error, mean_absolute_percentage_error,
 
 from escenarios import verificar_modelo_congelado
 from modelo import ROOT, SOURCE, grupos_inmueble, normalizar, preparar
-from preprocesar import procesar
+from preprocesar import elegir_captura, procesar
 
-CAPTURAS = ROOT.parent.parent / "data_diaria/snapshots"
 CRUDO_SEPTIEMBRE = ROOT.parent / "week04/data/departamentos_alquiler_lima.csv"
 SALIDA = ROOT / "resultados/validacion_octubre"
-MINIMO_CAPTURA = 1000   # una captura con menos anuncios es una descarga fallida (la del 22-oct trajo 30)
 MINIMO_DISTRITO = 20    # el mismo umbral orientativo de la evidencia por distrito
 SEMILLA = 42
 
@@ -44,15 +42,6 @@ def intervalo_bootstrap(errores, n=2000, semilla=SEMILLA):
     return [float(np.percentile(medias, 2.5)), float(np.percentile(medias, 97.5))]
 
 
-def elegir_captura(fecha=None):
-    if fecha:
-        return CAPTURAS / f"{fecha}.csv.gz"
-    for archivo in sorted(CAPTURAS.glob("*.csv.gz"), reverse=True):
-        if len(pd.read_csv(archivo, usecols=["id_anuncio"])) >= MINIMO_CAPTURA:
-            return archivo
-    raise SystemExit(f"No hay capturas completas en {CAPTURAS}.")
-
-
 def main():
     argumentos = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     argumentos.add_argument("--captura", help="fecha AAAA-MM-DD de la captura; por defecto la más reciente completa")
@@ -64,7 +53,7 @@ def main():
     error_septiembre = pd.read_csv(ROOT / "resultados/error_por_distrito.csv").set_index("distrito")
 
     crudo = pd.read_csv(archivo, low_memory=False)
-    octubre = procesar(crudo, distritos_conocidos=artefacto["distritos"])
+    octubre = procesar(crudo, distritos_conocidos=artefacto["distritos"], alias_portal=True)
     septiembre = pd.read_csv(SOURCE, low_memory=False)
     ids_septiembre = set(pd.read_csv(CRUDO_SEPTIEMBRE, usecols=["id_anuncio"])["id_anuncio"].astype(str))
 
