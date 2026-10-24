@@ -1,0 +1,5 @@
+[
+  {"nombre": "Departamento compacto en Lince", "naturaleza": "Escenario hipotético para probar el aplicativo", "entrada": {"distrito_norm": "lince", "area_total": 50, "dormitorios": 1, "banos": 1, "estacionamientos": 0, "antiguedad": 5, "mantenimiento": 200, "ascensor": 1, "balcon": 0, "terraza": 0, "piscina": 0, "gimnasio": 0, "pet_friendly": 1}},
+  {"nombre": "Departamento familiar en Miraflores", "naturaleza": "Escenario hipotético para probar el aplicativo", "entrada": {"distrito_norm": "miraflores", "area_total": 90, "dormitorios": 3, "banos": 2, "estacionamientos": 1, "antiguedad": 8, "mantenimiento": 400, "ascensor": 1, "balcon": 1, "terraza": 0, "piscina": 0, "gimnasio": 0, "pet_friendly": 1}},
+  {"nombre": "Departamento amplio en San Isidro", "naturaleza": "Escenario hipotético para probar el aplicativo", "entrada": {"distrito_norm": "san isidro", "area_total": 160, "dormitorios": 3, "banos": 3, "estacionamientos": 2, "antiguedad": 12, "mantenimiento": 700, "ascensor": 1, "balcon": 1, "terraza": 1, "piscina": 1, "gimnasio": 1, "pet_friendly": 1}}
+]

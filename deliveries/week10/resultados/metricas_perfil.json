@@ -1,0 +1,184 @@
+{
+  "modelo": "K-Means sobre variables estandarizadas, sin precio",
+  "k": 4,
+  "semilla": 42,
+  "entrenamiento": "captura del 14-sep-2026 (3128 anuncios)",
+  "mercado": "data/mercado.csv, captura del 2026-10-23 (3055 anuncios únicos), asignado a los perfiles de septiembre",
+  "variables": [
+    "area_total",
+    "dormitorios",
+    "banos",
+    "antiguedad",
+    "mantenimiento",
+    "ascensor",
+    "balcon",
+    "terraza",
+    "piscina",
+    "gimnasio",
+    "pet_friendly"
+  ],
+  "filas": 3055,
+  "silhouette": 0.20753314796495453,
+  "ari_medio_semillas": 1.0,
+  "silhouette_mercado_asignado": 0.20627013491728657,
+  "seleccion_k": [
+    {
+      "k": 2,
+      "silhouette": 0.1824140695776544,
+      "ari_medio_semillas": 0.9969954488568841,
+      "tamanos": [
+        2039,
+        1089
+      ]
+    },
+    {
+      "k": 3,
+      "silhouette": 0.2011587819758802,
+      "ari_medio_semillas": 0.9988208872569592,
+      "tamanos": [
+        391,
+        1019,
+        1718
+      ]
+    },
+    {
+      "k": 4,
+      "silhouette": 0.20753314796495453,
+      "ari_medio_semillas": 1.0,
+      "tamanos": [
+        815,
+        1540,
+        363,
+        410
+      ]
+    },
+    {
+      "k": 5,
+      "silhouette": 0.16227490019016072,
+      "ari_medio_semillas": 0.9396537555612436,
+      "tamanos": [
+        410,
+        811,
+        676,
+        972,
+        259
+      ]
+    },
+    {
+      "k": 6,
+      "silhouette": 0.16123390283380704,
+      "ari_medio_semillas": 0.6246523071422067,
+      "tamanos": [
+        782,
+        701,
+        379,
+        410,
+        607,
+        249
+      ]
+    },
+    {
+      "k": 7,
+      "silhouette": 0.1770410143026799,
+      "ari_medio_semillas": 0.5487447204667394,
+      "tamanos": [
+        574,
+        944,
+        410,
+        1,
+        288,
+        491,
+        420
+      ]
+    }
+  ],
+  "justificacion_k": "k=4 tiene el mayor silhouette entre 2 y 7 en septiembre, es estable (ARI ~1) y mantiene los 4 perfiles del diseño.",
+  "referencia_semana7": "K-Means k=4 con 19 variables que incluían precio por m²: silhouette 0.1776.",
+  "perfiles": {
+    "Compacto moderno con amenidades": {
+      "anuncios": 758.0,
+      "area_total": 60.0,
+      "dormitorios": 2.0,
+      "banos": 2.0,
+      "antiguedad": 3.0,
+      "mantenimiento": 280.0,
+      "ascensor": 0.296,
+      "balcon": 0.559,
+      "terraza": 0.397,
+      "piscina": 0.727,
+      "gimnasio": 0.881,
+      "pet_friendly": 0.0,
+      "precio_p25": 2213.25,
+      "precio_mediana": 2625.0,
+      "precio_p75": 3297.5,
+      "precio_m2_mediana": 46.81
+    },
+    "Estándar tradicional": {
+      "anuncios": 1534.0,
+      "area_total": 74.0,
+      "dormitorios": 2.0,
+      "banos": 2.0,
+      "antiguedad": 9.0,
+      "mantenimiento": 250.0,
+      "ascensor": 0.349,
+      "balcon": 0.201,
+      "terraza": 0.132,
+      "piscina": 0.019,
+      "gimnasio": 0.059,
+      "pet_friendly": 0.0,
+      "precio_p25": 1850.0,
+      "precio_mediana": 2407.5,
+      "precio_p75": 3050.0,
+      "precio_m2_mediana": 33.62
+    },
+    "Amplio de alta gama": {
+      "anuncios": 313.0,
+      "area_total": 198.0,
+      "dormitorios": 3.0,
+      "banos": 3.0,
+      "antiguedad": 11.0,
+      "mantenimiento": 750.0,
+      "ascensor": 0.562,
+      "balcon": 0.284,
+      "terraza": 0.639,
+      "piscina": 0.256,
+      "gimnasio": 0.23,
+      "pet_friendly": 0.08,
+      "precio_p25": 5360.0,
+      "precio_mediana": 7370.0,
+      "precio_p75": 9770.0,
+      "precio_m2_mediana": 36.81
+    },
+    "Moderno que admite mascotas": {
+      "anuncios": 450.0,
+      "area_total": 66.0,
+      "dormitorios": 2.0,
+      "banos": 2.0,
+      "antiguedad": 4.0,
+      "mantenimiento": 280.0,
+      "ascensor": 0.442,
+      "balcon": 0.336,
+      "terraza": 0.284,
+      "piscina": 0.369,
+      "gimnasio": 0.449,
+      "pet_friendly": 1.0,
+      "precio_p25": 2150.0,
+      "precio_mediana": 2655.5,
+      "precio_p75": 3375.0,
+      "precio_m2_mediana": 41.145
+    }
+  },
+  "entorno": {
+    "python": "3.13.5",
+    "sklearn": "1.7.2",
+    "numpy": "2.3.5",
+    "pandas": "2.3.3",
+    "joblib": "1.5.2"
+  },
+  "limites": [
+    "Silhouette bajo: segmentación heurística.",
+    "El perfil 'Moderno que admite mascotas' queda definido casi solo por pet_friendly.",
+    "Amenidades extraídas del texto de los anuncios con reglas; pueden tener errores.",
+    "Reentrenar con octubre dio silhouette 0.148 y grupos sin el rasgo que da su nombre: se asigna, no se reentrena."
+  ]
+}

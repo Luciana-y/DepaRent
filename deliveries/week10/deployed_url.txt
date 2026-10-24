@@ -1,3 +1,42 @@
-URL del prototipo desplegado: (pendiente)
+URL del prototipo desplegado: (pendiente; se completa al terminar el paso 4)
 
-Si no es posible desplegarlo, explicar aquí el motivo y enlazar el video de demostración.
+DESPLIEGUE (Render, un solo servicio: la API FastAPI también sirve el frontend)
+La configuración está en render.yaml (raíz del repositorio) y las dependencias en
+deliveries/week10/code/requirements-deploy.txt. Se probó localmente con un entorno limpio y el mismo comando de arranque.
+
+1. Fusionar la rama week10-prototipo en main (pull request en GitHub).
+   Render despliega desde main y GitHub solo ejecuta tareas programadas desde la rama por defecto.
+
+2. Dar permiso de escritura a GitHub Actions (lo hace quien administra el repositorio, Luciana-y):
+   Settings > Actions > General > Workflow permissions > "Read and write permissions" > Save.
+   Si main tiene reglas de protección, permitir que github-actions[bot] haga push.
+
+3. Probar la actualización diaria una vez a mano:
+   pestaña Actions > "Actualizar mercado diario" > Run workflow (rama main).
+   Debe terminar en verde y dejar un commit "chore(datos): actualizar el mercado con la captura del AAAA-MM-DD".
+
+4. Crear el servicio en Render (gratis):
+   render.com > iniciar sesión con GitHub > New > Blueprint > elegir el repositorio > Apply.
+   Render lee render.yaml, instala las dependencias y arranca. La primera vez tarda unos minutos.
+   Comprobar https://<servicio>.onrender.com/api/salud  ->  {"estado":"ok"}  y abrir la raíz del sitio.
+   Copiar la URL arriba, en este archivo.
+
+AUTOMATIZACIÓN (sin subir datos a mano)
+Todos los días a las 07:00 de Lima, .github/workflows/actualizar-mercado.yml:
+descarga los anuncios -> preparar_mercado.py -> entrenar_perfil.py -> pruebas -> commit en main.
+Render ve el commit y vuelve a desplegar con el mercado nuevo. Si un paso falla (por ejemplo, el portal bloquea la
+descarga), no se publica nada y la app sigue con el último mercado bueno. La captura cruda, que tiene direcciones,
+se queda en la máquina temporal de GitHub y se borra; al repositorio solo llega data/mercado.csv, sin direcciones.
+
+LIMITACIONES DEL PLAN GRATUITO
+- El servicio se duerme tras 15 minutos sin visitas; la primera visita después tarda unos 30-60 segundos.
+- El disco no es persistente: las cuentas, departamentos e interesados (SQLite) se borran en cada despliegue,
+  es decir, una vez al día. Para conservarlos: un disco persistente de Render (plan de pago) o una base de datos
+  externa (por ejemplo, PostgreSQL gratuito en Neon), que requiere adaptar code/cuentas.py.
+- Los portales pueden bloquear descargas desde servidores en la nube (ya hubo errores 403 de Urbania desde la PC).
+  Si la tarea diaria falla seguido, el respaldo es la tarea programada local (scraper/programar_tarea.ps1)
+  más los mismos pasos y un git push.
+
+OPCIONAL: frontend en Netlify
+No hace falta (Render ya sirve el frontend). Si se quiere: Base directory = deliveries/week10/frontend,
+en frontend/config.js poner la URL de Render y, en Render, la variable DEPARENT_ORIGENES con la URL de Netlify.

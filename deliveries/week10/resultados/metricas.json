@@ -1,0 +1,77 @@
+{
+  "fecha": "2026-10-18",
+  "version": "docente-1",
+  "commit_fuente": "fb81bb32c20c14185feaf4caa486fa99ef3570e9",
+  "sha256_datos_fuente": "dc44d92a0b72fcc7f5692b80c07bbf9da10cebfa0fb5ab067942074894ac400b",
+  "filas_originales": 3128,
+  "filas_utilizadas": 3128,
+  "grupos_posibles_inmuebles": 3013,
+  "filas_en_grupos_multiples": 211,
+  "particiones": {
+    "entrenamiento": 1999,
+    "calibracion": 500,
+    "prueba": 629
+  },
+  "interseccion_grupos": 0,
+  "semillas": {
+    "prueba": 42,
+    "calibracion": 43
+  },
+  "features": [
+    "distrito_norm",
+    "area_total",
+    "dormitorios",
+    "banos",
+    "estacionamientos",
+    "antiguedad",
+    "mantenimiento",
+    "ascensor",
+    "balcon",
+    "terraza",
+    "piscina",
+    "gimnasio",
+    "pet_friendly"
+  ],
+  "seleccion_modelo": "HistGradientBoosting fijado antes de evaluar, sin tuning",
+  "metricas_prueba": {
+    "mediana_global": {
+      "MAE_soles": 1215.818759936407,
+      "RMSE_soles": 2253.106832938893,
+      "MAPE_porcentaje": 37.83652183224807,
+      "R2": -0.04351289806633085
+    },
+    "mediana_distrital": {
+      "MAE_soles": 993.2257551669317,
+      "RMSE_soles": 2053.4477568187854,
+      "MAPE_porcentaje": 26.63607610219313,
+      "R2": 0.13323459637610913
+    },
+    "HistGradientBoosting": {
+      "MAE_soles": 553.1782113189673,
+      "RMSE_soles": 1075.5624146343587,
+      "MAPE_porcentaje": 18.845348549313595,
+      "R2": 0.7622034841946597
+    }
+  },
+  "intervalo": {
+    "metodo": "Residuos absolutos en calibración separada; radio global constante",
+    "nivel_nominal": 0.9,
+    "radio_soles": 1356.9473108166749,
+    "cobertura_observada_prueba": 0.9220985691573926,
+    "ancho_medio_soles": 2713.4171517838404
+  },
+  "entorno": {
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "pandas": "2.3.3",
+    "sklearn": "1.7.2",
+    "joblib": "1.5.2"
+  },
+  "limites": [
+    "Holdout agrupado de captura única; no valida períodos futuros.",
+    "Grupos heurísticos pueden omitir duplicados o unir viviendas diferentes.",
+    "Intervalo global; cobertura por subgrupo o futura no garantizada.",
+    "Precio de anuncio y atributos extraídos por alumnos; no precio de contrato.",
+    "Evaluación distinta del notebook original; las métricas no son una comparación directa."
+  ]
+}

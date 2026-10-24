@@ -1,0 +1,13 @@
+{
+  "archivos_v1_intactos": {
+    "models/modelo_docente.joblib": "6dabe6d10d3751654dde1dbc8d3eccfc66eabd3462b768b747aafe02e8724760",
+    "modelo.py": "ecc18d0cc05b1999932c60c8e06a75d83cec18441a67424218c55210bc4fdb81",
+    "entrenar.py": "2b27f9890da14ed701fd4cc3091c9c3b1a139e3e856ab21e8bcc51580d647827",
+    "resultados/metricas.json": "f30a68cb5ffeeaebc2a6d849b55a6e7029aa12f136e69097ccffbe87dfa0c636"
+  },
+  "n_consultas": 54,
+  "n_perfiles": 3,
+  "sha256_consultas_json": "31a6b7899f3699575c076988f8a40000cbf5af04791b796e089ac308b12f7ca2",
+  "reentrenamiento": false,
+  "datos_observados_generados": 0
+}
