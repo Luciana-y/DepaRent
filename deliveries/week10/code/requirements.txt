@@ -1,6 +1,0 @@
-Flask>=2.0
-pandas>=2.2
-# Agregar al incorporar los modelos:
-# scikit-learn>=1.5,<1.8
-# joblib
-# numpy>=1.26,<2.3

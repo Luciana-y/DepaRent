@@ -1,0 +1,11 @@
+# Descargas diarias: contienen direcciones y texto de anuncios; no se suben a GitHub
+data_diaria/
+
+# ZIP de la copia del profesor (incluye datos originales con contactos)
+drive-download-*.zip
+
+__pycache__/
+.venv/
+
+# Base local de cuentas y departamentos del prototipo (datos de usuarios)
+deliveries/week10/data/*.sqlite
