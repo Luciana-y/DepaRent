@@ -102,7 +102,9 @@ Versión Streamlit del profesor (opcional): `..\..\..\.venv\Scripts\python.exe -
 - Modelo 3: **no reentrenar**. Es la versión del profesor y la app verifica sus hashes.
 
 ## Despliegue
-_Pendiente._ Pasos en `deployed_url.txt`. Requiere conectar el repositorio de GitHub con Netlify y Render.
+Listo para Render con `render.yaml` (raíz del repo): un solo servicio que sirve la API y el frontend, con
+`code/requirements-deploy.txt`. El mercado se actualiza solo cada día con GitHub Actions
+(`.github/workflows/actualizar-mercado.yml`). Pasos y límites del plan gratuito en `deployed_url.txt`.
 
 ## Credenciales y datos
 No se requieren variables de entorno ni credenciales para el uso local. Variables opcionales: `DEPARENT_DB` (ruta de

@@ -1,0 +1,15 @@
+# Despliegue en Render (Blueprint). Un solo servicio: la API FastAPI también sirve el frontend.
+# Cada push a main vuelve a desplegar; la actualización diaria del mercado hace ese push sola.
+services:
+  - type: web
+    name: deparent
+    runtime: python
+    plan: free
+    branch: main
+    autoDeploy: true
+    buildCommand: pip install -r deliveries/week10/code/requirements-deploy.txt
+    startCommand: cd deliveries/week10/code && uvicorn api:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/salud
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.8"

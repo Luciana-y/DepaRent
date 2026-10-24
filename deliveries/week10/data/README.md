@@ -28,15 +28,11 @@ Desde `deliveries/week10/code`:
 
 Después hay que reiniciar la API, que carga el mercado al arrancar.
 
-## Duda abierta: que la app use la descarga diaria sola
-Hoy el mercado se actualiza a mano con los dos comandos de arriba. Para que sea automático hay tres piezas que decidir:
+## Actualización automática
+Desde que `main` tenga el flujo `.github/workflows/actualizar-mercado.yml`, el mercado se actualiza solo cada día a las
+07:00 de Lima en los servidores de GitHub: descarga → `preparar_mercado.py` → `entrenar_perfil.py` → pruebas → commit.
+Render vuelve a desplegar con ese commit. No hay que subir datos a mano ni tener la PC encendida. Los pasos para
+activarlo y sus límites están en `../deployed_url.txt`.
 
-1. **Encadenar los pasos.** La tarea programada (`scraper/programar_tarea.ps1`) descarga a las 07:00. Se le pueden
-   sumar `preparar_mercado.py` y `entrenar_perfil.py`, y que la API recargue el mercado sin reiniciarse (un endpoint
-   de recarga protegido o una relectura periódica de `mercado.json`).
-2. **Dónde corre.** En local funciona porque `data_diaria/` está en la misma PC. En un despliegue (Render), el
-   servidor no ve esa carpeta: o se sube cada día `mercado.csv` al repositorio (y el servidor se vuelve a desplegar),
-   o el scraper corre en el propio servidor con un disco persistente.
-3. **Controles.** Cada actualización debería rechazar capturas fallidas (como la del 22-oct, con 30 anuncios),
-   repetir `validar_octubre.py` para vigilar si el modelo se degrada y avisar antes de publicar un mercado con
-   menos anuncios de lo normal. Scrapear a diario también depende de los términos de uso de los portales.
+Respaldo si los portales bloquean la descarga desde la nube: la tarea programada local (`scraper/programar_tarea.ps1`)
+seguida de los dos comandos de arriba y un `git push`.

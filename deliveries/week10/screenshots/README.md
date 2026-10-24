@@ -1,6 +1,6 @@
 # Capturas del prototipo
 
-Tomadas el 24-oct-2026 en Chrome, con la app local y una base de prueba: una cuenta "Propietaria Demo" con tres
+Tomadas el 24-oct-2026 en Chrome, con la app local (mercado de la captura del 23-oct-2026) y una base de prueba: una cuenta "Propietaria Demo" con tres
 departamentos (Miraflores publicado; Lince y San Isidro como borradores). Escritorio a 1440 × 900 y teléfono a
 390 × 844. Con movimiento reducido, para que ninguna sección quede a medio revelar.
 
