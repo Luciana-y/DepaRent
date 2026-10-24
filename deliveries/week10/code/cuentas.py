@@ -49,7 +49,8 @@ class NoEncontrado(Exception):
 def conectar(base=None):
     ruta = Path(base or BASE)
     ruta.parent.mkdir(parents=True, exist_ok=True)
-    conexion = sqlite3.connect(ruta)
+    # Cada petición abre y cierra su propia conexión, pero FastAPI puede crearla y usarla en hilos distintos.
+    conexion = sqlite3.connect(ruta, check_same_thread=False)
     conexion.row_factory = sqlite3.Row
     conexion.execute("PRAGMA foreign_keys = ON")
     conexion.executescript(ESQUEMA)
