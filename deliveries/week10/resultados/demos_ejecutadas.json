@@ -1,0 +1,83 @@
+[
+  {
+    "nombre": "Departamento compacto en Lince",
+    "naturaleza": "Escenario hipotético para probar el aplicativo",
+    "entrada": {
+      "distrito_norm": "lince",
+      "area_total": 50,
+      "dormitorios": 1,
+      "banos": 1,
+      "estacionamientos": 0,
+      "antiguedad": 5,
+      "mantenimiento": 200,
+      "ascensor": 1,
+      "balcon": 0,
+      "terraza": 0,
+      "piscina": 0,
+      "gimnasio": 0,
+      "pet_friendly": 1
+    },
+    "resultado": {
+      "precio_estimado_soles": 2092.59,
+      "limite_inferior_soles": 735.64,
+      "limite_superior_soles": 3449.54,
+      "baseline_distrital_soles": 2525.0,
+      "anuncios_entrenamiento_distrito": 76,
+      "advertencias": []
+    }
+  },
+  {
+    "nombre": "Departamento familiar en Miraflores",
+    "naturaleza": "Escenario hipotético para probar el aplicativo",
+    "entrada": {
+      "distrito_norm": "miraflores",
+      "area_total": 90,
+      "dormitorios": 3,
+      "banos": 2,
+      "estacionamientos": 1,
+      "antiguedad": 8,
+      "mantenimiento": 400,
+      "ascensor": 1,
+      "balcon": 1,
+      "terraza": 0,
+      "piscina": 0,
+      "gimnasio": 0,
+      "pet_friendly": 1
+    },
+    "resultado": {
+      "precio_estimado_soles": 3656.22,
+      "limite_inferior_soles": 2299.28,
+      "limite_superior_soles": 5013.17,
+      "baseline_distrital_soles": 3500.0,
+      "anuncios_entrenamiento_distrito": 457,
+      "advertencias": []
+    }
+  },
+  {
+    "nombre": "Departamento amplio en San Isidro",
+    "naturaleza": "Escenario hipotético para probar el aplicativo",
+    "entrada": {
+      "distrito_norm": "san isidro",
+      "area_total": 160,
+      "dormitorios": 3,
+      "banos": 3,
+      "estacionamientos": 2,
+      "antiguedad": 12,
+      "mantenimiento": 700,
+      "ascensor": 1,
+      "balcon": 1,
+      "terraza": 1,
+      "piscina": 1,
+      "gimnasio": 1,
+      "pet_friendly": 1
+    },
+    "resultado": {
+      "precio_estimado_soles": 7386.28,
+      "limite_inferior_soles": 6029.33,
+      "limite_superior_soles": 8743.23,
+      "baseline_distrital_soles": 3400.0,
+      "anuncios_entrenamiento_distrito": 259,
+      "advertencias": []
+    }
+  }
+]

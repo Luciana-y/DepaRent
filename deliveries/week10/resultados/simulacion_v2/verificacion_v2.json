@@ -1,0 +1,44 @@
+{
+  "fecha": "2026-10-18",
+  "version_aplicativo": "2.1",
+  "resultado": "PASS",
+  "pruebas": [
+    {
+      "prueba": "Modelo, preparación, entrenamiento y métricas v1 idénticos por SHA-256",
+      "estado": "PASS"
+    },
+    {
+      "prueba": "17 fuentes originales intactas",
+      "estado": "PASS"
+    },
+    {
+      "prueba": "Procedencia: SHA-256 del catálogo coincide con los bytes guardados",
+      "estado": "PASS"
+    },
+    {
+      "prueba": "54 consultas iguales a inferencia v1, diferencias, rangos y exportaciones JSON/CSV",
+      "estado": "PASS"
+    },
+    {
+      "prueba": "Catálogo CSV de 54 filas concordante con JSON",
+      "estado": "PASS"
+    },
+    {
+      "prueba": "Mismo caso da diferencia cero, base inmutable y cinco cambios inválidos rechazados",
+      "estado": "PASS"
+    },
+    {
+      "prueba": "HTML autónomo: catálogo incrustado idéntico, sin dependencias de red ni marcadores pendientes",
+      "estado": "PASS"
+    },
+    {
+      "prueba": "Tres perfiles AppTest: comparación, resultados, botones de exportación y persistencia",
+      "estado": "PASS"
+    },
+    {
+      "prueba": "Advertencia visible al extrapolar mantenimiento fuera del rango de entrenamiento",
+      "estado": "PASS"
+    }
+  ],
+  "alcance": "Inferencia, datos, exportación, integridad y formulario AppTest. HTML inspeccionado estructuralmente; interacción en navegador queda para revisión visual del docente."
+}
