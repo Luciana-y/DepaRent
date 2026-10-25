@@ -13,3 +13,6 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: "3.12.8"
+      # Cadena de conexión de Neon; se pega a mano en el panel de Render (no va en el repo).
+      - key: DATABASE_URL
+        sync: false
