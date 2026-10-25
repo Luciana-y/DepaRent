@@ -8,9 +8,10 @@ const GRUPOS = [
 /**
  * Formulario de características del departamento, con la forma de una pantalla de ajustes.
  * opciones: datos de /api/opciones · conNombre: pide un nombre (propietario) · conDemos: casos de ejemplo
- * compacto: etiquetas sobre los campos (para paneles angostos). Devuelve { leer, cargar, ... }.
+ * conMapa: mapa para elegir la ubicación con un clic · compacto: etiquetas sobre los campos (para paneles angostos).
+ * Devuelve { leer, cargar, ... }.
  */
-export function formularioVivienda(contenedor, opciones, { conNombre = false, conDemos = false, compacto = false, textoBoton = "Analizar", secundario = "" } = {}) {
+export function formularioVivienda(contenedor, opciones, { conNombre = false, conDemos = false, conMapa = false, compacto = false, textoBoton = "Analizar", secundario = "" } = {}) {
   const numerico = (campo) => {
     const [min, max] = opciones.limites[campo];
     const obligatorio = ["area_total", "dormitorios", "banos"].includes(campo);
@@ -30,7 +31,9 @@ export function formularioVivienda(contenedor, opciones, { conNombre = false, co
             ${opciones.distritos.map((d) => `<option value="${esc(d)}">${esc(titulo(d))}</option>`).join("")}</select></div>`)}
         ${GRUPOS.map(([nombre, ayuda, campos]) => grupo(nombre, ayuda, campos.map(numerico).join(""))).join("")}
         ${grupo("Amenidades", "Las que el anuncio diría.", opciones.binarias.map(amenidad).join(""))}
-        ${grupo("Ubicación", "Opcional. Sin coordenadas usamos el centro del distrito; también puedes hacer clic en el mapa.", `
+        ${grupo("Ubicación", conMapa ? "Opcional. Haz clic en el mapa donde está el edificio; si no marcas nada usamos el centro del distrito."
+          : "Opcional. Sin coordenadas usamos el centro del distrito; también puedes hacer clic en el mapa.", `
+          ${conMapa ? '<div class="field wide"><div class="map map-picker" aria-label="Mapa para elegir la ubicación"></div></div>' : ""}
           <div class="field"><label for="f-latitud">Latitud</label><input class="input num" id="f-latitud" name="latitud" type="number" step="0.000001" placeholder="-12.088"></div>
           <div class="field"><label for="f-longitud">Longitud</label><input class="input num" id="f-longitud" name="longitud" type="number" step="0.000001" placeholder="-77.034"></div>`)}
       </div>
@@ -47,6 +50,7 @@ export function formularioVivienda(contenedor, opciones, { conNombre = false, co
     campo("latitud").value = ubicacion?.latitud ?? "";
     campo("longitud").value = ubicacion?.longitud ?? "";
     if (conNombre && nombre != null) campo("nombre").value = nombre;
+    mapa?.sincronizar();
   }
 
   function leer() {
@@ -65,9 +69,12 @@ export function formularioVivienda(contenedor, opciones, { conNombre = false, co
     return { vivienda, ubicacion, nombre: conNombre ? campo("nombre").value.trim() : null };
   }
 
+  const mapa = conMapa ? mapaUbicacion($(".map-picker", form), opciones, campo) : null;
+
   function fijarUbicacion(lat, lon) {
     campo("latitud").value = lat.toFixed(6);
     campo("longitud").value = lon.toFixed(6);
+    mapa?.sincronizar();
   }
 
   if (conDemos) {
@@ -75,4 +82,38 @@ export function formularioVivienda(contenedor, opciones, { conNombre = false, co
     cargar(opciones.demos[0].entrada);
   }
   return { form, leer, cargar, fijarUbicacion, mensaje: $(".form-msg", form), boton: $("button[type=submit]", form) };
+}
+
+const LIMA = [-12.0464, -77.0428];
+
+/* Mapa del formulario: muestra el centro del distrito elegido y, al hacer clic, fija latitud y longitud. */
+function mapaUbicacion(elemento, opciones, campo) {
+  if (!window.L) {
+    elemento.textContent = "No se pudo cargar el mapa (requiere conexión a internet). Puedes escribir las coordenadas.";
+    return null;
+  }
+  const mapa = L.map(elemento, { scrollWheelZoom: false }).setView(LIMA, 12);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19, attribution: "&copy; OpenStreetMap" }).addTo(mapa);
+  const marcador = L.circleMarker(LIMA, { radius: 9, color: "#fff", weight: 2, fillColor: "#c2510a", fillOpacity: 1 });
+
+  function sincronizar() {
+    const lat = Number(campo("latitud").value), lon = Number(campo("longitud").value);
+    if (campo("latitud").value.trim() !== "" && campo("longitud").value.trim() !== "" && Number.isFinite(lat) && Number.isFinite(lon)) {
+      marcador.setLatLng([lat, lon]).addTo(mapa).bindTooltip("Departamento");
+      mapa.setView([lat, lon], Math.max(mapa.getZoom(), 15));
+    } else {
+      marcador.remove();
+      mapa.setView(opciones.centros?.[campo("distrito_norm").value] || LIMA, 14);
+    }
+  }
+
+  mapa.on("click", (e) => {
+    campo("latitud").value = e.latlng.lat.toFixed(6);
+    campo("longitud").value = e.latlng.lng.toFixed(6);
+    sincronizar();
+  });
+  for (const nombre of ["distrito_norm", "latitud", "longitud"]) campo(nombre).addEventListener("change", sincronizar);
+  // El panel acaba de pintarse: Leaflet necesita medir el contenedor ya visible.
+  setTimeout(() => { mapa.invalidateSize(); sincronizar(); }, 0);
+  return { sincronizar };
 }

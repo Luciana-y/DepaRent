@@ -242,6 +242,7 @@ def opciones():
     return limpiar({
         "distritos": MODELO_PRECIO["distritos"], "limites": LIMITS, "binarias": BINARY, "etiquetas": ETIQUETAS,
         "cambiables": sorted(CAMBIABLES), "demos": DEMOS,
+        "centros": {d: centro_distrito(d) for d in MODELO_PRECIO["distritos"]},
         "metricas": {"precio": MODELO_PRECIO["metricas"]["metricas_prueba"], "intervalo": MODELO_PRECIO["metricas"]["intervalo"],
                      "particiones": MODELO_PRECIO["metricas"]["particiones"],
                      "perfil": {k: MODELO_PERFIL["metricas"][k] for k in ("k", "silhouette", "ari_medio_semillas", "filas")},

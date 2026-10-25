@@ -105,7 +105,7 @@ export async function vistaNuevoDepartamento(lienzo) {
   const op = await obtenerOpciones();
   lienzo.innerHTML = filaTitulo("Agregar departamento", "Con sus características calculamos el precio esperado, sus comparables y tres precios de publicación. Solo lo ven los inquilinos si lo publicas.")
     + '<section class="panel" data-form></section>';
-  const f = formularioVivienda($("[data-form]", lienzo), op, { conNombre: true, conDemos: true, textoBoton: "Guardar y analizar",
+  const f = formularioVivienda($("[data-form]", lienzo), op, { conNombre: true, conMapa: true, textoBoton: "Guardar y analizar",
     secundario: '<a class="btn" href="#/mis-departamentos">Cancelar</a>' });
   f.form.addEventListener("submit", async (e) => {
     e.preventDefault();
