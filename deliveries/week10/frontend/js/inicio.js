@@ -3,10 +3,10 @@ import { $, esc, num, pct, soles, titulo } from "./util.js";
 
 // Caso de ejemplo de la portada: el mismo perfil precargado de Miraflores que usa el profesor.
 const EQUIPO = [
-  ["Adrian Urbina Mendoza", "Coordina el equipo y la calidad de los datos"],
-  ["Armando Martinez Palomino", "Integra las fuentes de la ATU y del BCRP"],
-  ["Breysi Salazar Medina", "Entrena los modelos"],
-  ["Luciana Yangali Cáceres", "Diseña la aplicación"],
+  ["Adrian Urbina Mendoza", "Coordinación, datos y mantenimiento"],
+  ["Armando Martinez Palomino", "Fuentes externas"],
+  ["Breysi Salazar Medina", "Modelado"],
+  ["Luciana Yangali Cáceres", "Producto y diseño"],
 ];
 
 const EJEMPLO = {
