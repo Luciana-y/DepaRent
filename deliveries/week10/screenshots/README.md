@@ -3,6 +3,7 @@
 Tomadas el 24-oct-2026 en Chrome, con la app local (mercado de la captura del 23-oct-2026) y una base de prueba: una cuenta "Propietaria Demo" con tres
 departamentos (Miraflores publicado; Lince y San Isidro como borradores). Escritorio a 1440 × 900 y teléfono a
 390 × 844. Con movimiento reducido, para que ninguna sección quede a medio revelar.
+`01` y `07` se volvieron a tomar el 25-oct-2026, con la sección «Quiénes somos» nueva y el mapa del formulario.
 
 | Archivo | Qué muestra |
 |---|---|
@@ -12,7 +13,7 @@ departamentos (Miraflores publicado; Lince y San Isidro como borradores). Escrit
 | `04_probar_formulario.png` | Probar el análisis sin cuenta: formulario por grupos |
 | `05_crear_cuenta.png` | Registro de propietario |
 | `06_mis_departamentos.png` | Lista del propietario con conteos (todos, publicados, borradores) |
-| `07_agregar_departamento.png` | Formulario para agregar un departamento |
+| `07_agregar_departamento.png` | Formulario para agregar un departamento, con la ubicación marcada en el mapa |
 | `08_detalle_resumen.png` | Detalle: precio esperado, regla de precios, precios de publicación, accesibilidad, perfil y tendencia |
 | `09_comparables.png` | Los 8 anuncios más parecidos |
 | `10_accesibilidad.png` | Mapa de paraderos ATU y distancias |

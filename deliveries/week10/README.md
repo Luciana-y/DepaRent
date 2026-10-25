@@ -25,17 +25,17 @@ Los seis componentes analíticos:
 ```
 Navegador ──► frontend/ (HTML + CSS + JS en módulos, Leaflet)  ──fetch──►  code/api.py (FastAPI)
                                                                               ├─ modelos 1–6 (code/*.py)
-                                                                              ├─ cuentas.py ─► data/deparent.sqlite (usuarios y departamentos)
+                                                                              ├─ cuentas.py ─► Postgres (Neon) en producción · data/deparent.sqlite en local
                                                                               ├─ busqueda.py (anuncios de mercado + publicados)
                                                                               ├─ models/*.joblib
                                                                               ├─ resultados/ (métricas, pronósticos SARIMA)
                                                                               └─ ../week07/data/ (anuncios y paraderos procesados)
 ```
 Cuentas: contraseñas con PBKDF2-SHA256 y sal propia; tokens de sesión guardados solo como hash, con vencimiento de 7 días.
-La base `data/deparent.sqlite` se crea sola y no se sube a GitHub (`.gitignore`). Es un prototipo académico: no tiene
+En local la base `data/deparent.sqlite` se crea sola y no se sube a GitHub (`.gitignore`); en producción, con
+`DATABASE_URL`, se usa Postgres en Neon y las tablas también se crean solas. Es un prototipo académico: no tiene
 recuperación de contraseña ni verificación de correo.
-En local, la API también sirve el frontend. Para publicar, el frontend va a Netlify y la API a un servicio
-con Python, como Render (ver `deployed_url.txt`). `code/app.py` (Streamlit) se conserva como versión del profesor y respaldo.
+La API también sirve el frontend, en local y en Render (https://deparent.onrender.com, ver `deployed_url.txt`). `code/app.py` (Streamlit) se conserva como versión del profesor y respaldo.
 
 ## Contenido
 | Elemento | Ubicación |
@@ -47,9 +47,9 @@ con Python, como Render (ver `deployed_url.txt`). `code/app.py` (Streamlit) se c
 | Métricas y resultados | `resultados/` |
 | Ejercicio del profesor (n y MAE de un distrito) | `code/EJERCICIO_FINAL.py` |
 | Reporte del prototipo | `PrototypeReport.md` |
-| Presentación | `PresentationWeek10.pptx` / `.pdf` _(pendiente)_ |
+| Presentación | `PresentationWeek10.pptx` / `.pdf` |
 | Capturas / demo | `screenshots/` |
-| URL desplegada | `deployed_url.txt` _(pendiente)_ |
+| URL desplegada | https://deparent.onrender.com (`deployed_url.txt`) |
 
 ### Archivos de `code/`
 | Archivo | Función |
@@ -71,7 +71,7 @@ con Python, como Render (ver `deployed_url.txt`). `code/app.py` (Streamlit) se c
 
 ## Requisitos
 - Python 3.12 o 3.13 y conexión a internet la primera vez (para instalar dependencias; el mapa usa teselas de OpenStreetMap).
-- Dependencias exactas en `code/requirements.txt`.
+- Dependencias exactas en `code/requirements.txt`. Para usar Postgres en local (opcional) instalar también `psycopg[binary]`.
 
 ## Instalación y ejecución local (Windows, desde la raíz del repositorio)
 ```powershell
@@ -102,11 +102,11 @@ Versión Streamlit del profesor (opcional): `..\..\..\.venv\Scripts\python.exe -
 - Modelo 3: **no reentrenar**. Es la versión del profesor y la app verifica sus hashes.
 
 ## Despliegue
-Listo para Render con `render.yaml` (raíz del repo): un solo servicio que sirve la API y el frontend, con
+Publicado en **https://deparent.onrender.com**. Configurado para Render con `render.yaml` (raíz del repo): un solo servicio que sirve la API y el frontend, con
 `code/requirements-deploy.txt`. El mercado se actualiza solo cada día con GitHub Actions
 (`.github/workflows/actualizar-mercado.yml`). Pasos y límites del plan gratuito en `deployed_url.txt`.
 
 ## Credenciales y datos
 No se requieren variables de entorno ni credenciales para el uso local. Variables opcionales: `DEPARENT_DB` (ruta de
-la base SQLite) y, en despliegue, `DEPARENT_ORIGENES` (dominios que pueden llamar a la API). En un servicio gratuito
-como Render el disco no es persistente: las cuentas se borran al reiniciar, salvo que se use un disco o una base externa. Ninguna pantalla muestra dirección, coordenadas ni descripción de los anuncios; solo la ficha de un anuncio de mercado enlaza a su original en Adondevivir o Urbania (ver `PRODUCT.md`).
+la base SQLite), `DATABASE_URL` (cadena de conexión de Postgres; en Render apunta a Neon y se configura en el panel,
+nunca en el repositorio) y `DEPARENT_ORIGENES` (dominios que pueden llamar a la API, solo si el frontend va aparte). Ninguna pantalla muestra dirección, coordenadas ni descripción de los anuncios; solo la ficha de un anuncio de mercado enlaza a su original en Adondevivir o Urbania (ver `PRODUCT.md`).
