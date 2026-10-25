@@ -2,6 +2,13 @@ import { llamar, obtenerOpciones, sesion } from "./api.js";
 import { $, esc, num, pct, soles, titulo } from "./util.js";
 
 // Caso de ejemplo de la portada: el mismo perfil precargado de Miraflores que usa el profesor.
+const EQUIPO = [
+  ["Adrian Urbina Mendoza", "Coordina el equipo y la calidad de los datos"],
+  ["Armando Martinez Palomino", "Integra las fuentes de la ATU y del BCRP"],
+  ["Breysi Salazar Medina", "Entrena los modelos"],
+  ["Luciana Yangali Cáceres", "Diseña la aplicación"],
+];
+
 const EJEMPLO = {
   distrito_norm: "miraflores", area_total: 90, dormitorios: 3, banos: 2, estacionamientos: 1, antiguedad: 8,
   mantenimiento: 400, ascensor: 1, balcon: 1, terraza: 0, piscina: 0, gimnasio: 0, pet_friendly: 1,
@@ -106,15 +113,21 @@ export async function vistaInicio(main) {
       </section>
 
       <section class="home-about" aria-labelledby="titulo-equipo">
-        <h2 id="titulo-equipo" class="about-title">Quiénes somos</h2>
-        <p class="about-text" data-reveal style="--i:1"><b>DepaRent</b> es el proyecto de cuatro estudiantes de Ciencia de Datos de
-          <mark class="hl-a">UTEC</mark> para el curso <mark class="hl-b">DS3022 Desarrollo de Producto de Datos</mark>, en el ciclo 2026-2.
-          <mark class="hl-c">Adrian Urbina Mendoza</mark> coordina el equipo y la calidad de los datos; <mark class="hl-a">Armando Martinez Palomino</mark> integra
-          las fuentes de la ATU y del BCRP; <mark class="hl-b">Breysi Salazar Medina</mark> entrena los modelos; <mark class="hl-c">Luciana Yangali Cáceres</mark>
-          diseña la aplicación. Partimos de una pregunta que se hace cualquier propietario antes de pegar el cartel en la ventana: ¿a cuánto lo alquilo?
-          Reunimos miles de anuncios, paraderos y trece series de precios, y construimos un modelo que estima el alquiler y dice cuánto se equivoca.
-          No reemplaza a una tasación: es una segunda opinión con datos.
-          <a class="about-link" href="#/probar">Pruébalo con tu departamento.</a></p>
+        <div class="about-head">
+          <h2 id="titulo-equipo" class="about-title">Quiénes somos</h2>
+          <p class="about-intro" data-reveal><b>DepaRent</b> es el proyecto de cuatro estudiantes de Ciencia de Datos de UTEC
+            para el curso DS3022 Desarrollo de Producto de Datos, ciclo 2026-2.</p>
+        </div>
+        <ul class="about-team">
+          ${EQUIPO.map(([nombre, rol], i) => `<li class="miembro" data-reveal style="--i:${i}">
+            <span class="miembro-num">0${i + 1}</span><b class="miembro-nombre">${esc(nombre)}</b><span class="miembro-rol">${esc(rol)}</span></li>`).join("")}
+        </ul>
+        <div class="about-foot" data-reveal>
+          <p>Partimos de la pregunta que se hace cualquier propietario antes de pegar el cartel en la ventana: <b>¿a cuánto lo alquilo?</b>
+            Reunimos miles de anuncios, paraderos y trece series de precios, y construimos un modelo que estima el alquiler y dice cuánto se equivoca.</p>
+          <p>No reemplaza a una tasación: es una segunda opinión con datos.</p>
+          <a class="about-link" href="#/probar">Pruébalo con tu departamento</a>
+        </div>
       </section>
 
       <section class="home-reply" aria-labelledby="titulo-respuesta">
