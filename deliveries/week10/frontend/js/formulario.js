@@ -1,4 +1,5 @@
-import { $, esc, titulo } from "./util.js";
+import { llamar } from "./api.js";
+import { $, conBoton, esc, titulo } from "./util.js";
 
 const GRUPOS = [
   ["Tamaño", "Lo que más pesa en el precio.", ["area_total", "dormitorios", "banos", "estacionamientos"]],
@@ -31,8 +32,15 @@ export function formularioVivienda(contenedor, opciones, { conNombre = false, co
             ${opciones.distritos.map((d) => `<option value="${esc(d)}">${esc(titulo(d))}</option>`).join("")}</select></div>`)}
         ${GRUPOS.map(([nombre, ayuda, campos]) => grupo(nombre, ayuda, campos.map(numerico).join(""))).join("")}
         ${grupo("Amenidades", "Las que el anuncio diría.", opciones.binarias.map(amenidad).join(""))}
-        ${grupo("Ubicación", conMapa ? "Opcional. Haz clic en el mapa donde está el edificio; si no marcas nada usamos el centro del distrito."
-          : "Opcional. Sin coordenadas usamos el centro del distrito; también puedes hacer clic en el mapa.", `
+        ${grupo("Ubicación", conMapa ? "Opcional. Busca la dirección, haz clic en el mapa o escribe las coordenadas; si no marcas nada usamos el centro del distrito."
+          : "Opcional. Busca la dirección o escribe las coordenadas; sin ellas usamos el centro del distrito.", `
+          <div class="field wide">
+            <label for="f-direccion">Buscar dirección</label>
+            <div class="search-row"><input class="input" id="f-direccion" type="search" autocomplete="off" placeholder="Malecón Grau 231, Magdalena · o -12.0905, -77.0716">
+              <button type="button" class="btn" data-buscar>Buscar</button></div>
+            <ul class="dir-results" hidden></ul>
+            <p class="hint" data-dir-msg aria-live="polite"></p>
+          </div>
           ${conMapa ? '<div class="field wide"><div class="map map-picker" aria-label="Mapa para elegir la ubicación"></div></div>' : ""}
           <div class="field"><label for="f-latitud">Latitud</label><input class="input num" id="f-latitud" name="latitud" type="number" step="0.000001" placeholder="-12.088"></div>
           <div class="field"><label for="f-longitud">Longitud</label><input class="input num" id="f-longitud" name="longitud" type="number" step="0.000001" placeholder="-77.034"></div>`)}
@@ -77,6 +85,8 @@ export function formularioVivienda(contenedor, opciones, { conNombre = false, co
     mapa?.sincronizar();
   }
 
+  buscadorDireccion(form, campo, fijarUbicacion);
+
   if (conDemos) {
     campo("demo").addEventListener("change", () => cargar(opciones.demos[Number(campo("demo").value)].entrada));
     cargar(opciones.demos[0].entrada);
@@ -85,6 +95,62 @@ export function formularioVivienda(contenedor, opciones, { conNombre = false, co
 }
 
 const LIMA = [-12.0464, -77.0428];
+// Mismo recorte geográfico que la API (accesibilidad.LIMITES).
+const dentroDeLima = (lat, lon) => lat >= -12.35 && lat <= -11.75 && lon >= -77.2 && lon <= -76.8;
+
+/* Buscador de la ubicación: una dirección se busca en la API (OpenStreetMap) y se elige de una lista;
+   un par "latitud, longitud" se marca directo. Se busca al pulsar Buscar o Enter, no al teclear. */
+function buscadorDireccion(form, campo, fijarUbicacion) {
+  const entrada = $("#f-direccion", form), boton = $("[data-buscar]", form);
+  const lista = $(".dir-results", form), aviso = $("[data-dir-msg]", form);
+
+  function elegir(r) {
+    fijarUbicacion(r.latitud, r.longitud);
+    lista.hidden = true;
+    entrada.value = r.nombre;
+    const distrito = campo("distrito_norm");
+    // OpenStreetMap casi nunca tiene la numeración de Lima: suele devolver un punto de la calle.
+    const ajuste = "Si el número no coincide, haz clic en el mapa para afinar el punto.";
+    if (r.distrito && [...distrito.options].some((o) => o.value === r.distrito)) {
+      distrito.value = r.distrito;
+      aviso.textContent = `Ubicación marcada. Distrito: ${titulo(r.distrito)}. ${ajuste}`;
+    } else {
+      aviso.textContent = `Ubicación marcada. Revisa que el distrito elegido sea el correcto. ${ajuste}`;
+    }
+  }
+
+  async function buscar() {
+    const texto = entrada.value.trim();
+    lista.hidden = true;
+    const par = texto.match(/^(-?\d+(?:\.\d+)?)\s*[,;\s]\s*(-?\d+(?:\.\d+)?)$/);
+    if (par) {
+      const lat = Number(par[1]), lon = Number(par[2]);
+      if (!dentroDeLima(lat, lon)) { aviso.textContent = "Esas coordenadas están fuera de Lima. Escríbelas como latitud, longitud (por ejemplo -12.0905, -77.0716)."; return; }
+      fijarUbicacion(lat, lon);
+      aviso.textContent = "Ubicación marcada con las coordenadas.";
+      return;
+    }
+    if (texto.length < 3) { aviso.textContent = "Escribe la calle y el número, por ejemplo Malecón Grau 231, Magdalena."; return; }
+    aviso.textContent = "Buscando…";
+    try {
+      const resultados = await conBoton(boton, "Buscando…", () => llamar("/api/ubicaciones?q=" + encodeURIComponent(texto)));
+      if (!resultados.length) {
+        aviso.textContent = "No encontramos esa dirección en Lima. Prueba solo con la calle y el distrito, o marca el punto en el mapa.";
+        return;
+      }
+      lista.innerHTML = resultados.map((r, i) => `<li><button type="button" data-i="${i}">${esc(r.nombre)}</button></li>`).join("");
+      lista.querySelectorAll("button").forEach((b) => b.addEventListener("click", () => elegir(resultados[Number(b.dataset.i)])));
+      lista.hidden = false;
+      aviso.textContent = resultados.length === 1 ? "Elige el resultado para marcarlo en el mapa." : `Elige uno de los ${resultados.length} resultados.`;
+    } catch (err) {
+      aviso.textContent = err.message;
+    }
+  }
+
+  boton.addEventListener("click", buscar);
+  // Enter busca en vez de enviar el formulario.
+  entrada.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); buscar(); } });
+}
 
 /* Mapa del formulario: muestra el centro del distrito elegido y, al hacer clic, fija latitud y longitud. */
 function mapaUbicacion(elemento, opciones, campo) {
@@ -113,6 +179,11 @@ function mapaUbicacion(elemento, opciones, campo) {
     sincronizar();
   });
   for (const nombre of ["distrito_norm", "latitud", "longitud"]) campo(nombre).addEventListener("change", sincronizar);
+  // Mientras se escriben las coordenadas, el punto se mueve en cuanto el par es válido.
+  for (const nombre of ["latitud", "longitud"]) campo(nombre).addEventListener("input", () => {
+    const lat = Number(campo("latitud").value), lon = Number(campo("longitud").value);
+    if (campo("latitud").value.trim() !== "" && campo("longitud").value.trim() !== "" && dentroDeLima(lat, lon)) sincronizar();
+  });
   // El panel acaba de pintarse: Leaflet necesita medir el contenedor ya visible.
   setTimeout(() => { mapa.invalidateSize(); sincronizar(); }, 0);
   return { sincronizar };

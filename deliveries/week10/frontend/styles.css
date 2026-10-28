@@ -233,6 +233,11 @@ tr[data-href] { cursor: pointer; }
 .fields .wide { grid-column: 1 / -1; }
 .form-actions { display: flex; gap: 8px; justify-content: flex-end; padding-top: 20px; border-top: 1px solid var(--rule); }
 .compact .form-group { grid-template-columns: 1fr; gap: 12px; padding: 16px 0; }
+.search-row { display: flex; gap: 8px; }
+.search-row .input { flex: 1; min-width: 0; }
+.dir-results { list-style: none; margin: 0; padding: 4px; border: 1px solid var(--border); border-radius: var(--radius-control); background: var(--surface); }
+.dir-results button { display: block; width: 100%; padding: 8px 10px; border: 0; border-radius: 4px; background: none; text-align: left; line-height: 1.35; cursor: pointer; }
+@media (hover: hover) and (pointer: fine) { .dir-results button:hover { background: var(--raised); } }
 
 /* ---------- detalle: cabecera con el objeto ---------- */
 .object-head { display: flex; align-items: center; gap: 14px; padding: 14px; margin-bottom: 16px; }

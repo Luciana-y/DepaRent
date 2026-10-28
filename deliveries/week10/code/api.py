@@ -27,6 +27,7 @@ from ayuda_interfaz import ETIQUETAS, avisos_coherencia
 from busqueda import AVISO as AVISO_MERCADO, buscar, construir_mercado, formatear, ubicar, vivienda_de
 from escenarios import ADVERTENCIA, CAMBIABLES, comparar, verificar_modelo_congelado
 from escenarios_precio import escenarios_publicacion
+from direcciones import BusquedaNoDisponible, buscar_direccion, distrito_de
 from evidencia_distrital import evidencia_distrital
 from laboratorio_area import AVISO as AVISO_AREA, explorar_area
 from modelo import BINARY, LIMITS, ROOT, predecir, preparar
@@ -61,6 +62,11 @@ def _datos_invalidos(_: Request, exc: Exception):
 @app.exception_handler(cuentas.NoAutorizado)
 def _no_autorizado(_: Request, exc: Exception):
     return JSONResponse(status_code=401, content={"detail": str(exc)})
+
+
+@app.exception_handler(BusquedaNoDisponible)
+def _busqueda_no_disponible(_: Request, exc: Exception):
+    return JSONResponse(status_code=503, content={"detail": str(exc)})
 
 
 @app.exception_handler(cuentas.NoEncontrado)
@@ -254,6 +260,15 @@ def opciones():
             "mae_soles": VALIDACION["metricas_octubre"]["HistGradientBoosting"]["MAE_soles"],
             "cobertura": VALIDACION["intervalo"]["cobertura_octubre"]},
     })
+
+
+@app.get("/api/ubicaciones")
+def ubicaciones(q: str):
+    """Direcciones de Lima que coinciden con lo escrito, para elegir la ubicación del departamento."""
+    resultados = buscar_direccion(q)
+    for r in resultados:
+        r["distrito"] = distrito_de(r.pop("direccion"), MODELO_PRECIO["distritos"])
+    return resultados
 
 
 @app.post("/api/estimar")

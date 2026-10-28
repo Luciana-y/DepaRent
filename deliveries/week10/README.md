@@ -85,7 +85,8 @@ Abrir **http://127.0.0.1:8000**. En Linux/macOS usar `python3 -m venv .venv` y `
 Endpoints principales: `GET /api/opciones`, `POST /api/analizar`, `POST /api/accesibilidad`, `POST /api/comparar`,
 `POST /api/area`, `POST /api/cuentas/registro|ingreso|salida`, `GET|POST /api/departamentos`,
 `GET|PUT|DELETE /api/departamentos/{id}`, `POST|DELETE /api/departamentos/{id}/publicacion`, `POST /api/buscar`,
-`GET /api/anuncios/{id}` y `POST /api/anuncios/{id}/interes`.
+`GET /api/anuncios/{id}`, `POST /api/anuncios/{id}/interes` y `GET /api/ubicaciones?q=` (busca direcciones de Lima en
+OpenStreetMap/Nominatim para ubicar el departamento; necesita salida a internet).
 Documentación interactiva en http://127.0.0.1:8000/docs.
 
 Versión Streamlit del profesor (opcional): `..\..\..\.venv\Scripts\python.exe -m streamlit run app.py`.
