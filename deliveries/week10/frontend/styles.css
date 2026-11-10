@@ -449,3 +449,15 @@ dialog.bienvenida #bv-sub { margin-top: 6px; }
 .dist-row { display: grid; grid-template-columns: minmax(90px, 1fr) 2fr auto; }
 .leyenda i { display: inline-block; width: 10px; height: 10px; margin-right: 4px; border-radius: 2px; background: var(--accent); vertical-align: -1px; }
 .leyenda.base i { background: var(--control); }
+
+/* Menú del analista: el panel de KPIs manda; las opciones de usuario quedan plegadas. */
+.sidebar .group-label.equipo { color: var(--text); font-weight: 700; }
+.nav-item.nav-principal { color: var(--text); font-weight: 600; }
+.nav-grupo { margin-top: 16px; border-top: 1px solid var(--border); padding-top: 8px; }
+.nav-grupo summary { display: flex; align-items: center; min-height: 36px; padding: 0 10px; border-radius: 8px; color: var(--text); font-size: var(--fs-small); font-weight: 600; cursor: pointer; list-style: none; }
+.nav-grupo summary::-webkit-details-marker { display: none; }
+.nav-grupo summary::after { content: "▸"; margin-left: auto; color: var(--muted); transition: transform var(--t-hover) var(--ease-out); }
+.nav-grupo[open] summary::after { transform: rotate(90deg); }
+@media (hover: hover) and (pointer: fine) { .nav-grupo summary:hover { background: var(--raised); } }
+.nav-grupo-items { display: flex; flex-direction: column; gap: 2px; padding-left: 8px; }
+.nav-grupo-items .group-label { margin-top: 12px; }

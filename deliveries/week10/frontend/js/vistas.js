@@ -13,7 +13,7 @@ const filaTitulo = (h1, sub, acciones = "") =>
 /* ---------- Ingreso y registro ---------- */
 
 export function vistaIngresar(lienzo, params) {
-  if (sesion()) return irA(params.get("siguiente") || "#/mi-perfil");
+  if (sesion()) return irA(params.get("siguiente") || (sesion().usuario?.rol === "analista" ? "#/analista" : "#/mi-perfil"));
   const registro = params.get("modo") === "registro";
   const siguiente = params.get("siguiente");
   const enlace = (modo) => `#/ingresar${modo ? "?modo=registro" : ""}${siguiente ? `${modo ? "&" : "?"}siguiente=${encodeURIComponent(siguiente)}` : ""}`;
@@ -41,10 +41,11 @@ export function vistaIngresar(lienzo, params) {
       const r = await conBoton($("button", form), "Un momento…", () =>
         llamar(registro ? "/api/cuentas/registro" : "/api/cuentas/ingreso", { cuerpo: Object.fromEntries(new FormData(form)) }));
       guardarSesion({ token: r.token, usuario: r.usuario });
-      // Si venía de otro flujo (por ejemplo, publicar su depa), no lo interrumpimos con la bienvenida.
-      if (!siguiente) marcarBienvenida();
+      const analista = r.usuario.rol === "analista";
+      // Si venía de otro flujo (por ejemplo, publicar su depa) no lo interrumpimos; el analista va directo a su panel.
+      if (!siguiente && !analista) marcarBienvenida();
       // Al crear la cuenta, el inquilino empieza por el cuestionario; al ingresar, va a su perfil.
-      irA(siguiente || (registro ? "#/mi-perfil/editar" : "#/mi-perfil"));
+      irA(siguiente || (analista ? "#/analista" : registro ? "#/mi-perfil/editar" : "#/mi-perfil"));
     } catch (err) {
       mensaje($(".form-msg", form), err.message);
     }

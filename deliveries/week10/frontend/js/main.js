@@ -37,7 +37,8 @@ function menuInicio() {
       <a href="#/probar">Probar</a>
       ${actual ? '<a href="#/mis-departamentos">Mis departamentos</a>' : '<a href="#/ingresar">Ingresar</a>'}
     </div>
-    ${actual ? '<a class="menu-action" href="#/mis-departamentos/nuevo">Agregar departamento</a>'
+    ${actual?.usuario?.rol === "analista" ? '<a class="menu-action" href="#/analista">Panel de análisis (KPIs)</a>'
+      : actual ? '<a class="menu-action" href="#/mis-departamentos/nuevo">Agregar departamento</a>'
       : `<a class="menu-action" href="#/ingresar?modo=registro&siguiente=${encodeURIComponent("#/mis-departamentos/nuevo")}">Publicar mi depa</a>`}`;
 }
 
@@ -45,12 +46,9 @@ function menuInicio() {
 function marco(main, seccion, titulo) {
   const actual = sesion();
   const item = (href, s, texto) => `<a class="nav-item" href="${href}" ${s === seccion ? 'aria-current="page"' : ""}>${texto}</a>`;
-  main.innerHTML = `
-    <div class="app">
-      <aside class="sidebar" id="sidebar" aria-label="Navegación">
-        <button class="btn ghost sidebar-close" type="button" data-cerrar-menu>Cerrar</button>
-        <a class="app-brand" href="#/"><span class="app-mark" aria-hidden="true">D</span>
-          <span><b>DepaRent</b><span data-captura>Lima</span></span></a>
+  const analista = actual?.usuario?.rol === "analista";
+  // Las opciones de siempre; para un analista quedan dentro de "Probar como usuario de DepaRent".
+  const menuUsuario = `
         <p class="group-label">Explorar</p>
         ${item("#/para-ti", "para-ti", "Recomendados para ti")}
         ${item("#/buscar", "buscar", "Buscar departamentos")}
@@ -59,8 +57,19 @@ function marco(main, seccion, titulo) {
         <p class="group-label">Mi cuenta</p>
         ${actual ? item("#/mi-perfil", "mi-perfil", "Mi perfil") + item("#/mis-departamentos", "propietario", "Mis departamentos")
             + item("#/mis-departamentos/nuevo", "nuevo", "Agregar departamento")
-          : item("#/ingresar", "ingresar", "Ingresar o crear cuenta")}
-        ${actual?.usuario?.rol === "analista" ? '<p class="group-label">Equipo</p>' + item("#/analista", "analista", "Panel de análisis (KPIs)") : ""}
+          : item("#/ingresar", "ingresar", "Ingresar o crear cuenta")}`;
+  main.innerHTML = `
+    <div class="app">
+      <aside class="sidebar" id="sidebar" aria-label="Navegación">
+        <button class="btn ghost sidebar-close" type="button" data-cerrar-menu>Cerrar</button>
+        <a class="app-brand" href="#/"><span class="app-mark" aria-hidden="true">D</span>
+          <span><b>DepaRent</b><span data-captura>Lima</span></span></a>
+        ${analista ? `<p class="group-label equipo">Equipo de análisis</p>
+          <a class="nav-item nav-principal" href="#/analista" ${seccion === "analista" ? 'aria-current="page"' : ""}>Panel de análisis (KPIs)</a>
+          <details class="nav-grupo" ${seccion !== "analista" ? "open" : ""}>
+            <summary>Probar como usuario de DepaRent</summary>
+            <div class="nav-grupo-items">${menuUsuario}</div>
+          </details>` : menuUsuario}
         <div class="bottom">
           ${actual ? `<div class="user-row"><b>${esc(actual.usuario.nombre)}</b><span>${esc(actual.usuario.email)}</span></div>
             <button class="btn" type="button" id="salir">Salir</button>`
