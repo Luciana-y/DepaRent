@@ -10,9 +10,10 @@ const GRUPOS = [
  * Formulario de características del departamento, con la forma de una pantalla de ajustes.
  * opciones: datos de /api/opciones · conNombre: pide un nombre (propietario) · conDemos: casos de ejemplo
  * conMapa: mapa para elegir la ubicación con un clic · compacto: etiquetas sobre los campos (para paneles angostos).
+ * conPrecio: campo opcional con el precio al que el propietario quiere publicar.
  * Devuelve { leer, cargar, ... }.
  */
-export function formularioVivienda(contenedor, opciones, { conNombre = false, conDemos = false, conMapa = false, compacto = false, textoBoton = "Analizar", secundario = "" } = {}) {
+export function formularioVivienda(contenedor, opciones, { conNombre = false, conDemos = false, conMapa = false, conPrecio = false, compacto = false, textoBoton = "Analizar", secundario = "" } = {}) {
   const numerico = (campo) => {
     const [min, max] = opciones.limites[campo];
     const obligatorio = ["area_total", "dormitorios", "banos"].includes(campo);
@@ -44,6 +45,9 @@ export function formularioVivienda(contenedor, opciones, { conNombre = false, co
           ${conMapa ? '<div class="field wide"><div class="map map-picker" aria-label="Mapa para elegir la ubicación"></div></div>' : ""}
           <div class="field"><label for="f-latitud">Latitud</label><input class="input num" id="f-latitud" name="latitud" type="number" step="0.000001" placeholder="-12.088"></div>
           <div class="field"><label for="f-longitud">Longitud</label><input class="input num" id="f-longitud" name="longitud" type="number" step="0.000001" placeholder="-77.034"></div>`)}
+        ${conPrecio ? grupo("Publicación", "Opcional. Si ya sabes a cuánto quieres alquilarlo, escríbelo y lo publicamos a ese precio. Si lo dejas vacío, primero ves el precio esperado y decides después.", `
+          <div class="field wide"><label for="f-precio">Precio al que quiero publicarlo (S/ al mes)</label>
+            <input class="input num" id="f-precio" name="precio_publicar" type="number" inputmode="numeric" min="300" max="50000" step="10" placeholder="Por ejemplo 2500"></div>`) : ""}
       </div>
       <div class="form-actions">${secundario}<button type="submit" class="btn primary">${esc(textoBoton)}</button></div>
       <div class="form-msg" role="alert"></div>
@@ -74,7 +78,12 @@ export function formularioVivienda(contenedor, opciones, { conNombre = false, co
     const lat = campo("latitud").value.trim(), lon = campo("longitud").value.trim();
     if ((lat === "") !== (lon === "")) throw new Error("Ingresa latitud y longitud, o deja ambas vacías.");
     const ubicacion = lat === "" ? null : { latitud: Number(lat), longitud: Number(lon) };
-    return { vivienda, ubicacion, nombre: conNombre ? campo("nombre").value.trim() : null };
+    let precio = null;
+    if (conPrecio && campo("precio_publicar").value.trim() !== "") {
+      precio = Number(campo("precio_publicar").value);
+      if (!(precio >= 300 && precio <= 50000)) throw new Error("El precio de publicación debe estar entre S/ 300 y S/ 50,000.");
+    }
+    return { vivienda, ubicacion, nombre: conNombre ? campo("nombre").value.trim() : null, precio };
   }
 
   const mapa = conMapa ? mapaUbicacion($(".map-picker", form), opciones, campo) : null;

@@ -1,4 +1,6 @@
-import { obtenerOpciones, sesion } from "./api.js";
+import { guardarSesion, llamar, obtenerOpciones, sesion } from "./api.js";
+import { vistaAnalista } from "./analista.js";
+import { mostrarBienvenida } from "./bienvenida.js";
 import { vistaAnuncio } from "./anuncio.js";
 import { vistaInicio } from "./inicio.js";
 import { activarMovimiento } from "./movimiento.js";
@@ -22,6 +24,7 @@ const RUTAS = [
   [/^\/mis-departamentos$/, vistaMisDepartamentos, true, "propietario", "Mis departamentos"],
   [/^\/mis-departamentos\/nuevo$/, vistaNuevoDepartamento, true, "nuevo", "Agregar departamento"],
   [/^\/mis-departamentos\/(\d+)$/, vistaDetalleDepartamento, true, "propietario", "Departamento"],
+  [/^\/analista$/, vistaAnalista, true, "analista", "Panel de análisis"],
 ];
 
 // Menú de la página de inicio: marca, tres enlaces y una acción.
@@ -57,6 +60,7 @@ function marco(main, seccion, titulo) {
         ${actual ? item("#/mi-perfil", "mi-perfil", "Mi perfil") + item("#/mis-departamentos", "propietario", "Mis departamentos")
             + item("#/mis-departamentos/nuevo", "nuevo", "Agregar departamento")
           : item("#/ingresar", "ingresar", "Ingresar o crear cuenta")}
+        ${actual?.usuario?.rol === "analista" ? '<p class="group-label">Equipo</p>' + item("#/analista", "analista", "Panel de análisis (KPIs)") : ""}
         <div class="bottom">
           ${actual ? `<div class="user-row"><b>${esc(actual.usuario.nombre)}</b><span>${esc(actual.usuario.email)}</span></div>
             <button class="btn" type="button" id="salir">Salir</button>`
@@ -98,6 +102,7 @@ async function navegar() {
   try {
     await vista(destino, params, ...(ruta.match(patron).slice(1)));
     activarMovimiento(main);
+    mostrarBienvenida();
   } catch (error) {
     if (error.estado === 401) {
       location.hash = "#/ingresar?siguiente=" + encodeURIComponent("#" + ruta);
@@ -112,5 +117,18 @@ $("#menu-toggle").addEventListener("click", (e) => {
   e.currentTarget.setAttribute("aria-expanded", String(abierto));
 });
 window.addEventListener("hashchange", navegar);
-navegar();
+
+// Las sesiones guardadas antes de que existieran los roles no traen "rol": se completa una vez al abrir la app.
+async function iniciar() {
+  const actual = sesion();
+  if (actual?.token && !actual.usuario?.rol) {
+    try {
+      guardarSesion({ ...actual, usuario: await llamar("/api/cuentas/yo") });
+    } catch {
+      /* sin conexión o sesión vencida: la app sigue y pedirá ingresar si hace falta */
+    }
+  }
+  navegar();
+}
+iniciar();
 

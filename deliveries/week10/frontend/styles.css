@@ -391,3 +391,61 @@ tr[data-href] { cursor: pointer; }
 .perfil-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
 .perfil-foot { color: var(--muted); }
 .link-btn { padding: 0; border: 0; background: none; color: inherit; font: inherit; text-decoration: underline; cursor: pointer; }
+
+/* ---------- Mejoras de la semana 15 (feedback de pruebas) ---------- */
+
+/* Mapa de accesibilidad: la ubicación queda fija salvo que se active el interruptor. */
+.map-lock { display: flex; align-items: center; gap: 8px; margin-top: 12px; font-size: var(--fs-small); cursor: pointer; }
+.map-lock input { width: 16px; height: 16px; accent-color: var(--text); }
+
+/* Detalle técnico plegado: el texto principal se queda en lenguaje cotidiano. */
+details.tech { margin-top: 10px; font-size: var(--fs-small); color: var(--muted); }
+details.tech summary { cursor: pointer; width: fit-content; font-weight: 500; color: var(--text); }
+details.tech p { margin-top: 6px; line-height: 17px; }
+
+/* Publicar a un precio propio. */
+.precio-propio { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--rule); display: grid; gap: 6px; }
+.precio-propio label { font-weight: 500; }
+.precio-propio .search-row { align-items: center; }
+.prefijo { color: var(--muted); font-weight: 500; }
+
+/* Acciones por fila en Mis departamentos. */
+.btn.small { height: 28px; padding: 0 10px; font-size: var(--fs-small); }
+.row-actions { white-space: nowrap; }
+.row-actions .btn + .btn { margin-left: 6px; }
+
+/* Orden de las recomendaciones. */
+.orden-row { display: flex; align-items: center; gap: 10px; margin-bottom: var(--gap); }
+.orden-row label { font-weight: 500; }
+.orden-row .input { width: auto; min-width: 240px; }
+
+/* Ventana de bienvenida. */
+dialog.bienvenida { width: min(640px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); padding: 24px; border: 0; border-radius: var(--radius-card);
+  background: var(--surface); color: var(--text); box-shadow: 0 24px 64px rgba(0, 0, 0, 0.25); }
+dialog.bienvenida::backdrop { background: rgba(17, 17, 17, 0.55); }
+dialog.bienvenida[open] { animation: bv-entrar var(--t-ui) var(--ease-out); }
+@keyframes bv-entrar { from { opacity: 0; transform: translateY(8px) scale(0.98); } }
+@media (prefers-reduced-motion: reduce) { dialog.bienvenida[open] { animation: none; } }
+dialog.bienvenida h2 { font-size: var(--fs-title); line-height: 1.2; }
+dialog.bienvenida #bv-sub { margin-top: 6px; }
+.bv-opciones { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 18px; }
+.bv-opcion { display: flex; flex-direction: column; gap: 8px; padding: 16px; border: 1px solid var(--border); border-radius: var(--radius-card); }
+.bv-opcion h3 { font-size: var(--fs-section); }
+.bv-opcion p { color: var(--muted); line-height: 1.45; flex: 1; }
+.bv-acciones { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.bv-pie { display: flex; justify-content: flex-end; margin-top: 14px; }
+@media (max-width: 600px) { .bv-opciones { grid-template-columns: 1fr; } dialog.bienvenida { padding: 18px; } }
+
+/* Panel de análisis (KPIs). */
+.section-title { margin: 28px 0 10px; font-size: var(--fs-section); }
+/* Las líneas entre tarjetas salen del hueco de 1px sobre el fondo del borde: funcionan en cualquier número de columnas. */
+.kpis.kpis-wrap { grid-auto-flow: row; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1px; background: var(--border); overflow: hidden; }
+.kpis.kpis-wrap .kpi { border-left: 0; background: var(--surface); }
+.barra { height: 8px; border-radius: 999px; background: var(--raised); overflow: hidden; }
+.barra span { display: block; height: 100%; border-radius: 999px; background: var(--accent); }
+.barra.base span { background: var(--control); }
+.barras-celda { min-width: 140px; }
+.barras-celda .barra + .barra { margin-top: 4px; }
+.dist-row { display: grid; grid-template-columns: minmax(90px, 1fr) 2fr auto; }
+.leyenda i { display: inline-block; width: 10px; height: 10px; margin-right: 4px; border-radius: 2px; background: var(--accent); vertical-align: -1px; }
+.leyenda.base i { background: var(--control); }
