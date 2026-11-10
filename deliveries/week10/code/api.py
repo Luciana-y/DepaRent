@@ -247,6 +247,14 @@ def usuario_actual(authorization: Optional[str] = Header(None), conexion=Depends
     return cuentas.usuario_de_token(conexion, _token(authorization))
 
 
+def usuario_opcional(authorization: Optional[str] = Header(None), conexion=Depends(base_datos)):
+    """La cuenta si hay una sesión válida; None si no. Para pantallas públicas que cambian un poco con sesión."""
+    try:
+        return cuentas.usuario_de_token(conexion, _token(authorization))
+    except cuentas.NoAutorizado:
+        return None
+
+
 def analista_actual(usuario=Depends(usuario_actual)):
     if usuario.get("rol") != "analista":
         raise cuentas.SinPermiso("Esta sección es solo para el equipo de análisis.")
@@ -475,7 +483,7 @@ def buscar_departamentos(filtros: Filtros, conexion=Depends(base_datos)):
 # ---------- Ficha de un anuncio para inquilinos ----------
 
 @app.get("/api/anuncios/{anuncio_id}")
-def ver_anuncio(anuncio_id: str, conexion=Depends(base_datos)):
+def ver_anuncio(anuncio_id: str, usuario=Depends(usuario_opcional), conexion=Depends(base_datos)):
     fila = ubicar(MERCADO, tabla_publicados(conexion), anuncio_id) if re.fullmatch(r"[md]\d+", anuncio_id) else None
     if fila is None:
         raise cuentas.NoEncontrado("No encontramos ese anuncio. Puede que ya no esté publicado.")
@@ -495,7 +503,10 @@ def ver_anuncio(anuncio_id: str, conexion=Depends(base_datos)):
             original = {"url": enlace.geturl(), "portal": PORTALES[enlace.netloc], "capturado": str(fila["fecha_scraping"])[:10]}
     if propio:
         d = cuentas.publicado(conexion, int(anuncio_id[1:]))
-        publicacion = {"propietario": d["propietario"], "escenario": d["publicacion"]["escenario"], "desde": d["publicacion"]["desde"]}
+        publicacion = {"propietario": d["propietario"], "escenario": d["publicacion"]["escenario"], "desde": d["publicacion"]["desde"],
+                       # Quien mira su propio anuncio no ve el formulario de contacto (no se escribe a sí mismo).
+                       "es_mio": bool(usuario and usuario["id"] == d["usuario_id"]),
+                       "departamento_id": d["id"] if usuario and usuario["id"] == d["usuario_id"] else None}
     return limpiar({
         "anuncio": formatear(fila), "vivienda": vivienda, "publicacion": publicacion, "original": original,
         "precio": predecir(vivienda, MODELO_PRECIO), "perfil": competencia,
@@ -509,10 +520,11 @@ def ver_anuncio(anuncio_id: str, conexion=Depends(base_datos)):
 
 
 @app.post("/api/anuncios/{anuncio_id}/interes")
-def registrar_interes(anuncio_id: str, datos: Interes, conexion=Depends(base_datos)):
+def registrar_interes(anuncio_id: str, datos: Interes, usuario=Depends(usuario_opcional), conexion=Depends(base_datos)):
     if not re.fullmatch(r"d\d+", anuncio_id):
         raise cuentas.DatosInvalidos("Este anuncio viene de un portal externo; DepaRent no tiene el contacto de su propietario.")
-    cuentas.registrar_interes(conexion, int(anuncio_id[1:]), datos.nombre, datos.email, datos.mensaje)
+    cuentas.registrar_interes(conexion, int(anuncio_id[1:]), datos.nombre, datos.email, datos.mensaje,
+                              usuario["id"] if usuario else None)
     return {"estado": "ok"}
 
 # ---------- KPIs del producto de datos (solo analistas) ----------

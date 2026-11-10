@@ -71,6 +71,25 @@ class KpisAnalista(unittest.TestCase):
         self.assertEqual(r.json()["publicacion"]["precio_soles"], 2400)
         self.assertEqual(self.cliente.post(url, headers=cabecera, json={"precio_soles": 50}).status_code, 422)
 
+    def test_propietario_no_se_escribe_a_si_mismo(self):
+        email, _, cabecera = _cuenta(self.cliente, "dueno")
+        d = self.cliente.post("/api/departamentos", headers=cabecera, json={"nombre": "Depa propio", "vivienda": VIVIENDA}).json()["departamento"]
+        self.cliente.post(f"/api/departamentos/{d['id']}/publicacion", headers=cabecera, json={"precio_soles": 2300})
+        ficha = f"/api/anuncios/d{d['id']}"
+        self.assertTrue(self.cliente.get(ficha, headers=cabecera).json()["publicacion"]["es_mio"])
+        publica = self.cliente.get(ficha).json()["publicacion"]
+        self.assertFalse(publica["es_mio"])
+        self.assertIsNone(publica["departamento_id"])
+        mensaje = {"nombre": "Yo mismo", "email": "otro@ejemplo.com", "mensaje": "Hola, ¿sigue disponible?"}
+        # Con su sesión, o sin sesión pero con su propio correo: rechazado.
+        self.assertEqual(self.cliente.post(ficha + "/interes", headers=cabecera, json=mensaje).status_code, 422)
+        self.assertEqual(self.cliente.post(ficha + "/interes", json={**mensaje, "email": email.upper()}).status_code, 422)
+        # Otra persona sí puede escribir.
+        _, _, otra = _cuenta(self.cliente, "inquilina")
+        self.assertEqual(self.cliente.post(ficha + "/interes", headers=otra, json=mensaje).status_code, 200)
+        interesados = self.cliente.get(f"/api/departamentos/{d['id']}", headers=cabecera).json()["departamento"]["interesados"]
+        self.assertEqual(len(interesados), 1)
+
     def test_orden_del_perfil_se_guarda_y_se_valida(self):
         _, _, cabecera = _cuenta(self.cliente, "inquilino")
         perfil = {"hogar": "pareja", "presupuesto_max": 3000, "orden": "precio"}

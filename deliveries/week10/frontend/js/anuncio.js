@@ -24,7 +24,8 @@ export async function vistaAnuncio(lienzo, params, id) {
       <div class="title-actions">
         <button class="btn" type="button" data-copiar>Copiar enlace</button>
         ${f.original ? `<a class="btn primary" href="${esc(f.original.url)}" target="_blank" rel="noopener noreferrer nofollow">Ver el anuncio original en ${esc(f.original.portal)}</a>` : ""}
-        ${f.publicacion ? '<a class="btn primary" href="#contacto" data-ir-contacto>Me interesa</a>' : ""}
+        ${f.publicacion?.es_mio ? `<a class="btn primary" href="#/mis-departamentos/${f.publicacion.departamento_id}">Editar mi departamento</a>`
+          : f.publicacion ? '<a class="btn primary" href="#contacto" data-ir-contacto>Me interesa</a>' : ""}
       </div>
     </section>
     <div class="grid">
@@ -83,8 +84,10 @@ export async function vistaAnuncio(lienzo, params, id) {
       <div class="span-6">${panelComparables(f.perfil).replace("Los 8 anuncios más parecidos", "Anuncios parecidos")}</div>
 
       <section class="panel span-6" id="contacto" aria-labelledby="t-contacto">
-        <header><h2 id="t-contacto">${f.publicacion ? `Escríbele a ${esc(f.publicacion.propietario)}` : "Contacto"}</h2></header>
-        ${f.publicacion ? formularioInteres(f.publicacion.propietario)
+        <header><h2 id="t-contacto">${f.publicacion?.es_mio ? "Contacto de interesados" : f.publicacion ? `Escríbele a ${esc(f.publicacion.propietario)}` : "Contacto"}</h2></header>
+        ${f.publicacion?.es_mio ? `<p>Este es tu departamento: así lo ven los inquilinos. Ellos te escriben desde aquí y sus mensajes te llegan a tu cuenta.</p>
+              <p style="margin-top:12px"><a class="btn" href="#/mis-departamentos/${f.publicacion.departamento_id}?ver=interesados">Ver mis interesados</a></p>`
+          : f.publicacion ? formularioInteres(f.publicacion.propietario)
           : f.original ? `<p>Este anuncio viene de ${esc(f.original.portal)} (captura del ${fecha(Date.parse(f.original.capturado + "T12:00:00") / 1000)}) y puede ya no estar disponible.
               La dirección y el contacto están en el anuncio original; DepaRent no los guarda ni los muestra.</p>
               <p style="margin-top:12px"><a class="btn" href="${esc(f.original.url)}" target="_blank" rel="noopener noreferrer nofollow">Ver el anuncio original en ${esc(f.original.portal)}</a></p>`

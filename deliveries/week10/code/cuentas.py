@@ -286,12 +286,16 @@ def publicado(conexion, departamento_id):
                             "WHERE d.id = ? AND d.precio_publicado IS NOT NULL", (departamento_id,)).fetchone()
     if fila is None:
         raise NoEncontrado("Ese departamento no está publicado.")
-    return {**_departamento(fila), "propietario": fila["propietario"].split()[0]}
+    return {**_departamento(fila), "propietario": fila["propietario"].split()[0], "usuario_id": fila["usuario_id"]}
 
 
-def registrar_interes(conexion, departamento_id, nombre, email, mensaje):
-    publicado(conexion, departamento_id)
+def registrar_interes(conexion, departamento_id, nombre, email, mensaje, usuario_id=None):
+    d = publicado(conexion, departamento_id)
     nombre, email, mensaje = (nombre or "").strip(), (email or "").strip().lower(), (mensaje or "").strip()
+    dueno = conexion.execute("SELECT email FROM usuarios WHERE id = ?", (d["usuario_id"],)).fetchone()
+    # El propietario no se escribe a sí mismo: ni con su sesión ni con su correo.
+    if usuario_id == d["usuario_id"] or (dueno and email == dueno["email"]):
+        raise DatosInvalidos("Este es tu departamento: no puedes enviarte un mensaje. Los mensajes de los interesados aparecen en Mis departamentos.")
     if not 2 <= len(nombre) <= 80:
         raise DatosInvalidos("Escribe tu nombre (entre 2 y 80 caracteres).")
     if not PATRON_EMAIL.match(email) or len(email) > 120:
