@@ -1,4 +1,4 @@
-import { llamar } from "./api.js";
+import { llamar, sesion } from "./api.js";
 import { escala, panelComparables, ticks } from "./analisis.js";
 import { $, esc, num, pct, soles, titulo, conBoton, mensaje, ETIQUETAS_AMENIDAD, enlazarFilas, copiarEnlace, valoracionSencilla } from "./util.js";
 
@@ -9,7 +9,10 @@ const fecha = (segundos) => new Date(segundos * 1000).toLocaleDateString("es-PE"
 
 export async function vistaAnuncio(lienzo, params, id) {
   lienzo.innerHTML = `<section class="panel object-head"><div class="cover" aria-hidden="true"></div><div><h1><span class="skeleton">Cargando anuncio</span></h1></div></section>`;
-  const f = await llamar(`/api/anuncios/${id}`);
+  const conCuenta = Boolean(sesion());
+  // Con cuenta se sabe si ya está guardado; si la lista falla, la ficha se muestra igual.
+  const [f, guardados] = await Promise.all([llamar(`/api/anuncios/${id}`), conCuenta ? llamar("/api/guardados").catch(() => null) : null]);
+  let guardado = Boolean(guardados?.some((g) => g.id === id));
   const x = f.anuncio, v = f.vivienda, p = f.precio;
   const nombre = x.nombre || `${num(v.dormitorios)} dorm. · ${banos(v.banos)} en ${titulo(x.distrito)}`;
   const origen = f.publicacion
@@ -22,6 +25,9 @@ export async function vistaAnuncio(lienzo, params, id) {
       <div class="cover" aria-hidden="true">${num(v.area_total)}<br>m²</div>
       <div><h1>${esc(nombre)}</h1><p class="meta">${esc(titulo(x.distrito))} · ${num(v.area_total)} m² · ${esc(x.perfil)} · ${origen}</p></div>
       <div class="title-actions">
+        ${f.publicacion?.es_mio ? "" : conCuenta
+          ? `<button class="btn ${guardado ? "primary" : ""}" type="button" data-guardar aria-pressed="${guardado}">${guardado ? "Guardado" : "Guardar"}</button>`
+          : `<a class="btn" href="#/ingresar?siguiente=${encodeURIComponent(`#/anuncio/${id}`)}">Guardar</a>`}
         <button class="btn" type="button" data-copiar>Copiar enlace</button>
         ${f.original ? `<a class="btn primary" href="${esc(f.original.url)}" target="_blank" rel="noopener noreferrer nofollow">Ver el anuncio original en ${esc(f.original.portal)}</a>` : ""}
         ${f.publicacion?.es_mio ? `<a class="btn primary" href="#/mis-departamentos/${f.publicacion.departamento_id}">Editar mi departamento</a>`
@@ -97,6 +103,21 @@ export async function vistaAnuncio(lienzo, params, id) {
     <p class="panel-note">${esc(f.aviso)}</p>`;
 
   $("[data-copiar]", lienzo).addEventListener("click", (e) => copiarEnlace(e.currentTarget));
+  const botonGuardar = $("[data-guardar]", lienzo);
+  botonGuardar?.addEventListener("click", async () => {
+    try {
+      const lista = await conBoton(botonGuardar, guardado ? "Quitando…" : "Guardando…",
+        () => llamar(`/api/guardados/${encodeURIComponent(id)}`, { metodo: guardado ? "DELETE" : "POST" }));
+      guardado = lista.some((g) => g.id === id);
+      botonGuardar.textContent = guardado ? "Guardado" : "Guardar";
+      botonGuardar.setAttribute("aria-pressed", String(guardado));
+      botonGuardar.classList.toggle("primary", guardado);
+      botonGuardar.title = guardado ? "Está en tus guardados (Recomendados para ti → Guardados). Pulsa para quitarlo." : "";
+    } catch (err) {
+      botonGuardar.textContent = "No se pudo guardar";
+      botonGuardar.title = err.message;
+    }
+  });
   enlazarFilas(lienzo);
   $("[data-ir-contacto]", lienzo)?.addEventListener("click", (e) => {
     e.preventDefault();
