@@ -1,5 +1,5 @@
 import { llamar, obtenerOpciones, sesion } from "./api.js";
-import { $, esc, num, pct, soles, titulo } from "./util.js";
+import { $, esc, num, pct, soles, titulo, valoracionSencilla } from "./util.js";
 
 // Caso de ejemplo de la portada: el mismo perfil precargado de Miraflores que usa el profesor.
 const EQUIPO = [
@@ -23,8 +23,8 @@ export async function vistaInicio(main) {
   const captura = opciones?.mercado.captura_texto || "la última captura";
   const val = opciones?.validacion;
   const mesVal = val?.mes || "octubre";
-  const errorTexto = val ? `Error medio en ${num(val.evaluados)} anuncios nuevos de ${mesVal}: <b>${soles(val.mae_soles)} al mes</b>.`
-    : "Error medio medido en 629 anuncios de prueba: <b>S/ 553 al mes</b>.";
+  const errorTexto = val ? `Al comprobarlo con ${num(val.evaluados)} anuncios nuevos de ${mesVal}, nos equivocamos en promedio <b>${soles(val.mae_soles)} al mes</b>.`
+    : "Al comprobarlo con 629 anuncios, nos equivocamos en promedio <b>S/ 553 al mes</b>.";
   const conCuenta = Boolean(sesion());
   main.innerHTML = `
     <div class="home">
@@ -71,7 +71,7 @@ export async function vistaInicio(main) {
           </ol>
         </figure>
         <div class="price-facts" data-reveal style="--i:3">
-          <p>No te damos un solo número. El precio equilibrado es lo que estima el modelo; el competitivo se acerca a los anuncios parecidos más baratos para alquilar rápido; el de renta superior se acerca a los más caros.</p>
+          <p>No te damos un solo número. El precio equilibrado es lo que calculamos que debería costar; el competitivo se acerca a los anuncios parecidos más baratos para alquilar rápido; el de renta superior se acerca a los más caros.</p>
           <p data-motivo>La tendencia del distrito decide cuál sugerimos: si la serie del BCRP proyecta alza, hay margen para pedir más.</p>
         </div>
         </div>
@@ -96,7 +96,7 @@ export async function vistaInicio(main) {
           <img class="proof-foto" src="assets/buildings-in-miraflores-district-lima-peru.jpg" width="1920" height="1440" loading="lazy" decoding="async"
             alt="Edificios de departamentos sobre el acantilado de Miraflores, bajo el cielo gris de Lima">
           <p>Modelo entrenado con 3,128 anuncios de septiembre&nbsp;·&nbsp;${val ? `probado con ${num(val.evaluados)} anuncios nuevos de ${mesVal}&nbsp;·&nbsp;` : ""}3,233 paraderos de la ATU&nbsp;·&nbsp;13 series del BCRP</p>
-          <p>Error medio de S/ 553 en septiembre${val ? ` y de ${soles(val.mae_soles)} en ${mesVal}` : ""}&nbsp;·&nbsp;el rango cubrió ${val ? Math.round(val.cobertura * 100) : 92} de cada 100 precios${val ? ` de ${mesVal}` : " de prueba"}&nbsp;·&nbsp;8 comparables por departamento</p>
+          <p>Margen de error promedio de S/ 553 en septiembre${val ? ` y de ${soles(val.mae_soles)} en ${mesVal}` : ""}&nbsp;·&nbsp;el precio real cayó en nuestro rango ${val ? Math.round(val.cobertura * 100) : 92} de cada 100 veces&nbsp;·&nbsp;8 departamentos parecidos para comparar</p>
           <h3>Y lo que no</h3>
           <p>Son precios pedidos, no contratos&nbsp;·&nbsp;la búsqueda es una foto del mercado del ${captura}&nbsp;·&nbsp;paraderos del inventario de 2021&nbsp;·&nbsp;no es una tasación</p>
         </div>
@@ -107,7 +107,7 @@ export async function vistaInicio(main) {
           alt="Edificios de departamentos con balcones en Lima">
         <div class="carta" data-reveal>
           <h2 id="titulo-carta">La carta de alquileres</h2>
-          <p class="carta-note">Para quien busca: los dos dormitorios más económicos por distrito, comparados con el precio del modelo.</p>
+          <p class="carta-note">Para quien busca: los dos dormitorios más económicos por distrito, comparados con lo que deberían costar.</p>
           <div class="carta-groups" data-carta>${DISTRITOS_CARTA.map((d) => `<section class="carta-group"><h3>${esc(titulo(d))}</h3><p class="carta-wait">Cargando…</p></section>`).join("")}</div>
           <p class="carta-close">Anuncios del ${captura}<br><a href="#/buscar">Buscar con tus propios filtros</a></p>
         </div>
@@ -134,7 +134,7 @@ export async function vistaInicio(main) {
       <section class="home-reply" aria-labelledby="titulo-respuesta">
         <img class="reply-fondo" src="assets/malecon-de-miraflores-lima.jpg" width="1920" height="1440" loading="lazy" decoding="async"
           alt="El malecón de Miraflores y el mar bajo el cielo nublado">
-        <p class="reply-aside" data-reveal>¿Buscas dónde vivir? No necesitas cuenta: filtra por distrito y presupuesto, y mira si cada precio está por debajo o por encima de lo que estima el modelo. <a href="#/buscar">Buscar departamentos</a></p>
+        <p class="reply-aside" data-reveal>¿Buscas dónde vivir? No necesitas cuenta: filtra por distrito y presupuesto, y mira si cada departamento está más barato o más caro de lo que debería costar. <a href="#/buscar">Buscar departamentos</a></p>
         <div class="reply-card" data-reveal style="--i:1">
           <h2 id="titulo-respuesta">Publica a tu precio</h2>
           <p>Guarda tus departamentos, revisa su análisis cuando quieras y publícalos con el precio que elijas.</p>
@@ -226,7 +226,7 @@ async function cargarCarta(contenedor) {
     const items = r?.resultados?.length ? r.resultados.map((x) => `
       <li><span class="carta-item">${num(x.dormitorios)} dorm. · ${num(x.area_total)} m²${x.nombre ? ` · ${esc(x.nombre)}` : ""}</span>
         <span class="carta-price">${soles(x.precio_soles)}</span>
-        <span class="carta-desc">${esc(x.valoracion)} (${pct(x.diferencia_estimado_porcentaje)}) · paradero a ${num(x.dist_paradero_min_m)} m</span></li>`).join("")
+        <span class="carta-desc">${esc(valoracionSencilla(x.valoracion))} (${pct(x.diferencia_estimado_porcentaje)}) · paradero a ${num(x.dist_paradero_min_m)} m</span></li>`).join("")
       : '<li class="carta-wait">Sin datos por ahora.</li>';
     return `<section class="carta-group"><h3>${esc(titulo(d))}</h3><ul>${items}</ul></section>`;
   }).join("");

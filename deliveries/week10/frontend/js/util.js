@@ -69,3 +69,29 @@ export async function copiarEnlace(boton) {
   boton.textContent = copiado ? "Enlace copiado" : "Copia la dirección del navegador";
   setTimeout(() => { boton.textContent = original; }, 2000);
 }
+
+// Detalle técnico (método, supuestos) plegado: el texto principal queda en lenguaje cotidiano.
+export const notaTecnica = (texto) => texto
+  ? `<details class="tech"><summary>Detalle técnico</summary><p>${esc(texto)}</p></details>` : "";
+
+// La API habla del "estimado"; en pantalla decimos si está caro, barato o a un precio justo.
+export const valoracionSencilla = (v) => ({
+  "Por debajo del estimado": "Más barato de lo esperado",
+  "Por encima del estimado": "Más caro de lo esperado",
+  "En línea con el estimado": "Precio justo",
+}[v] || v);
+
+const CAMPOS_AVISO = {
+  area_total: "el área", dormitorios: "los dormitorios", banos: "los baños", estacionamientos: "los estacionamientos",
+  antiguedad: "la antigüedad", mantenimiento: "el mantenimiento",
+};
+
+// Avisos del modelo (texto fijo en modelo.py, que está congelado) dichos en lenguaje cotidiano.
+export function avisoSencillo(texto) {
+  const fuera = /^(\w+) está fuera del rango observado en entrenamiento\.$/.exec(texto || "");
+  if (fuera) return `El valor de ${CAMPOS_AVISO[fuera[1]] || fuera[1]} es poco común en los anuncios que conocemos: toma el precio con cautela.`;
+  if ((texto || "").startsWith("Revisa esta combinación")) {
+    return "Revisa los datos: 30 m² o menos con 6 o más dormitorios, baños o estacionamientos es una combinación muy poco común.";
+  }
+  return texto;
+}

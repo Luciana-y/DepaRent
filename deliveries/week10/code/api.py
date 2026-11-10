@@ -51,6 +51,9 @@ MES_VALIDACION = MESES[int(VALIDACION["captura"][5:7]) - 1] if VALIDACION else "
 # Enlace al anuncio original, solo para la ficha de los anuncios de mercado (decisión del equipo).
 PORTALES = {"www.adondevivir.com": "Adondevivir", "adondevivir.com": "Adondevivir", "urbania.pe": "Urbania", "www.urbania.pe": "Urbania"}
 FRONTEND = ROOT / "frontend"
+ORDENES_RECOMENDACION = ("afinidad", "precio", "precio_desc", "paradero")
+# Evaluación del recomendador (semana 12), si el repositorio la incluye.
+_EVAL_RECOMENDADOR = ROOT.parent / "week12/resultados/recomendador_evaluacion.json"
 
 app = FastAPI(title="DepaRent API", version="0.10")
 app.add_middleware(CORSMiddleware, allow_origins=os.environ.get("DEPARENT_ORIGENES", "*").split(","),
@@ -71,6 +74,11 @@ def _no_autorizado(_: Request, exc: Exception):
 @app.exception_handler(BusquedaNoDisponible)
 def _busqueda_no_disponible(_: Request, exc: Exception):
     return JSONResponse(status_code=503, content={"detail": str(exc)})
+
+
+@app.exception_handler(cuentas.SinPermiso)
+def _sin_permiso(_: Request, exc: Exception):
+    return JSONResponse(status_code=403, content={"detail": str(exc)})
 
 
 @app.exception_handler(cuentas.NoEncontrado)
@@ -107,6 +115,8 @@ class PerfilBusqueda(BaseModel):
     prioridades: List[str] = []
     lugar: Optional[Ubicacion] = None
     lugar_nombre: Optional[str] = Field(None, max_length=200)
+    # Cómo prefiere ver las recomendaciones; solo lo usa la app para ordenar la lista.
+    orden: Optional[str] = None
 
 
 class PerfilInquilino(PerfilBusqueda):
@@ -235,6 +245,12 @@ def _token(authorization):
 
 def usuario_actual(authorization: Optional[str] = Header(None), conexion=Depends(base_datos)):
     return cuentas.usuario_de_token(conexion, _token(authorization))
+
+
+def analista_actual(usuario=Depends(usuario_actual)):
+    if usuario.get("rol") != "analista":
+        raise cuentas.SinPermiso("Esta sección es solo para el equipo de análisis.")
+    return usuario
 
 
 def tabla_publicados(conexion):
@@ -432,6 +448,8 @@ def retirar_publicacion(departamento_id: int, usuario=Depends(usuario_actual), c
 def _perfil_valido(perfil):
     """Perfil del cuestionario con la ubicación validada; lugar_nombre solo se guarda para mostrarlo."""
     datos = {k: v for k, v in perfil.model_dump().items() if k not in ("limite", "lugar_nombre")}
+    if datos.get("orden") not in (None, *ORDENES_RECOMENDACION):
+        raise ValueError(f"Orden no válido. Opciones: {', '.join(ORDENES_RECOMENDACION)}.")
     if datos["lugar"]:
         lugar = datos["lugar"]
         datos["lugar"] = dict(zip(("latitud", "longitud"), validar_coordenadas(lugar["latitud"], lugar["longitud"])))
@@ -496,6 +514,60 @@ def registrar_interes(anuncio_id: str, datos: Interes, conexion=Depends(base_dat
         raise cuentas.DatosInvalidos("Este anuncio viene de un portal externo; DepaRent no tiene el contacto de su propietario.")
     cuentas.registrar_interes(conexion, int(anuncio_id[1:]), datos.nombre, datos.email, datos.mensaje)
     return {"estado": "ok"}
+
+# ---------- KPIs del producto de datos (solo analistas) ----------
+
+def _metricas(m):
+    return {"mae_soles": round(m["MAE_soles"], 1), "mape_porcentaje": round(m["MAPE_porcentaje"], 1), "r2": round(m["R2"], 3)}
+
+
+def _kpis_modelo():
+    entrenamiento = json.loads((ROOT / "resultados/metricas.json").read_text(encoding="utf-8"))
+    prueba = entrenamiento["metricas_prueba"]
+    modelo = {"entrenado_con": "captura del 14-sep-2026", "version": entrenamiento.get("version"),
+              "prueba": {"modelo": _metricas(prueba["HistGradientBoosting"]), "baseline_distrital": _metricas(prueba["mediana_distrital"]),
+                         "baseline_global": _metricas(prueba["mediana_global"])},
+              "validaciones": []}
+    for v in sorted(_VALIDACIONES, key=lambda v: v["captura"]):
+        m = v["metricas_octubre"]
+        modelo["validaciones"].append({
+            "captura": v["captura"], "evaluados": v["flujo"]["evaluados"],
+            "modelo": _metricas(m["HistGradientBoosting"]), "baseline_distrital": _metricas(m["mediana_distrital"]),
+            "cobertura_rango_porcentaje": round(100 * v["intervalo"]["cobertura_octubre"], 1),
+            "cobertura_objetivo_porcentaje": round(100 * v["intervalo"]["nivel_nominal"], 1),
+            "cambio_mae_porcentaje": round(v["cambio_MAE_porcentaje"], 1),
+            "porcentaje_por_encima_del_estimado": round(v["sesgo"]["porcentaje_por_encima_del_estimado"], 1)})
+    return modelo
+
+
+def _kpis_datos():
+    from datetime import date
+    captura = date.fromisoformat(MERCADO_INFO["captura"])
+    distritos = MERCADO["distrito_norm"].value_counts()
+    return {"captura": MERCADO_INFO["captura"], "captura_texto": MERCADO_INFO["captura_texto"],
+            "dias_desde_captura": (date.today() - captura).days,
+            "anuncios_en_captura": MERCADO_INFO["anuncios_en_captura"], "validos": MERCADO_INFO["validos"],
+            "unicos": MERCADO_INFO["unicos"], "en_la_app": int(len(MERCADO)),
+            "porcentaje_validos": round(100 * MERCADO_INFO["validos"] / MERCADO_INFO["anuncios_en_captura"], 1),
+            "distritos": int(distritos.size),
+            "anuncios_por_distrito": [{"distrito": d, "anuncios": int(n)} for d, n in distritos.head(12).items()],
+            "precio_mediano_soles": round(float(MERCADO["precio_soles"].median()), 0)}
+
+
+def _kpis_recomendador():
+    if not _EVAL_RECOMENDADOR.exists():
+        return None
+    e = json.loads(_EVAL_RECOMENDADOR.read_text(encoding="utf-8"))
+    r = e["resumen"]
+    return {"perfiles_evaluados": e["perfiles_evaluados"], "k": e["K"],
+            "recomendador": r["recomendador"], "mejor_alternativa": max(
+                ((k, v) for k, v in r.items() if k != "recomendador"), key=lambda kv: kv[1]["precision"])}
+
+
+@app.get("/api/kpis")
+def kpis(_=Depends(analista_actual), conexion=Depends(base_datos)):
+    return limpiar({"producto": cuentas.kpis_producto(conexion), "modelo": _kpis_modelo(),
+                    "datos": _kpis_datos(), "recomendador": _kpis_recomendador()})
 
 
 if FRONTEND.exists():

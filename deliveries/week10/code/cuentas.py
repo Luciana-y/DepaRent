@@ -71,6 +71,10 @@ class NoEncontrado(Exception):
     pass
 
 
+class SinPermiso(Exception):
+    pass
+
+
 class _Resultado:
     def __init__(self, cursor, lastrowid=None):
         self._cursor, self.lastrowid = cursor, lastrowid
@@ -134,8 +138,16 @@ def _hash_token(token):
     return hashlib.sha256(token.encode("utf-8")).hexdigest()
 
 
+def es_analista(email):
+    """Los analistas se definen por correo en DEPARENT_ANALISTAS (separados por comas), no en la base:
+    así no hace falta migrar la tabla de usuarios de Neon ni dar el rol desde la propia app."""
+    lista = {e.strip().lower() for e in os.environ.get("DEPARENT_ANALISTAS", "").split(",") if e.strip()}
+    return (email or "").strip().lower() in lista
+
+
 def _usuario(fila):
-    return {"id": fila["id"], "nombre": fila["nombre"], "email": fila["email"]}
+    return {"id": fila["id"], "nombre": fila["nombre"], "email": fila["email"],
+            "rol": "analista" if es_analista(fila["email"]) else "usuario"}
 
 
 def registrar(conexion, nombre, email, password):
@@ -153,7 +165,7 @@ def registrar(conexion, nombre, email, password):
                                       (nombre, email, sal, _hash_password(password, sal), time.time()))
     except ERRORES_INTEGRIDAD:
         raise DatosInvalidos("Ya existe una cuenta con ese correo.")
-    return {"id": cursor.lastrowid, "nombre": nombre, "email": email}
+    return {"id": cursor.lastrowid, "nombre": nombre, "email": email, "rol": "analista" if es_analista(email) else "usuario"}
 
 
 def ingresar(conexion, email, password):
@@ -343,3 +355,46 @@ def quitar_guardado(conexion, usuario_id, anuncio_id):
     with conexion:
         conexion.execute("DELETE FROM guardados WHERE usuario_id = ? AND anuncio_id = ?", (usuario_id, anuncio_id))
     return listar_guardados(conexion, usuario_id)
+
+
+# ---------- KPIs del producto (solo analistas) ----------
+
+def kpis_producto(conexion, ahora=None):
+    """Conteos de uso del producto, sin datos personales: cuántas cuentas, perfiles, departamentos, guardados y mensajes."""
+    ahora = ahora or time.time()
+    semana = ahora - 7 * 24 * 3600
+    uno = lambda sql, *p: list(dict(conexion.execute(sql, p).fetchone()).values())[0] or 0
+    usuarios = uno("SELECT COUNT(*) AS n FROM usuarios")
+    perfiles = uno("SELECT COUNT(*) AS n FROM perfiles_inquilino")
+    con_guardados = uno("SELECT COUNT(DISTINCT usuario_id) AS n FROM guardados")
+    propietarios = uno("SELECT COUNT(DISTINCT usuario_id) AS n FROM departamentos")
+    departamentos = uno("SELECT COUNT(*) AS n FROM departamentos")
+    publicados_n = uno("SELECT COUNT(*) AS n FROM departamentos WHERE precio_publicado IS NOT NULL")
+    con_interes = uno("SELECT COUNT(DISTINCT departamento_id) AS n FROM interesados")
+    tasa = lambda a, b: round(100 * a / b, 1) if b else None
+    filas_precio = conexion.execute("SELECT precio_publicado, resumen FROM departamentos WHERE precio_publicado IS NOT NULL")
+    diferencias = []
+    for f in filas_precio:
+        resumen = json.loads(f["resumen"]) if f["resumen"] else {}
+        esperado = resumen.get("precio_estimado_soles")
+        if esperado:
+            diferencias.append(100 * (f["precio_publicado"] - esperado) / esperado)
+    return {
+        "usuarios": usuarios,
+        "usuarios_nuevos_7_dias": uno("SELECT COUNT(*) AS n FROM usuarios WHERE creado >= ?", semana),
+        "perfiles_completados": perfiles,
+        "tasa_perfil_porcentaje": tasa(perfiles, usuarios),
+        "guardados": uno("SELECT COUNT(*) AS n FROM guardados"),
+        "usuarios_con_guardados": con_guardados,
+        "tasa_perfil_a_guardado_porcentaje": tasa(con_guardados, perfiles),
+        "propietarios": propietarios,
+        "departamentos": departamentos,
+        "departamentos_publicados": publicados_n,
+        "tasa_publicacion_porcentaje": tasa(publicados_n, departamentos),
+        "publicados_a_precio_propio": uno("SELECT COUNT(*) AS n FROM departamentos WHERE escenario_publicado = 'Personalizado'"),
+        "diferencia_media_publicado_vs_esperado_porcentaje": round(sum(diferencias) / len(diferencias), 1) if diferencias else None,
+        "mensajes_interesados": uno("SELECT COUNT(*) AS n FROM interesados"),
+        "mensajes_7_dias": uno("SELECT COUNT(*) AS n FROM interesados WHERE creado >= ?", semana),
+        "publicados_con_interes": con_interes,
+        "tasa_publicado_con_interes_porcentaje": tasa(con_interes, publicados_n),
+    }

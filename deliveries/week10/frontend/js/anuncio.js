@@ -1,6 +1,6 @@
 import { llamar } from "./api.js";
 import { escala, panelComparables, ticks } from "./analisis.js";
-import { $, esc, num, pct, soles, titulo, conBoton, mensaje, ETIQUETAS_AMENIDAD, enlazarFilas, copiarEnlace } from "./util.js";
+import { $, esc, num, pct, soles, titulo, conBoton, mensaje, ETIQUETAS_AMENIDAD, enlazarFilas, copiarEnlace, valoracionSencilla } from "./util.js";
 
 const banos = (n) => `${num(n)} ${n === 1 ? "baño" : "baños"}`;
 const fecha = (segundos) => new Date(segundos * 1000).toLocaleDateString("es-PE", { day: "numeric", month: "long", year: "numeric" });
@@ -31,16 +31,16 @@ export async function vistaAnuncio(lienzo, params, id) {
       <div class="kpis span-6">
         <div class="kpi"><p class="kpi-label">Precio pedido</p><p class="kpi-value is-main num">${soles(x.precio_soles)}<small>al mes</small></p>
           <p class="delta">${f.publicacion ? `Escenario ${esc(f.publicacion.escenario.toLowerCase())}` : "Precio pedido en el portal, no de contrato"}</p></div>
-        <div class="kpi"><p class="kpi-label">Estimado por el modelo</p><p class="kpi-value num">${soles(p.precio_estimado_soles)}</p>
+        <div class="kpi"><p class="kpi-label">Lo que debería costar</p><p class="kpi-value num">${soles(p.precio_estimado_soles)}</p>
           <p class="delta">Rango probable: ${soles(p.limite_inferior_soles)} a ${soles(p.limite_superior_soles)}</p></div>
-        <div class="kpi"><p class="kpi-label">Frente al estimado</p><p class="kpi-value num">${pct(x.diferencia_estimado_porcentaje)}</p>
-          <p class="delta"><span class="pill ${clasePill}">${esc(x.valoracion)}</span></p></div>
+        <div class="kpi"><p class="kpi-label">¿Caro o barato?</p><p class="kpi-value num">${pct(x.diferencia_estimado_porcentaje)}</p>
+          <p class="delta"><span class="pill ${clasePill}">${esc(valoracionSencilla(x.valoracion))}</span></p></div>
       </div>
 
     </div>
     <div class="grid stretch" style="margin-top:var(--gap)">
       <section class="panel span-4 ruler" aria-labelledby="t-justo">
-        <header><h2 id="t-justo">¿Es un buen precio?</h2><span class="meta">Frente a sus anuncios parecidos y al rango del modelo</span></header>
+        <header><h2 id="t-justo">¿Es un buen precio?</h2><span class="meta">Frente a departamentos parecidos y al rango probable</span></header>
         ${reglaAnuncio(f)}
         <p class="panel-note">${lecturaPrecio(f)}</p>
       </section>
@@ -74,8 +74,8 @@ export async function vistaAnuncio(lienzo, params, id) {
         <p>${f.tendencia.serie_propia ? "La serie del BCRP del distrito" : "La serie promedio de Lima del BCRP (el distrito no tiene serie propia)"}
           proyecta un cambio de ${pct(f.tendencia.cambio_porcentaje)} en los próximos cuatro trimestres.</p>
         <div class="rows kv" style="margin-top:10px">
-          <div class="row"><span>Mediana de alquiler del distrito</span><b class="num">${soles(p.baseline_distrital_soles)}</b></div>
-          <div class="row"><span>Anuncios del distrito en el modelo</span><b class="num">${num(p.anuncios_entrenamiento_distrito)}</b></div>
+          <div class="row"><span>Alquiler típico del distrito</span><b class="num">${soles(p.baseline_distrital_soles)}</b></div>
+          <div class="row"><span>Departamentos del distrito con los que calculamos</span><b class="num">${num(p.anuncios_entrenamiento_distrito)}</b></div>
         </div>
         <p class="panel-note">Es contexto de mercado derivado del precio de venta, no un pronóstico de este alquiler.</p>
       </section>
@@ -127,8 +127,8 @@ function formularioInteres(propietario) {
 function lecturaPrecio(f) {
   const x = f.anuncio, c = f.perfil;
   const baratos = c.comparables.filter((k) => k["Precio pedido (S/)"] < x.precio_soles).length;
-  return `Pide ${soles(x.precio_soles)}: ${baratos} de sus ${c.comparables.length} anuncios más parecidos piden menos, y el modelo estima ${soles(f.precio.precio_estimado_soles)}. `
-    + "Muchos anuncios de mercado se usaron para entrenar el modelo, así que la comparación es orientativa.";
+  return `Pide ${soles(x.precio_soles)}: ${baratos} de sus ${c.comparables.length} departamentos más parecidos piden menos, y calculamos que debería costar ${soles(f.precio.precio_estimado_soles)}. `
+    + "Tómalo como una referencia, no como una tasación.";
 }
 
 // La regla de precios del inquilino: el precio pedido (único dato en naranja) frente a los parecidos y al modelo.
@@ -144,13 +144,13 @@ function reglaAnuncio(f) {
   const etiqueta = (texto, y) => compacto ? `<text class="lbl" x="0" y="${y - 16}">${texto}</text>` : `<text class="lbl" x="0" y="${y + 4}">${texto}</text>`;
   const xPedido = ex(x.precio_soles), xEstimado = ex(p.precio_estimado_soles);
   const anclaPedido = xPedido > (L + R) / 2 ? "end" : "start", dxPedido = anclaPedido === "end" ? -6 : 6;
-  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Precio pedido ${soles(x.precio_soles)} frente a ${comps.length} anuncios parecidos y al rango del modelo">
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Precio pedido ${soles(x.precio_soles)} frente a ${comps.length} departamentos parecidos y al rango probable">
     ${ticks(min, max, compacto ? 3 : 4).map((v) => `<line x1="${ex(v)}" x2="${ex(v)}" y1="40" y2="${ejeY - 18}" stroke="#e7e6e2" stroke-dasharray="2 3"/><text x="${ex(v)}" y="${ejeY}" text-anchor="middle">${soles(v)}</text>`).join("")}
-    ${etiqueta(`${comps.length} parecidos`, fila.comparables)}${etiqueta("Rango del modelo", fila.rango)}
+    ${etiqueta(`${comps.length} parecidos`, fila.comparables)}${etiqueta("Rango probable", fila.rango)}
     ${comps.map((v) => `<circle cx="${ex(v)}" cy="${fila.comparables}" r="5" fill="#111" fill-opacity="0.28"><title>${soles(v)}</title></circle>`).join("")}
     <rect x="${ex(p.limite_inferior_soles)}" y="${fila.rango - 4}" width="${ex(p.limite_superior_soles) - ex(p.limite_inferior_soles)}" height="8" rx="4" fill="#d9d7d2"/>
     <line x1="${xEstimado}" x2="${xEstimado}" y1="${fila.rango - 12}" y2="${fila.rango + 12}" stroke="#111" stroke-width="2"/>
-    <text x="${xEstimado}" y="${fila.rango + 28}" text-anchor="middle">Estimado</text>
+    <text x="${xEstimado}" y="${fila.rango + 28}" text-anchor="middle">Debería costar</text>
     <line x1="${xPedido}" x2="${xPedido}" y1="34" y2="${fila.rango + 12}" stroke="var(--accent)" stroke-width="2"/>
     <text class="main-lbl" x="${xPedido + dxPedido}" y="24" text-anchor="${anclaPedido}">Pide ${soles(x.precio_soles)}</text>
   </svg>`;

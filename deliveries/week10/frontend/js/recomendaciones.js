@@ -17,8 +17,25 @@ const irA = (ruta) => { location.hash = ruta; };
 const filaTitulo = (h1, sub, acciones = "") =>
   `<div class="title-row"><div><h1>${h1}</h1>${sub ? `<p class="sub">${sub}</p>` : ""}</div>${acciones ? `<div class="title-actions">${acciones}</div>` : ""}</div>`;
 
-// El perfil que se envía al recomendador: sin los campos que solo sirven para mostrarlo.
-const paraRecomendar = ({ actualizado, lugar_nombre, ...perfil }) => perfil;
+// El perfil que se envía al recomendador: sin los campos que solo sirven para mostrarlo u ordenar.
+const paraRecomendar = ({ actualizado, lugar_nombre, orden, ...perfil }) => perfil;
+
+// Cómo ordenar la lista de recomendados (se elige en el cuestionario y se puede cambiar en la lista).
+const ORDENES = [
+  ["afinidad", "Los que mejor me calzan"],
+  ["precio", "Precio: del más barato al más caro"],
+  ["precio_desc", "Precio: del más caro al más barato"],
+  ["paradero", "Más cerca de un paradero"],
+];
+const NOMBRE_ORDEN = Object.fromEntries(ORDENES);
+function ordenar(lista, orden) {
+  const copia = [...lista];
+  const valor = (x, k) => (x[k] == null ? Infinity : Number(x[k]));
+  if (orden === "precio") copia.sort((a, b) => valor(a, "precio_soles") - valor(b, "precio_soles"));
+  if (orden === "precio_desc") copia.sort((a, b) => valor(b, "precio_soles") - valor(a, "precio_soles"));
+  if (orden === "paradero") copia.sort((a, b) => valor(a, "dist_paradero_min_m") - valor(b, "dist_paradero_min_m"));
+  return copia;
+}
 
 /* ---------- 1. Cuestionario ---------- */
 
@@ -49,6 +66,10 @@ export async function vistaEditarPerfil(lienzo) {
       <fieldset class="perfil-grupo"><legend>Distritos que te interesan <small>(si no marcas ninguno, buscamos en todos)</small></legend>
         <div class="chips">${distritos.map((d) => `
           <label class="chip"><input type="checkbox" name="distritos" value="${esc(d)}" ${p.distritos?.includes(d) ? "checked" : ""}><span>${esc(titulo(d))}</span></label>`).join("")}</div>
+      </fieldset>
+      <fieldset class="perfil-grupo"><legend>¿Cómo quieres ver los resultados?</legend>
+        <div class="chips">${ORDENES.map(([k, nombre]) => `
+          <label class="chip"><input type="radio" name="orden" value="${k}" ${(p.orden || "afinidad") === k ? "checked" : ""}><span>${esc(nombre)}</span></label>`).join("")}</div>
       </fieldset>
       <fieldset class="perfil-grupo"><legend>¿Dónde trabajas o estudias? <small>(opcional: acerca las recomendaciones)</small></legend>
         <div class="search-row"><input class="input" id="r-lugar" placeholder="Por ejemplo: Av. Javier Prado Este 4600, Surco" value="${esc(p.lugar_nombre || "")}" autocomplete="off">
@@ -109,6 +130,7 @@ export async function vistaEditarPerfil(lienzo) {
       prioridades: $$('input[name="prioridades"]:checked', form).map((c) => c.value),
       distritos: $$('input[name="distritos"]:checked', form).map((c) => c.value),
       lugar, lugar_nombre: lugarNombre || null,
+      orden: $('input[name="orden"]:checked', form)?.value || "afinidad",
     };
     if (nuevo.presupuesto_max != null && (nuevo.presupuesto_max < 300 || nuevo.presupuesto_max > 50000)) {
       return mensaje($(".form-msg", form), "El presupuesto debe estar entre S/ 300 y S/ 50,000.");
@@ -154,6 +176,7 @@ function filasPerfil(op, perfil) {
     ["Te importa", perfil.prioridades?.length ? perfil.prioridades.map((k) => op.recomendador.prioridades[k]).join(", ") : "sin prioridades marcadas"],
     ["Distritos", perfil.distritos?.length ? perfil.distritos.map(titulo).join(", ") : "todos"],
     ["Trabajo o estudio", perfil.lugar ? (perfil.lugar_nombre || "ubicación marcada") : "no indicado"],
+    ["Orden de resultados", NOMBRE_ORDEN[perfil.orden || "afinidad"]],
   ];
 }
 
@@ -170,6 +193,8 @@ export async function vistaRecomendaciones(lienzo, params) {
       <a href="#/para-ti" ${pestana === "recomendados" ? 'aria-current="page"' : ""}>Recomendados</a>
       <a href="#/para-ti?ver=guardados" ${pestana === "guardados" ? 'aria-current="page"' : ""}>Guardados <span data-n-guardados>(${guardados.length})</span></a>
     </nav>
+    ${pestana === "recomendados" ? `<div class="orden-row"><label for="r-orden">Ordenar</label>
+      <select class="input" id="r-orden">${ORDENES.map(([k, nombre]) => `<option value="${k}" ${(perfil.orden || "afinidad") === k ? "selected" : ""}>${esc(nombre)}</option>`).join("")}</select></div>` : ""}
     <div data-recos aria-busy="true"><section class="panel"><p class="skeleton">Buscando los departamentos que mejor te calzan…</p></section></div>`;
   const destino = $("[data-recos]", lienzo);
   const estado = { ids: new Set(guardados.map((g) => g.id)) };
@@ -178,14 +203,24 @@ export async function vistaRecomendaciones(lienzo, params) {
       pintarGuardados(destino, lienzo, guardados, estado);
     } else {
       const r = await llamar("/api/recomendar", { cuerpo: { ...paraRecomendar(perfil), limite: 12 } });
-      destino.innerHTML = r.recomendaciones.length ? `
-        <ol class="reco-list">${r.recomendaciones.map((x, i) => tarjeta(x, i, estado)).join("")}</ol>
-        <p class="panel-note">${esc(r.aviso)} El orden combina lo que suele necesitar tu tipo de hogar, tus prioridades,
-          la cercanía a tu trabajo o estudio y el precio frente al estimado del modelo. El esquema de cada tarjeta es referencial:
-          se dibuja con los dormitorios, baños y metros del anuncio, no es su plano real.</p>`
-        : `<section class="panel"><div class="empty"><p>Ningún departamento cumple tu presupuesto y tus filtros. Prueba subir el presupuesto, quitar distritos o bajar el mínimo de dormitorios.</p>
-            <a class="btn primary" href="#/mi-perfil/editar">Editar mi perfil</a></div></section>`;
-      activarGuardar(destino, lienzo, estado);
+      const pintar = (orden) => {
+        destino.innerHTML = r.recomendaciones.length ? `
+          <ol class="reco-list">${ordenar(r.recomendaciones, orden).map((x, i) => tarjeta(x, i, estado)).join("")}</ol>
+          <p class="panel-note">${esc(r.aviso)} Elegimos estos ${r.recomendaciones.length} según lo que suele necesitar tu tipo de hogar, tus prioridades,
+            la cercanía a tu trabajo o estudio y si el precio es bueno para lo que ofrece; luego los ordenamos como prefieras. El esquema de cada tarjeta es referencial:
+            se dibuja con los dormitorios, baños y metros del anuncio, no es su plano real.</p>`
+          : `<section class="panel"><div class="empty"><p>Ningún departamento cumple tu presupuesto y tus filtros. Prueba subir el presupuesto, quitar distritos o bajar el mínimo de dormitorios.</p>
+              <a class="btn primary" href="#/mi-perfil/editar">Editar mi perfil</a></div></section>`;
+        activarGuardar(destino, lienzo, estado);
+      };
+      pintar(perfil.orden || "afinidad");
+      $("#r-orden", lienzo)?.addEventListener("change", (e) => {
+        const orden = e.currentTarget.value;
+        pintar(orden);
+        // Se recuerda en el perfil para la próxima visita; si falla, la lista ya quedó ordenada igual.
+        perfil.orden = orden;
+        llamar("/api/perfil", { metodo: "PUT", cuerpo: perfil }).catch(() => null);
+      });
     }
   } catch (err) {
     destino.innerHTML = `<section class="panel"><div class="empty"><p>No pudimos cargar esta sección. ${esc(err.message)}</p>
@@ -244,7 +279,7 @@ function tarjeta(x, i, estado) {
         <figcaption>${num(x.area_total)} m² · referencial</figcaption></figure>
       <div class="reco-body">
         <p class="reco-title"><b>${esc(titulo(x.distrito))}</b> · ${esc(dorm)} · ${esc(banos)} · ${num(x.area_total)} m²</p>
-        <p class="reco-price"><b>${soles(x.precio_soles)}</b> al mes · estimado ${soles(x.precio_estimado_soles)}</p>
+        <p class="reco-price"><b>${soles(x.precio_soles)}</b> al mes · debería costar ${soles(x.precio_estimado_soles)}${x.dist_paradero_min_m != null ? ` · paradero a ${num(x.dist_paradero_min_m)} m` : ""}</p>
         ${x.motivos?.length ? `<p class="reco-why"><span>Tiene:</span> ${x.motivos.map(esc).join(" · ")}</p>` : ""}
         ${amenidades.length ? `<p class="reco-extra"><span>Amenidades:</span> ${amenidades.map(esc).join(" · ")}</p>` : ""}
         ${x.faltas?.length ? `<p class="reco-miss"><span>Ten en cuenta:</span> ${x.faltas.map(esc).join(" · ")}</p>` : ""}
