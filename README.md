@@ -7,6 +7,7 @@ Ayuda al **propietario** a decidir a cuánto publicar su departamento y al **inq
 |---|---|
 | **App desplegada** | https://deparent.onrender.com (plan gratuito: la primera visita tarda 30–60 s en despertar) |
 | **Repositorio** | https://github.com/Luciana-y/DepaRent |
+| **Guía para el profesor** | [`README_PROFESOR.md`](README_PROFESOR.md) |
 | **Estado del proyecto (documento breve)** | [`deliveries/week15/EstadoProyecto.md`](deliveries/week15/EstadoProyecto.md) |
 | **Curso** | DS3022 Desarrollo de Producto de Datos · UTEC · 2026-2 |
 | **Equipo** | Adrian Urbina Mendoza · Armando Martinez Palomino · Breysi Salazar Medina · Luciana Yangali Cáceres |
@@ -16,20 +17,11 @@ distrito y escenarios de publicación para reducir la incertidumbre.
 
 ---
 
-## 1. Dónde está cada cosa (lo que pide el profesor)
+## 1. Guía para el profesor
 
-| Pedido | Dónde está |
-|---|---|
-| **Código completo y actualizado** | Producto (API + modelos): [`deliveries/week10/code/`](deliveries/week10/code/) · Interfaz web: [`deliveries/week10/frontend/`](deliveries/week10/frontend/) · Descarga diaria de anuncios: [`scraper/`](scraper/) · Índice del código por etapa: [`deliveries/week15/code/README.md`](deliveries/week15/code/README.md) |
-| **Base de datos utilizada** | Datos crudos (septiembre): [`deliveries/week04/data/`](deliveries/week04/data/) · Datos procesados: [`deliveries/week07/data/`](deliveries/week07/data/) · Mercado actual de la app (captura del 9-nov-2026): [`deliveries/week10/data/mercado.csv`](deliveries/week10/data/) · Diccionario de datos: [`deliveries/week07/data_dictionary.csv`](deliveries/week07/data_dictionary.csv) · Base de cuentas: Postgres (Neon) en producción, SQLite local (ver §4) |
-| **Notebooks o scripts de entrenamiento** | Notebooks EDA + preprocesamiento: [`deliveries/week06/code/EDA_week06_v5.ipynb`](deliveries/week06/code/), [`deliveries/week07/code/EDA_week07.ipynb`](deliveries/week07/code/) · Notebook del profesor: [`deliveries/week10/code/Notebook_docente.ipynb`](deliveries/week10/code/) · Scripts: `entrenar.py` (precio), `entrenar_perfil.py` (K-Means), `entrenar_tendencia.py` (SARIMA) en `deliveries/week10/code/` |
-| **Modelo entrenado** | [`deliveries/week10/models/`](deliveries/week10/models/) (`modelo_docente.joblib`, `perfil_competitivo.joblib`) · Cómo cargarlos y métricas: [`deliveries/week10/models/metadata.md`](deliveries/week10/models/metadata.md) |
-| **Interfaz o prototipo actual** | En línea: https://deparent.onrender.com · Código: [`deliveries/week10/frontend/`](deliveries/week10/frontend/) · Capturas: [`deliveries/week10/screenshots/`](deliveries/week10/screenshots/) · Bocetos y wireframes: [`deliveries/week07/design/`](deliveries/week07/design/) |
-| **Documentos y presentaciones** | Ver la tabla de §3 (por semana) |
-| **Resultados de evaluación** | [`deliveries/week12/EvaluationReport.md`](deliveries/week12/EvaluationReport.md) · Métricas: [`deliveries/week10/resultados/`](deliveries/week10/resultados/), [`deliveries/week12/resultados/`](deliveries/week12/resultados/) |
-| **Instrucciones para instalar y ejecutar** | §4 de este README |
-| **Enlace de GitHub / Drive** | GitHub: https://github.com/Luciana-y/DepaRent · Drive con la copia del profesor: https://drive.google.com/drive/u/0/folders/11Li9yikIQJH2MJNBuWX5ytOqb5nXRPab |
-| **Documento breve del estado** | [`deliveries/week15/EstadoProyecto.md`](deliveries/week15/EstadoProyecto.md) |
+Lo que pidió el profesor para la revisión (código, base de datos, notebooks, modelo, interfaz, documentos,
+instrucciones y enlaces), con la ubicación de cada cosa, está en **[`README_PROFESOR.md`](README_PROFESOR.md)**.
+El documento breve del estado del proyecto está en [`deliveries/week15/EstadoProyecto.md`](deliveries/week15/EstadoProyecto.md).
 
 ---
 

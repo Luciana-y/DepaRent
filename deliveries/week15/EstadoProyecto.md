@@ -3,7 +3,7 @@
 **Fecha:** 13 de noviembre de 2026 · **App:** https://deparent.onrender.com · **Repositorio:** https://github.com/Luciana-y/DepaRent
 **Equipo:** Adrian Urbina Mendoza, Armando Martinez Palomino, Breysi Salazar Medina, Luciana Yangali Cáceres
 
-Dónde está cada archivo (código, datos, modelos, documentos): ver el [`README.md`](../../README.md) de la raíz.
+Dónde está cada archivo (código, datos, modelos, documentos): ver [`README_PROFESOR.md`](../../README_PROFESOR.md) en la raíz del repositorio.
 
 ---
 
