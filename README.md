@@ -1,317 +1,187 @@
 # DepaRent
 
-## Plataforma inteligente para propietarios de departamentos en alquiler
+**Plataforma de apoyo a la decisión para alquilar departamentos en Lima Metropolitana y Callao.**
+Ayuda al **propietario** a decidir a cuánto publicar su departamento y al **inquilino** a encontrar uno a su medida.
 
-**DepaRent** es un producto de datos diseñado para apoyar a propietarios de departamentos en alquiler en Lima Metropolitana y Callao en la toma de decisiones antes de publicar sus inmuebles.
-
-La plataforma integra información inmobiliaria, territorial y de mercado para proporcionar analítica descriptiva, predictiva y prescriptiva.
-
-DepaRent no busca realizar una tasación oficial ni garantizar un precio final de alquiler. Su propósito es proporcionar estimaciones, contexto de mercado, propiedades comparables y escenarios de publicación que reduzcan la incertidumbre del propietario.
-
----
-
-# 1. Problema
-
-Los propietarios suelen determinar el precio de alquiler de sus departamentos mediante comparaciones manuales con anuncios publicados en portales inmobiliarios.
-
-Sin embargo, las propiedades seleccionadas no siempre son realmente comparables y existen diferencias importantes relacionadas con ubicación, área, características del inmueble, accesibilidad y contexto del mercado.
-
-DepaRent busca reducir esta incertidumbre mediante la integración de múltiples fuentes de información y técnicas analíticas dentro de una única plataforma de apoyo a la decisión.
-
----
-
-# 2. Usuarios Objetivo
-
-## Usuario Principal
-
-El usuario principal es el **propietario de uno o varios departamentos en alquiler** ubicados en Lima Metropolitana o Callao.
-
-El propietario podrá:
-
-- registrar y administrar propiedades;
-- analizar su posicionamiento competitivo;
-- identificar propiedades comparables;
-- consultar indicadores de accesibilidad;
-- obtener una estimación del precio esperado de alquiler;
-- revisar la tendencia del mercado distrital;
-- comparar estrategias de precio de publicación;
-- simular determinadas mejoras del inmueble;
-- preparar el inmueble para su publicación.
-
-## Usuario Secundario
-
-Los potenciales inquilinos podrán explorar las propiedades publicadas y consultar información relevante sin necesidad de registrarse durante la primera versión del producto.
-
----
-
-# 3. Requerimientos Principales del Producto
-
-DepaRent se organiza en torno a dos requerimientos generales.
-
-## Requerimiento General 1 – Analizar y Valorar el Inmueble
-
-El sistema proporciona un análisis integral compuesto por:
-
-1. Perfil competitivo y propiedades comparables.
-2. Perfil de accesibilidad.
-3. Predicción del precio esperado de alquiler.
-4. Pronóstico de tendencia distrital.
-
-## Requerimiento General 2 – Recomendar una Estrategia de Publicación
-
-A partir de los resultados del análisis anterior, la plataforma proporciona:
-
-5. Escenarios de precio de publicación.
-6. Simulación de mejoras del inmueble.
-
-Estas seis funcionalidades corresponden a los principales requerimientos funcionales documentados en la especificación del proyecto.
-
----
-
-# 4. Componentes Analíticos
-
-| Componente | Método |
+| | |
 |---|---|
-| Perfil competitivo | Clustering mediante K-Means |
-| Propiedades comparables | Análisis de similitud / vecinos cercanos |
-| Perfil de accesibilidad | Ingeniería de características geoespaciales con datos de ATU |
-| Precio esperado de alquiler | Regresión con HistGradientBoosting |
-| Tendencia distrital | Pronóstico de series temporales con SARIMA |
-| Escenarios de publicación | Motor prescriptivo basado en reglas |
-| Simulador de mejoras | Reutilización contrafactual del modelo de precio |
+| **App desplegada** | https://deparent.onrender.com (plan gratuito: la primera visita tarda 30–60 s en despertar) |
+| **Repositorio** | https://github.com/Luciana-y/DepaRent |
+| **Estado del proyecto (documento breve)** | [`deliveries/week15/EstadoProyecto.md`](deliveries/week15/EstadoProyecto.md) |
+| **Curso** | DS3022 Desarrollo de Producto de Datos · UTEC · 2026-2 |
+| **Equipo** | Adrian Urbina Mendoza · Armando Martinez Palomino · Breysi Salazar Medina · Luciana Yangali Cáceres |
+
+DepaRent no es una tasación oficial: da un precio esperado con su rango, anuncios comparables, contexto del
+distrito y escenarios de publicación para reducir la incertidumbre.
 
 ---
 
-# 5. Fuentes de Datos
+## 1. Dónde está cada cosa (lo que pide el profesor)
 
-DepaRent integra actualmente tres fuentes principales de información.
-
-## Dataset Inmobiliario
-
-Anuncios de departamentos en alquiler obtenidos de:
-
-- Adondevivir
-- Urbania
-
-El dataset original contiene aproximadamente **3,822 anuncios** y **43 variables**, incluyendo información sobre:
-
-- precio;
-- área;
-- dormitorios;
-- baños;
-- estacionamientos;
-- antigüedad;
-- mantenimiento;
-- distrito;
-- coordenadas geográficas;
-- amenidades;
-- información textual del anuncio.
+| Pedido | Dónde está |
+|---|---|
+| **Código completo y actualizado** | Producto (API + modelos): [`deliveries/week10/code/`](deliveries/week10/code/) · Interfaz web: [`deliveries/week10/frontend/`](deliveries/week10/frontend/) · Descarga diaria de anuncios: [`scraper/`](scraper/) · Índice del código por etapa: [`deliveries/week15/code/README.md`](deliveries/week15/code/README.md) |
+| **Base de datos utilizada** | Datos crudos (septiembre): [`deliveries/week04/data/`](deliveries/week04/data/) · Datos procesados: [`deliveries/week07/data/`](deliveries/week07/data/) · Mercado actual de la app (captura del 9-nov-2026): [`deliveries/week10/data/mercado.csv`](deliveries/week10/data/) · Diccionario de datos: [`deliveries/week07/data_dictionary.csv`](deliveries/week07/data_dictionary.csv) · Base de cuentas: Postgres (Neon) en producción, SQLite local (ver §4) |
+| **Notebooks o scripts de entrenamiento** | Notebooks EDA + preprocesamiento: [`deliveries/week06/code/EDA_week06_v5.ipynb`](deliveries/week06/code/), [`deliveries/week07/code/EDA_week07.ipynb`](deliveries/week07/code/) · Notebook del profesor: [`deliveries/week10/code/Notebook_docente.ipynb`](deliveries/week10/code/) · Scripts: `entrenar.py` (precio), `entrenar_perfil.py` (K-Means), `entrenar_tendencia.py` (SARIMA) en `deliveries/week10/code/` |
+| **Modelo entrenado** | [`deliveries/week10/models/`](deliveries/week10/models/) (`modelo_docente.joblib`, `perfil_competitivo.joblib`) · Cómo cargarlos y métricas: [`deliveries/week10/models/metadata.md`](deliveries/week10/models/metadata.md) |
+| **Interfaz o prototipo actual** | En línea: https://deparent.onrender.com · Código: [`deliveries/week10/frontend/`](deliveries/week10/frontend/) · Capturas: [`deliveries/week10/screenshots/`](deliveries/week10/screenshots/) · Bocetos y wireframes: [`deliveries/week07/design/`](deliveries/week07/design/) |
+| **Documentos y presentaciones** | Ver la tabla de §3 (por semana) |
+| **Resultados de evaluación** | [`deliveries/week12/EvaluationReport.md`](deliveries/week12/EvaluationReport.md) · Métricas: [`deliveries/week10/resultados/`](deliveries/week10/resultados/), [`deliveries/week12/resultados/`](deliveries/week12/resultados/) |
+| **Instrucciones para instalar y ejecutar** | §4 de este README |
+| **Enlace de GitHub / Drive** | GitHub: https://github.com/Luciana-y/DepaRent · Drive con la copia del profesor: https://drive.google.com/drive/u/0/folders/11Li9yikIQJH2MJNBuWX5ytOqb5nXRPab |
+| **Documento breve del estado** | [`deliveries/week15/EstadoProyecto.md`](deliveries/week15/EstadoProyecto.md) |
 
 ---
 
-## Banco Central de Reserva del Perú – BCRP
+## 2. Qué hace el producto
 
-Se utilizan series trimestrales de indicadores inmobiliarios distritales para proporcionar contexto histórico del mercado y apoyar el pronóstico de tendencias.
+| Recorrido | Qué hace |
+|---|---|
+| **Propietario** | Crea cuenta, registra sus departamentos (con ubicación en el mapa) y recibe el análisis completo; publica al precio que elija y ve a los interesados |
+| **Inquilino** | Busca con filtros (distrito, presupuesto, dormitorios, amenidades, cercanía a paraderos) sobre ~3,000 anuncios reales; ve si cada precio está por debajo, en línea o por encima del estimado; o responde un cuestionario y recibe recomendaciones personalizadas |
+| **Prueba rápida** | El análisis completo sin crear cuenta (`#/probar`) |
+| **Analista** | Panel de KPIs (uso, modelo, datos y recomendador), solo para correos autorizados |
 
----
+### Componentes analíticos
 
-## Autoridad de Transporte Urbano – ATU
+| # | Componente | Método | Archivo (`deliveries/week10/code/`) |
+|:-:|---|---|---|
+| 1 | Perfil competitivo y comparables | K-Means (k=4, sin precio) + vecinos cercanos | `perfil_competitivo.py` |
+| 2 | Accesibilidad a transporte | Paraderos ATU con `cKDTree` | `accesibilidad.py` |
+| 3 | Precio esperado y rango | HistGradientBoosting + rango calibrado al 90% | `modelo.py` |
+| 4 | Tendencia distrital | SARIMA sobre series trimestrales del BCRP | `tendencia.py` |
+| 5 | Escenarios de precio de publicación | Reglas sobre 1 + 3 + 4 | `escenarios_precio.py` |
+| 6 | Simulador de mejoras | Uso contrafactual del modelo 3 | `escenarios.py`, `laboratorio_area.py` |
+| 7 | Recomendador para inquilinos | Puntaje por contenido según el perfil del hogar | `recomendador.py` |
 
-Se utiliza información georreferenciada de paraderos de transporte público para generar indicadores de accesibilidad asociados a cada inmueble.
-
----
-
-# 6. Integrantes del Equipo y Responsabilidades
-
-| Integrante | Rol principal | Responsabilidades |
-|---|---|---|
-| **Adrian Urbina Mendoza** | Líder de Equipo / Adquisición y Preprocesamiento de Datos | Coordinación general del proyecto, adquisición de datos, preprocesamiento, calidad de datos y apoyo en el análisis competitivo. |
-| **Armando Martinez Palomino** | Ingeniería de Datos e Integración de Datos Externos | Integración de fuentes externas, preparación de datos de ATU y BCRP, ingeniería de características espaciales y temporales e integración técnica. |
-| **Breysi Salazar Medina** | Ingeniera de Machine Learning | Clustering, predicción del precio de alquiler, forecasting, evaluación de modelos, motor de recomendación y simulador de mejoras. |
-| **Luciana Yangali Cáceres** | Aplicación y Visualización | Desarrollo de la aplicación web, dashboards, visualización de resultados, flujo de usuario e integración de la interfaz. |
-
-Todos los integrantes participan adicionalmente en:
-
-- validación;
-- pruebas;
-- documentación;
-- preparación de presentaciones;
-- revisión del repositorio;
-- integración final del producto.
-
-La distribución detallada de responsabilidades se encuentra en:
-
-`deliveries/week07/planning/team_responsibilities.md`
+### Fuentes de datos
+- **Anuncios** de Adondevivir y Urbania: captura base del 14-sep-2026 (3,128 anuncios válidos) + capturas diarias (`scraper/`).
+- **BCRP**: series trimestrales de precios inmobiliarios por distrito (tendencia).
+- **ATU**: paraderos de transporte público georreferenciados (accesibilidad).
 
 ---
 
-# 7. Estructura del Repositorio
+## 3. Estructura del repositorio
 
 ```text
 DepaRent/
-│
-├── README.md
-│
+├── README.md                      ← este archivo
+├── requirements.txt               dependencias de los notebooks (semanas 6–7)
+├── render.yaml                    despliegue en Render
+├── .github/workflows/             actualización diaria del mercado (GitHub Actions)
+├── scraper/                       descarga diaria de anuncios (Adondevivir, Urbania)
 └── deliveries/
-    │
-    ├── week04/
-    │   ├── README.md
-    │   ├── data/
-    │   ├── data_dictionary.csv
-    │   └── acquisition.md
-    │
-    ├── week05/
-    │   ├── ProjectProposal.pdf
-    │   ├── DataProductCanvas.pdf
-    │   ├── Requirements.pdf
-    │   └── PresentationWeek05.pdf
-    │
-    ├── week06/
-    │   ├── DataAnalysis.md
-    │   ├── ModelSelection.md
-    │   ├── PresentationWeek06.pdf
-    │   ├── data/
-    │   │   └── processed/
-    │   └── code/
-    │
-    └── week07/
-        ├── Delivery1Report.pdf
-        ├── Delivery1Report.docx
-        ├── PresentationWeek07.pptx
-        ├── DataProductCanvas.pdf
-        ├── Requirements.pdf
-        ├── data_dictionary.csv
-        │
-        ├── architecture/
-        │   ├── product_workflow.png
-        │   └── system_architecture.png
-        │
-        ├── design/
-        │   ├── sketch_requirement_1.png
-        │   ├── sketch_requirement_2.png
-        │   ├── sketch_requirement_3.png
-        │   ├── sketch_requirement_4.png
-        │   ├── sketch_requirement_5.png
-        │   ├── sketch_requirement_6.png
-        │   ├── wireframe_requirement_1.png
-        │   ├── wireframe_requirement_2.png
-        │   ├── wireframe_requirement_3.png
-        │   ├── wireframe_requirement_4.png
-        │   ├── wireframe_requirement_5.png
-        │   └── wireframe_requirement_6.png
-        │
-        ├── data/
-        │   ├── bcrp_procesado.csv
-        │   ├── bcrp_serie_completa.csv
-        │   ├── departamentos_procesados.csv
-        │   ├── departamentos_sin_geo_para_clustering.csv
-        │   └── paraderos_procesado.csv
-        │
-        ├── code/
-        │   └── EDA_week07.ipynb
-        │
-        └── planning/
-            ├── Implementation_Plan.md
-            └── team_responsibilities.md
+    ├── week04/   adquisición de datos: datos crudos, diccionario, calidad de datos
+    ├── week05/   propuesta, Data Product Canvas, requisitos, presentación
+    ├── week06/   análisis exploratorio, selección de modelos, notebook EDA, presentación
+    ├── week07/   Entrega 1: informe, arquitectura, bocetos/wireframes, datos procesados, notebook, plan
+    ├── week08/   estado del proyecto para revisión del profesor, presentación
+    ├── week10/   PROTOTIPO: código (API + modelos), frontend, modelos .joblib, datos, resultados, capturas
+    ├── week12/   evaluación, casos de estudio, guion de pruebas con usuarios, plan final
+    └── week15/   Entrega final: informe, requisitos, contribución, reflexión, diagramas, índices
 ```
 
----
+### Documentos y presentaciones por semana
 
-# 8. Instrucciones de Ejecución
+| Semana | Documentos | Presentación |
+|---|---|---|
+| 04 | `README.md`, `acquisition.md`, `data_quality.md`, `data_dictionary.csv`, `DepaRent.pdf` | — |
+| 05 | `ProjectProposal.pdf/.docx`, `DataProductCanvas.pdf`, `Requirements.pdf` | `PresentationWeek05.pdf` |
+| 06 | `DataAnalysis.md`, `ModelSelection.md` | `PresentationWeek06.pdf` |
+| 07 | `Delivery1Report.pdf/.docx`, `Requirements.pdf`, `DataProductCanvas.pdf`, `architecture/`, `design/`, `planning/` | `PresentationWeek07.pptx` |
+| 08 | `README.md` (estado para el profesor) | `PresentationWeek08.pptx/.pdf` |
+| 10 | `PrototypeReport.md`, `PRODUCT.md`, `DESIGN.md`, `models/metadata.md`, `deployed_url.txt` | `PresentationWeek10.pptx/.pdf` |
+| 12 | `EvaluationReport.md`, `GuionPruebasUsuarios.md`, `PlanFinal.md`, `architecture/` | — |
+| 15 | `EstadoProyecto.md`, `FinalReport.md` (en redacción), `Requirements.md`, `ContributionStatement.md`, `Reflection.md`, `architecture/` | `presentation/` (pendiente) |
 
-## Requisitos Previos
-
-- **Python**: Se recomienda utilizar **Python 3.10** o superior (probado con Python 3.10 / 3.11).
-- **Dependencias y librerías**: Las dependencias están definidas en `requirements.txt` en la raíz del repositorio (rangos de versiones compatibles con Python 3.10 – 3.13): `numpy`, `pandas`, `scipy`, `scikit-learn`, `statsmodels`, `matplotlib`, `seaborn`, `umap-learn` y `notebook` / `ipykernel`.
-
-## Clonación del Repositorio y Preparación del Entorno
-
-1. **Clonar el repositorio:**
-
-   ```bash
-   git clone https://github.com/Luciana-y/DepaRent.git
-   cd DepaRent
-   ```
-
-2. **Crear y activar un entorno virtual:**
-
-   - En Windows (PowerShell):
-     ```powershell
-     python -m venv venv
-     .\venv\Scripts\Activate.ps1
-     ```
-   - En Linux / macOS:
-     ```bash
-     python3 -m venv venv
-     source venv/bin/activate
-     ```
-
-3. **Instalar dependencias necesarias:**
-
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-## Ejecución del Pipeline de Datos, EDA y Modelado
-
-El procesamiento de datos, análisis exploratorio y entrenamiento de los modelos analíticos preliminares están centralizados en cuadernos de Jupyter:
-
-- **Pipeline y EDA de Semana 06:**
-  ```text
-  deliveries/week06/code/EDA_week06_v5.ipynb
-  ```
-- **Pipeline y EDA consolidado de Semana 07 (Delivery 1):**
-  ```text
-  deliveries/week07/code/EDA_week07.ipynb
-  ```
-
-Para ejecutarlos:
-
-1. Iniciar Jupyter Notebook o JupyterLab:
-   ```bash
-   jupyter notebook
-   ```
-2. Abrir cualquiera de los notebooks mencionados (`deliveries/week06/code/EDA_week06_v5.ipynb` o `deliveries/week07/code/EDA_week07.ipynb`).
-3. Ejecutar las celdas secuencialmente (*Run All*). Los notebooks están configurados para detectar automáticamente los datasets crudos ubicados en `deliveries/week04/data/`:
-   - `departamentos_alquiler_lima.csv`
-   - `dataset_alquileres_trimestre_bcrp.csv`
-   - `paraderos.csv`
-
-## Ubicación de Outputs y Artefactos
-
-- **Datasets Procesados:**
-  Al ejecutarse el pipeline en los notebooks, el código (`to_csv`) genera y escribe los archivos procesados en una subcarpeta relativa `processed/` en el directorio de trabajo del notebook en ejecución (por ejemplo, `deliveries/week06/code/processed/` o `deliveries/week07/code/processed/`).
-  
-  Por otro lado, los datasets procesados oficiales y versionados en el repositorio correspondientes a la Semana 07 se encuentran almacenados directamente en:
-  `deliveries/week07/data/`
-
-  Archivos generados:
-  - `departamentos_procesados.csv`: dataset inmobiliario limpio con coordenadas e imputación básica.
-  - `departamentos_sin_geo_para_clustering.csv`: versión estructurada para segmentación y clustering sin variables geoespaciales.
-  - `paraderos_procesado.csv`: paraderos de transporte público de la ATU procesados para cálculo de accesibilidad.
-  - `bcrp_procesado.csv`: corte más reciente de estadísticas distritales del BCRP.
-  - `bcrp_serie_completa.csv`: serie histórica trimestral para pronóstico y análisis temporal.
-
-- **Modelos Serializados:**
-  Actualmente **no existen modelos serializados** (`.joblib` o `.pkl`) almacenados en el repositorio. La serialización y guardado de los artefactos entrenados (clustering K-Means y regresión HistGradientBoosting) está planificada como parte del prototipo funcional en la **Week 10**.
-
-## Variables de Entorno y Credenciales
-
-- **No se requieren variables de entorno ni credenciales externas** (API keys, tokens o contraseñas) para la ejecución actual. Todos los datos necesarios provienen de archivos locales contenidos dentro del repositorio.
+> El código del producto se quedó en `deliveries/week10/` porque Render despliega desde esas rutas; las
+> mejoras de las semanas 12 y 15 se hicieron sobre esa misma carpeta.
 
 ---
 
-# 9. Cronograma del Proyecto
+## 4. Instalación y ejecución
 
-| Semana | Prioridad | Trabajo principal | Resultado esperado |
-|---|---|---|---|
-| Week 7 | Alta | Consolidar definición integrada, arquitectura, requirements, datos y plan de implementación. | Delivery 1 completo y repositorio reorganizado. |
-| Week 8 | Alta | Estabilizar pipeline de datos, esquemas y artefactos procesados; pruebas de reproducibilidad. | Pipeline reproducible y datasets versionados. |
-| Week 9 | Alta | Validar estabilidad de K-Means k=4 e implementar segunda etapa de comparables (k-NN dentro de cluster + ubicación). | Perfil competitivo utilizable en producto. |
-| Week 10 | Alta | Tuning y análisis de error del HistGradientBoosting; definición de contrato de inferencia. | Modelo de precio versionado y endpoint/prototipo de inferencia. |
-| Week 11 | Media-Alta | Implementar/validar SARIMA temporal y consolidar módulo de accesibilidad. | Tendencia distrital y accesibilidad integrables. |
-| Week 12 | Alta | Construir motor de escenarios de precio y simulador contrafactual con advertencias de uso. | Módulos prescriptivos funcionales. |
-| Week 13 | Alta | Integrar frontend, backend, persistencia y modelos; flujo propietario de extremo a extremo. | Prototipo integrado. |
-| Week 14 | Alta | Pruebas con usuarios, criterios de aceptación, QA, rendimiento, revisión de explicabilidad y limitaciones. | Versión candidata final con hallazgos de validación. |
-| Week 15 | Alta | Evaluación final, documentación, limpieza de repositorio, presentación y entrega. | Prototipo final y Delivery 2. |
+### Requisitos
+- **Python 3.12 o 3.13** y conexión a internet (instalar dependencias y cargar el mapa de OpenStreetMap).
+- Git.
 
+### App web (API + interfaz) — Windows PowerShell, desde la raíz del repo
+
+```powershell
+git clone https://github.com/Luciana-y/DepaRent.git
+cd DepaRent
+py -3.13 -m venv .venv
+.venv\Scripts\python.exe -m pip install -r deliveries/week10/code/requirements.txt
+cd deliveries/week10/code
+..\..\..\.venv\Scripts\python.exe -m uvicorn api:app --host 127.0.0.1 --port 8000
+```
+
+Abrir **http://127.0.0.1:8000**. Documentación de la API: http://127.0.0.1:8000/docs.
+
+En Linux/macOS: `python3 -m venv .venv`, `.venv/bin/python -m pip install ...` y `../../../.venv/bin/python -m uvicorn api:app --port 8000`.
+
+### Pruebas automáticas (desde `deliveries/week10/code`)
+
+```powershell
+..\..\..\.venv\Scripts\python.exe -m unittest discover -p "test_*.py"   # 70 pruebas, todas pasan (13-nov-2026)
+```
+
+### Reproducir la evaluación
+
+```powershell
+cd deliveries\week12\code
+..\..\..\.venv\Scripts\python.exe evaluar_producto.py       # error por rango de precio + coherencia de punta a punta
+..\..\..\.venv\Scripts\python.exe casos_estudio.py          # casos de estudio
+..\..\..\.venv\Scripts\python.exe evaluar_recomendador.py   # recomendador frente al buscador y al azar
+```
+
+### Reentrenar (opcional)
+Desde `deliveries/week10/code`: `entrenar_perfil.py` (modelo 1) y `entrenar_tendencia.py` (modelo 4).
+El modelo de precio (`entrenar.py`) **no se reentrena**: es la versión revisada por el profesor y la app verifica su hash.
+
+### Notebooks (semanas 6–7)
+
+```powershell
+.venv\Scripts\python.exe -m pip install -r requirements.txt
+.venv\Scripts\python.exe -m notebook
+```
+Abrir `deliveries/week07/code/EDA_week07.ipynb` y ejecutar todo; lee los crudos de `deliveries/week04/data/`.
+
+### Variables de entorno (todas opcionales en local)
+
+| Variable | Uso |
+|---|---|
+| `DATABASE_URL` | Postgres (Neon) en producción. Sin ella se usa SQLite en `deliveries/week10/data/deparent.sqlite` (se crea sola, no se sube) |
+| `DEPARENT_DB` | Otra ruta para la base SQLite |
+| `DEPARENT_ANALISTAS` | Correos (separados por comas) que ven el panel de KPIs |
+| `DEPARENT_ORIGENES` | Dominios permitidos si el frontend se sirve aparte |
+
+### Despliegue
+Render con `render.yaml` (un solo servicio que sirve API y frontend). El mercado se actualiza con
+`.github/workflows/actualizar-mercado.yml` o, si los portales bloquean la nube, con `scraper/programar_tarea.ps1`
+en local. Detalle en [`deliveries/week10/deployed_url.txt`](deliveries/week10/deployed_url.txt).
+
+---
+
+## 5. Equipo y roles
+
+| Integrante | Rol principal |
+|---|---|
+| **Adrian Urbina Mendoza** | Líder · adquisición y preprocesamiento de datos |
+| **Armando Martinez Palomino** | Ingeniería de datos · integración de fuentes externas (ATU, BCRP) |
+| **Breysi Salazar Medina** | Machine learning · modelos y evaluación |
+| **Luciana Yangali Cáceres** | Aplicación y visualización · interfaz web |
+
+Detalle: [`deliveries/week07/planning/team_responsibilities.md`](deliveries/week07/planning/team_responsibilities.md) y
+[`deliveries/week15/ContributionStatement.md`](deliveries/week15/ContributionStatement.md).
+
+---
+
+## 6. Limitaciones principales
+- El modelo aprende **precios pedidos** en anuncios, no precios de contrato.
+- El rango de precio tiene radio fijo (S/ 1,357): bien calibrado en promedio, menos en departamentos de lujo.
+- Distritos con pocos anuncios tienen error inestable.
+- Los portales bloquean a veces la descarga automática (error 403); la app usa la última captura completa.
+- Render gratuito se duerme tras 15 min sin visitas.
+
+Más detalle en [`deliveries/week12/EvaluationReport.md`](deliveries/week12/EvaluationReport.md) §8.
