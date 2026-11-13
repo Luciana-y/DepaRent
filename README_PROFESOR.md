@@ -7,7 +7,7 @@ las instrucciones completas están en el [`README.md`](README.md).
 |---|---|
 | **App desplegada** | https://deparent.onrender.com (plan gratuito: la primera visita tarda 30–60 s en despertar) |
 | **Repositorio** | https://github.com/Luciana-y/DepaRent |
-| **Drive (copia del profesor)** | https://drive.google.com/drive/u/0/folders/11Li9yikIQJH2MJNBuWX5ytOqb5nXRPab |
+| **Panel de KPIs** | Ingresar en la app con `analista@gmail.com` / contraseña `analista` (ver §2) |
 | **Equipo** | Adrian Urbina Mendoza · Armando Martinez Palomino · Breysi Salazar Medina · Luciana Yangali Cáceres |
 
 ---
@@ -23,10 +23,25 @@ las instrucciones completas están en el [`README.md`](README.md).
 | **Interfaz o prototipo actual** | En línea: https://deparent.onrender.com · Código: [`deliveries/week10/frontend/`](deliveries/week10/frontend/) · Capturas: [`deliveries/week10/screenshots/`](deliveries/week10/screenshots/) · Bocetos y wireframes: [`deliveries/week07/design/`](deliveries/week07/design/) |
 | **Documentos y presentaciones** | Tabla por semana en el [`README.md`](README.md) §3 · Evaluación: [`deliveries/week12/EvaluationReport.md`](deliveries/week12/EvaluationReport.md) · Última presentación: [`deliveries/week10/PresentationWeek10.pptx`](deliveries/week10/) |
 | **Instrucciones para instalar y ejecutar** | [`README.md`](README.md) §4 |
-| **Enlace de GitHub o Drive** | GitHub: https://github.com/Luciana-y/DepaRent · Drive: https://drive.google.com/drive/u/0/folders/11Li9yikIQJH2MJNBuWX5ytOqb5nXRPab |
+| **Enlace de GitHub** | https://github.com/Luciana-y/DepaRent |
 | **Ejercicio del profesor (n y MAE de un distrito)** | [`deliveries/week10/code/EJERCICIO_FINAL.py`](deliveries/week10/code/EJERCICIO_FINAL.py) |
 
-## 2. Documento breve
+## 2. Acceso al panel de KPIs
+
+En https://deparent.onrender.com, entrar a **Ingresar** con esta cuenta de analista:
+
+| Correo | Contraseña |
+|---|---|
+| `analista@gmail.com` | `analista` |
+
+Al iniciar sesión se abre directamente el **Panel de análisis (KPIs)**: uso del producto (cuentas, perfiles,
+departamentos, publicaciones, guardados y mensajes), métricas del modelo, estado de los datos y evaluación del
+recomendador. El panel solo muestra conteos agregados, sin datos personales.
+
+En una instalación local, la cuenta no existe todavía: hay que crearla desde **Ingresar** y arrancar la API con
+`$env:DEPARENT_ANALISTAS = "analista@gmail.com"` antes del comando `uvicorn` de la §4.
+
+## 3. Documento breve
 
 Está en [`deliveries/week15/EstadoProyecto.md`](deliveries/week15/EstadoProyecto.md). Cada pregunta tiene su sección:
 
@@ -42,7 +57,7 @@ Está en [`deliveries/week15/EstadoProyecto.md`](deliveries/week15/EstadoProyect
 | Qué desean demostrar en la presentación | §8 |
 | Qué parte está desarrollando cada integrante | §9 |
 
-## 3. Ejecución rápida (Windows, desde la raíz del repositorio)
+## 4. Ejecución rápida (Windows, desde la raíz del repositorio)
 
 ```powershell
 py -3.13 -m venv .venv
